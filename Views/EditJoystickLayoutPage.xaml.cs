@@ -71,53 +71,53 @@ namespace RinceDCS.Views
 
         public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
 
-        private void CreateButtons()
-        {
-            //  Create all the Button controls and add to canvas
-            JoystickCanvas.Children.Clear();
-            var i = 0;
-            foreach (GameJoystickButton button in ViewModel.Stick.Buttons)
-            {
-                Border border = CreateButton(i, button);
+        //private void CreateButtons()
+        //{
+        //    //  Create all the Button controls and add to canvas
+        //    JoystickCanvas.Children.Clear();
+        //    var i = 0;
+        //    foreach (GameJoystickButton button in ViewModel.Stick.Buttons)
+        //    {
+        //        Border border = CreateButton(i, button);
 
-                JoystickCanvas.Children.Add(border);
+        //        JoystickCanvas.Children.Add(border);
 
-                i = i + 1;
-            }
-        }
+        //        i = i + 1;
+        //    }
+        //}
 
-        private Border CreateButton(int i, GameJoystickButton button)
-        {
-            Binding visibilityBinding = new Binding { Source = button, Path = new PropertyPath("OnLayout"), Mode = BindingMode.OneWay, Converter = new ButtonOnLayoutConverter() };
-            Binding topXBinding = new Binding { Source = button, Path = new PropertyPath("TopX"), Mode = BindingMode.OneWay };
-            Binding topYBinding = new Binding { Source = button, Path = new PropertyPath("TopY"), Mode = BindingMode.OneWay };
-            Binding widthBinding = new Binding { Source = button, Path = new PropertyPath("Width"), Mode = BindingMode.OneWay };
-            Binding heightBinding = new Binding { Source = button, Path = new PropertyPath("Height"), Mode = BindingMode.OneWay };
-            Border border = new Border
-            {
-                BorderThickness = new Thickness(2),
-                BorderBrush = new SolidColorBrush(Colors.Black),
-                MinWidth = 60,
-                MinHeight = 24
-            };
-            border.SetBinding(Border.VisibilityProperty, visibilityBinding);
-            border.SetBinding(Canvas.LeftProperty, topXBinding);
-            border.SetBinding(Canvas.TopProperty, topYBinding);
-            border.SetBinding(Border.WidthProperty, widthBinding);
-            border.SetBinding(Border.HeightProperty, heightBinding);
+        //private Border CreateButton(int i, GameJoystickButton button)
+        //{
+        //    Binding visibilityBinding = new Binding { Source = button, Path = new PropertyPath("OnLayout"), Mode = BindingMode.OneWay, Converter = new ButtonOnLayoutConverter() };
+        //    Binding topXBinding = new Binding { Source = button, Path = new PropertyPath("TopX"), Mode = BindingMode.OneWay };
+        //    Binding topYBinding = new Binding { Source = button, Path = new PropertyPath("TopY"), Mode = BindingMode.OneWay };
+        //    Binding widthBinding = new Binding { Source = button, Path = new PropertyPath("Width"), Mode = BindingMode.OneWay };
+        //    Binding heightBinding = new Binding { Source = button, Path = new PropertyPath("Height"), Mode = BindingMode.OneWay };
+        //    Border border = new Border
+        //    {
+        //        BorderThickness = new Thickness(2),
+        //        BorderBrush = new SolidColorBrush(Colors.Black),
+        //        MinWidth = 60,
+        //        MinHeight = 24
+        //    };
+        //    border.SetBinding(Border.VisibilityProperty, visibilityBinding);
+        //    border.SetBinding(Canvas.LeftProperty, topXBinding);
+        //    border.SetBinding(Canvas.TopProperty, topYBinding);
+        //    border.SetBinding(Border.WidthProperty, widthBinding);
+        //    border.SetBinding(Border.HeightProperty, heightBinding);
 
-            Binding labelBinding = new Binding
-            {
-                Source = button,
-                Path = new PropertyPath("ButtonLabel"),
-                Mode = BindingMode.OneWay
-            };
-            TextBlock textBlock = new TextBlock();
-            textBlock.SetBinding(TextBlock.TextProperty, labelBinding);
-            border.Child = textBlock;
+        //    Binding labelBinding = new Binding
+        //    {
+        //        Source = button,
+        //        Path = new PropertyPath("ButtonLabel"),
+        //        Mode = BindingMode.OneWay
+        //    };
+        //    TextBlock textBlock = new TextBlock();
+        //    textBlock.SetBinding(TextBlock.TextProperty, labelBinding);
+        //    border.Child = textBlock;
 
-            return border;
-        }
+        //    return border;
+        //}
 
         private async void EditImage_Click(object sender, RoutedEventArgs e)
         {
@@ -153,7 +153,7 @@ namespace RinceDCS.Views
                 JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength();
             }
             JoystickImage.Scale = newScale;
-            JoystickCanvas.Scale = newScale;
+//            JoystickCanvas.Scale = newScale;
         }
 
         private int CurrentScaleIndex()

@@ -15,22 +15,6 @@
     <Page.Resources>
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
-
-        <DataTemplate x:Key="JoystickButtonTemplate" x:DataType="models:GameJoystickButton">
-            <Border
-                BorderThickness="2"
-                BorderBrush="Black"
-                MinWidth="60"
-                MinHeight="24"
-                Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
-                Canvas.Top="{x:Bind TopY, Mode=OneWay}"
-                Canvas.Left="{x:Bind TopX, Mode=OneWay}"
-                Width="{x:Bind Width, Mode=OneWay}"
-                Height="{x:Bind Height, Mode=OneWay}">
-                <TextBlock Text="{x:Bind ButtonLabel, Mode=OneWay}"/>
-            </Border>
-        </DataTemplate>
-
     </Page.Resources>
 
     <Grid>
@@ -110,16 +94,37 @@
                     PointerPressed="JoystickImage_PointerPressed"
                     PointerMoved="JoystickImage_PointerMoved"
                     PointerReleased="JoystickImage_PointerReleased"/>
-                <Canvas
+                <ItemsControl
                     Grid.Row="0"
                     Grid.Column="0"
-                    Name="JoystickCanvas">
-                    <ItemsControl
-                        Name="ButtonsItemsControl"
-                        ItemsSource="{x:Bind ViewModel.Stick.Buttons}"
-                        ItemTemplate="{StaticResource JoystickButtonTemplate}">
-                    </ItemsControl>
-                 </Canvas>
+                    Name="ButtonsItemsControl"
+                    ItemsSource="{x:Bind ViewModel.Stick.Buttons}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding TopX, Mode=OneWay}"/>
+                            <Setter Property="Canvas.Top" Value="{Binding TopY, Mode=OneWay}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:GameJoystickButton">
+                            <Border
+                                BorderThickness="2"
+                                BorderBrush="Black"
+                                MinWidth="60"
+                                MinHeight="24"
+                                Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
+                                Width="{x:Bind Width, Mode=OneWay}"
+                                Height="{x:Bind Height, Mode=OneWay}">
+                                <TextBlock Text="{x:Bind ButtonLabel, Mode=OneWay}"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
         </ScrollViewer>
     </Grid>
