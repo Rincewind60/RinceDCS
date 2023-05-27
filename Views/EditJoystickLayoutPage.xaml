@@ -104,12 +104,6 @@
                             <Canvas/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="Canvas.Left" Value="{Binding TopX, Mode=OneWay}"/>
-                            <Setter Property="Canvas.Top" Value="{Binding TopY, Mode=OneWay}"/>
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:GameJoystickButton">
                             <Border
@@ -120,6 +114,9 @@
                                 Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
                                 Width="{x:Bind Width, Mode=OneWay}"
                                 Height="{x:Bind Height, Mode=OneWay}">
+                                <Border.RenderTransform>
+                                    <TranslateTransform X="{x:Bind TopX, Mode=OneWay}" Y="{x:Bind TopY, Mode=OneWay}"/>
+                                </Border.RenderTransform>
                                 <TextBlock Text="{x:Bind ButtonLabel, Mode=OneWay}"/>
                             </Border>
                         </DataTemplate>
