@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -9,6 +11,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,8 +50,19 @@ namespace RinceDCS
         {
             m_window = new MainWindow();
             m_window.Activate();
+
+            Ioc.Default.ConfigureServices(
+                new ServiceCollection()
+                    .AddSingleton<IDialogService>(new DialogService(m_window))
+                    .AddSingleton<IJoystickService>(new JoystickService())
+                    .AddSingleton<ISettingsService>(new SettingsService())
+                    .AddSingleton<IFileService>(new FileService())
+                    .AddSingleton<IDCSService>(new DCSService())
+                    .BuildServiceProvider());
+
+            m_window.StartApp();
         }
 
-        private Window m_window;
+        private MainWindow m_window;
     }
 }

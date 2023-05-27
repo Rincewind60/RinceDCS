@@ -1,0 +1,59 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Page
+    x:Class="RinceDCS.Views.GameInstancesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RinceDCS.Views"
+    xmlns:viewModels="using:RinceDCS.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Width="1040">
+
+    <Page.Resources>
+        <local:HideIfHeadingConverter x:Key="HideIfHeading"/>
+        <local:ShowIfHeadingConverter x:Key="ShowIfHeading"/>
+    </Page.Resources>
+
+    <StackPanel Orientation="Vertical">
+        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Add" Label="Add" Click="{x:Bind ViewModel.AddInstance}"/>
+        </CommandBar>
+        <ListView ItemsSource="{x:Bind ViewModel.Instances}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:InstanceData">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="440"/>
+                            <ColumnDefinition Width="45"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="45"/>
+                            <ColumnDefinition Width="45"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" Text="{x:Bind Name, Mode=TwoWay}" PlaceholderText="New Instance..." Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource HideIfHeading}}" IsEnabled="{x:Bind IsValid, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Bind Name, Mode=TwoWay}" Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource ShowIfHeading}}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind GameExePath, Mode=OneWay}"/>
+                        <Button Grid.Row="0" Grid.Column="2" Name="SelectGameExePath" Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource HideIfHeading}}" Click="SelectGameExePath_Click">
+                            <SymbolIcon Symbol="OpenFile"/>
+                        </Button>
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{x:Bind SavedGameFolderPath, Mode=OneWay}"/>
+                        <Button Grid.Row="0" Grid.Column="4" Name="SelectSavedGameFolderPath" Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource HideIfHeading}}" Click="SelectSavedGameFolderPath_Click">
+                            <SymbolIcon Symbol="OpenFile"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="5" Name="DeleteInstance" Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource HideIfHeading}}" Click="DeleteInstance_Click">
+                            <SymbolIcon Symbol="Delete"/>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>                        
+        </ListView>
+    </StackPanel>
+</Page>

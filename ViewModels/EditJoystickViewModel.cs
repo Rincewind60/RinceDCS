@@ -1,0 +1,54 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
+using RinceDCS.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections;
+using SharpDX.DirectInput;
+
+namespace RinceDCS.ViewModels;
+
+public partial class EditJoystickViewModel : ObservableRecipient,
+                                             IRecipient<PropertyChangedMessage<Game>>
+{
+    [ObservableProperty]
+    private AttachedJoystick attachedStick;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
+    private GameJoystick stick;
+
+    [ObservableProperty]
+    private GameJoystickButton currentJoystickButton;
+
+    [ObservableProperty]
+    private string currentScale;
+
+    public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
+
+    public EditJoystickViewModel(Tuple<Game, AttachedJoystick> data)
+    {
+        IsActive = true;
+
+        AttachedStick = data.Item2;
+        CurrentJoystickButton = null;
+        CurrentScale = Scales[2];
+
+        Stick = (from gameStick in data.Item1.Joysticks
+                    where gameStick.AttachedJoystick == AttachedStick
+                    select gameStick).First();
+    }
+
+    public void Receive(PropertyChangedMessage<Game> message)
+    {
+        Stick = (from gameStick in message.NewValue.Joysticks
+                    where gameStick.AttachedJoystick == AttachedStick
+                    select gameStick).First();
+        CurrentJoystickButton = null;
+    }
+}

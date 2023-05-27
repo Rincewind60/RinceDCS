@@ -9,11 +9,11 @@
   <Identity
     Name="b0dbd435-29fc-47c4-aaed-aa6491565cd5"
     Publisher="CN=Paul"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <Properties>
-    <DisplayName>RinceDCS</DisplayName>
-    <PublisherDisplayName>Paul</PublisherDisplayName>
+    <DisplayName>Rince DCS</DisplayName>
+    <PublisherDisplayName>Paul Scobell</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,8 +31,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="RinceDCS"
-        Description="RinceDCS"
+        DisplayName="Rince DCS"
+        Description="Rince DCS is a tool that allows you to configure Joysticks images for DCS. You assign Buttons to locations on the Joystick image and can then view/print/export a PDF of the Joysticks configuration for each Aircraft. These can also be exported to your Kneepad folders."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

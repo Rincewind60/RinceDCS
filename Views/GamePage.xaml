@@ -1,0 +1,108 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Page
+    x:Class="RinceDCS.Views.GamePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RinceDCS.Views"
+    xmlns:models="using:RinceDCS.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <local:ModeConverter x:Key="ModeConverter"/>
+        <local:ModeVisibilityConverter x:Key="ModeVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <CommandBar Grid.Row="0" Grid.Column="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right" HorizontalAlignment="Left">
+            <AppBarButton Icon="NewFolder" Label="New" Command="{x:Bind ViewModel.NewCommand}"/>
+            <AppBarButton Icon="OpenFile" Label="Open" Command="{x:Bind ViewModel.OpenCommand}"/>
+            <AppBarButton Icon="Save" Label="Save" Command="{x:Bind ViewModel.SaveCommand}"/>
+            <AppBarButton Icon="Save" Label="Save As" Command="{x:Bind ViewModel.SaveAsCommand}"/>
+            <AppBarSeparator/>
+            <AppBarToggleButton Icon="View" Label="View" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"/>
+            <AppBarToggleButton Icon="Manage" Label="Manage" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"/>
+            <AppBarToggleButton Icon="Edit" Label="Edit" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
+            <AppBarToggleButton Icon="List" Label="Bindings" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
+            <AppBarSeparator/>
+            <AppBarButton Label="About" Click="About_Click"/>
+        </CommandBar>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal">
+            <TextBlock Text="Game Instance:" VerticalAlignment="Center" Margin="2"/>
+            <ComboBox
+                Name="InstancesCombo" 
+                ItemsSource="{x:Bind ViewModel.CurrentGame.Instances}" 
+                SelectedItem="{x:Bind ViewModel.CurrentInstance, Mode=TwoWay}" 
+                SelectionChanged="InstancesCombo_SelectionChanged"
+                DisplayMemberPath="Name"
+                IsEnabled="{x:Bind ViewModel.IsGameLoaded}"
+                MinWidth="180"
+                Margin="2,0,2,0"
+                VerticalAlignment="Center">
+            </ComboBox>
+            <Button Name="UpdateInstances" Click="UpdateInstances_Click" IsEnabled="{x:Bind ViewModel.IsGameLoaded, Mode=OneWay}" Margin="2,0,2,0">
+                <SymbolIcon Symbol="Edit"/>
+            </Button>
+            <TextBlock Text="Aircraft:" VerticalAlignment="Center" Margin="2,0,2,0"/>
+            <ComboBox
+                Name="AircraftCombo" 
+                ItemsSource="{x:Bind ViewModel.CurrentInstance.Aircraft}" 
+                SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}" 
+                SelectionChanged="AircraftCombo_SelectionChanged"
+                DisplayMemberPath="Name"
+                IsEnabled="{x:Bind ViewModel.IsGameLoaded}"
+                MinWidth="180"
+                Margin="2,0,2,0"
+                VerticalAlignment="Center">
+            </ComboBox>
+        </StackPanel>
+
+        <TabView
+            Name="ViewJoystickLayouts"
+            Grid.Row="2"
+            Grid.Column="0"
+            IsAddTabButtonVisible="False"
+            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=View}"
+            Loaded="ViewJoystickLayouts_Loaded">
+        </TabView>
+        <TabView
+            Name="ManageJoystickLayouts"
+            Grid.Row="2"
+            Grid.Column="0"
+            IsAddTabButtonVisible="False"
+            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Manage}"
+            Loaded="ManageJoystickLayouts_Loaded">
+        </TabView>
+        <TabView
+            Name="EditJoystickLayouts"
+            Grid.Row="2"
+            Grid.Column="0"
+            IsAddTabButtonVisible="False"
+            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Edit}"
+            Loaded="EditJoystickLayouts_Loaded">
+        </TabView>
+        <Frame
+            Name="BindingsTableFrame"
+            Grid.Row="2"
+            Grid.Column="0"
+            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Bindings}"
+            Loaded="BindingsTable_Loaded">
+        </Frame>
+
+    </Grid>
+ 
+</Page>
