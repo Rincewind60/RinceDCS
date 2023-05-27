@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RinceDCS (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "RinceDCS (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
