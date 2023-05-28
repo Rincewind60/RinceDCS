@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.Models;
 
-public class GameAircraft : ObservableObject
+public partial class GameAircraft : ObservableObject
 {
-    public string Name { get; set; }
+    [ObservableProperty]
+    private string name;
 }

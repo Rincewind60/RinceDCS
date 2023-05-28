@@ -20,7 +20,7 @@ public partial class GameInstance : ObservableObject
     [ObservableProperty]
     private string savedGameFolderPath;
 
-    public ObservableCollection<GameAircraft> Aircraft { get; set; } = new ObservableCollection<GameAircraft>();
+    public ObservableCollection<GameAircraft> Aircraft { get; set; } = new();
 
     public string CurrentAircraftName { get; set; }
 

@@ -1,34 +1,20 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using RinceDCS.Models;
-using RinceDCS.ServiceModels;
-using RinceDCS.ViewModels;
-using RinceDCS.ViewModels.Messages;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using SharpDX.DirectInput;
+using RinceDCS.Models;
+using RinceDCS.ServiceModels;
+using RinceDCS.ViewModels;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -50,12 +36,6 @@ namespace RinceDCS.Views
         public EditJoystickLayoutPage()
         {
             this.InitializeComponent();
-
-            StrongReferenceMessenger.Default.Register<PropertyChangedMessage<GameJoystick>>(this, (r, m) => {
-                if (m.NewValue.AttachedJoystick != ViewModel.Stick.AttachedJoystick) return;
-
-                //CreateButtons();
-            });
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -65,59 +45,9 @@ namespace RinceDCS.Views
             Tuple<Game,AttachedJoystick> data = e.Parameter as Tuple<Game, AttachedJoystick>;
 
             this.DataContext = new EditJoystickViewModel(data);
-
-            //CreateButtons();
         }
 
         public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
-
-        //private void CreateButtons()
-        //{
-        //    //  Create all the Button controls and add to canvas
-        //    JoystickCanvas.Children.Clear();
-        //    var i = 0;
-        //    foreach (GameJoystickButton button in ViewModel.Stick.Buttons)
-        //    {
-        //        Border border = CreateButton(i, button);
-
-        //        JoystickCanvas.Children.Add(border);
-
-        //        i = i + 1;
-        //    }
-        //}
-
-        //private Border CreateButton(int i, GameJoystickButton button)
-        //{
-        //    Binding visibilityBinding = new Binding { Source = button, Path = new PropertyPath("OnLayout"), Mode = BindingMode.OneWay, Converter = new ButtonOnLayoutConverter() };
-        //    Binding topXBinding = new Binding { Source = button, Path = new PropertyPath("TopX"), Mode = BindingMode.OneWay };
-        //    Binding topYBinding = new Binding { Source = button, Path = new PropertyPath("TopY"), Mode = BindingMode.OneWay };
-        //    Binding widthBinding = new Binding { Source = button, Path = new PropertyPath("Width"), Mode = BindingMode.OneWay };
-        //    Binding heightBinding = new Binding { Source = button, Path = new PropertyPath("Height"), Mode = BindingMode.OneWay };
-        //    Border border = new Border
-        //    {
-        //        BorderThickness = new Thickness(2),
-        //        BorderBrush = new SolidColorBrush(Colors.Black),
-        //        MinWidth = 60,
-        //        MinHeight = 24
-        //    };
-        //    border.SetBinding(Border.VisibilityProperty, visibilityBinding);
-        //    border.SetBinding(Canvas.LeftProperty, topXBinding);
-        //    border.SetBinding(Canvas.TopProperty, topYBinding);
-        //    border.SetBinding(Border.WidthProperty, widthBinding);
-        //    border.SetBinding(Border.HeightProperty, heightBinding);
-
-        //    Binding labelBinding = new Binding
-        //    {
-        //        Source = button,
-        //        Path = new PropertyPath("ButtonLabel"),
-        //        Mode = BindingMode.OneWay
-        //    };
-        //    TextBlock textBlock = new TextBlock();
-        //    textBlock.SetBinding(TextBlock.TextProperty, labelBinding);
-        //    border.Child = textBlock;
-
-        //    return border;
-        //}
 
         private async void EditImage_Click(object sender, RoutedEventArgs e)
         {
@@ -242,16 +172,20 @@ namespace RinceDCS.Views
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            bool onLayout = (bool)value;
+            return (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
+        }
 
-            if(onLayout)
-            {
-                return Visibility.Visible;
-            }
-            else 
-            {
-                return Visibility.Collapsed;
-            }
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ButtonOnLayoutColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (bool)value == true ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Gray);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

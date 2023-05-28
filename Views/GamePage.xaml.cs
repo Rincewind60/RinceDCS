@@ -50,7 +50,7 @@ namespace RinceDCS.Views
                 Path = new PropertyPath("IsValid"),
                 Mode = BindingMode.OneWay
             };
-            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Update Game Instances", page, "Save", SaveButtonBinding, null, "Cancel");
+            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Manage Game Instances", page, "Save", SaveButtonBinding, null, "Cancel");
 
             if (result == ContentDialogResult.Primary)
             {
@@ -166,9 +166,7 @@ namespace RinceDCS.Views
             if(isChecked)
             {
                 DisplayMode mode;
-
                 Enum.TryParse(parameter.ToString(), true, out mode);
-
                 return mode;
             }
             else
@@ -182,14 +180,7 @@ namespace RinceDCS.Views
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if(value.ToString() == parameter.ToString())
-            {
-                return Visibility.Visible;
-            }
-            else
-            {
-                return Visibility.Collapsed;
-            }
+            return value.ToString() == parameter.ToString() ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

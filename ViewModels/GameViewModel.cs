@@ -2,20 +2,13 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Messages;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Xml.Linq;
 
 namespace RinceDCS.ViewModels;
@@ -44,6 +37,10 @@ public partial class GameViewModel : ObservableRecipient
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
+    private ObservableCollection<GameAircraft> currentInstanceAircraft;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
     private GameAircraft currentAircraft;
 
     [ObservableProperty]
@@ -62,6 +59,8 @@ public partial class GameViewModel : ObservableRecipient
         JoystickMode = DisplayMode.View;
 
         AttachedJoysticks = Ioc.Default.GetRequiredService<IJoystickService>().GetAttachedJoysticks();
+
+        currentInstanceAircraft = new();
 
         WeakReferenceMessenger.Default.Register<GameInstancesUpdatedMessage>(this, (r, m) =>
         {
@@ -126,6 +125,7 @@ public partial class GameViewModel : ObservableRecipient
     public void CurrentInstanceChanged()
     {
         CurrentInstanceBindingsData = CurrentInstance == null ? null : CurrentInstance.BindingsData;
+        CurrentInstanceAircraft = CurrentInstance == null ? null : CurrentInstance.Aircraft;
         SetCurrentAircraftForCurrentInstance();
     }
 

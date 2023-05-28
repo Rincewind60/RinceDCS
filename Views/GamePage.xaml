@@ -45,7 +45,7 @@
             <TextBlock Text="Game Instance:" VerticalAlignment="Center" Margin="2"/>
             <ComboBox
                 Name="InstancesCombo" 
-                ItemsSource="{x:Bind ViewModel.CurrentGame.Instances}" 
+                ItemsSource="{x:Bind ViewModel.CurrentGame.Instances, Mode=OneWay}" 
                 SelectedItem="{x:Bind ViewModel.CurrentInstance, Mode=TwoWay}" 
                 SelectionChanged="InstancesCombo_SelectionChanged"
                 DisplayMemberPath="Name"
@@ -60,7 +60,7 @@
             <TextBlock Text="Aircraft:" VerticalAlignment="Center" Margin="2,0,2,0"/>
             <ComboBox
                 Name="AircraftCombo" 
-                ItemsSource="{x:Bind ViewModel.CurrentInstance.Aircraft}" 
+                ItemsSource="{x:Bind ViewModel.CurrentInstanceAircraft, Mode=OneWay}" 
                 SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}" 
                 SelectionChanged="AircraftCombo_SelectionChanged"
                 DisplayMemberPath="Name"

@@ -1,56 +1,52 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Messages;
-using Microsoft.UI.Xaml;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Windows.Data.Text;
-using Windows.Devices.Geolocation;
-using Windows.System;
+using System.Xml.Linq;
 
 namespace RinceDCS.ViewModels;
 
 public partial class InstanceData : ObservableObject
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNameEditable))]
     private string name;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNameEditable))]
     private string gameExePath;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNameEditable))]
     private string savedGameFolderPath;
 
     [ObservableProperty]
     private bool isHeading;
 
+    public bool IsNameEditable
+    {
+        get { return !string.IsNullOrWhiteSpace(GameExePath); }
+    }
+
     public bool IsValid
     {
-        get
-        {
-            return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(GameExePath) && !string.IsNullOrWhiteSpace(SavedGameFolderPath);
-        }
+        get { return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(GameExePath) && !string.IsNullOrWhiteSpace(SavedGameFolderPath); }
     }
 }
 
 public partial class GameInstancesViewModel : ObservableObject
 {
-     public ObservableCollection<InstanceData> Instances;
+    public ObservableCollection<InstanceData> Instances;
 
     [ObservableProperty]
     public bool isValid;
 
-//    private GameViewModel GameVM { get; set; }
+    private readonly int NumberOfHeadingInstances = 1;
 
     public GameInstancesViewModel(List<GameInstance> instances)
     {
@@ -108,7 +104,7 @@ public partial class GameInstancesViewModel : ObservableObject
 
     private void ValidateInstances()
     {
-        if(Instances.Count == 0)
+        if(Instances.Count == NumberOfHeadingInstances)
         {
             IsValid = false;
             return;
@@ -116,14 +112,9 @@ public partial class GameInstancesViewModel : ObservableObject
 
         bool valid = true;
 
-        for(var i = 1; i < Instances.Count; i++)
+        for(var i = NumberOfHeadingInstances; i < Instances.Count; i++)
         {
-            InstanceData instance = Instances[i];
-            if (string.IsNullOrEmpty(instance.Name) || string.IsNullOrEmpty(instance.GameExePath) || string.IsNullOrEmpty(instance.SavedGameFolderPath))
-            {
-                valid = false; 
-                break;
-            }
+            if(Instances[i].IsValid == false) {  valid = false; break; }
         }
 
         IsValid = valid;

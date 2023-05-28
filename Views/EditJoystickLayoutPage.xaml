@@ -15,6 +15,14 @@
     <Page.Resources>
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
+        <local:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
+
+        <Style x:Key="NonUsedStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+        <Style x:Key="UsedStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -49,7 +57,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:GameJoystickButton">
                     <ListViewItem>
-                        <TextBlock Text="{x:Bind ButtonLabel}" Width="140"/>
+                        <TextBlock Text="{x:Bind ButtonLabel}" Foreground="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutColorConverter}}" Width="140"/>
                     </ListViewItem>
                 </DataTemplate>
             </ListView.ItemTemplate>
