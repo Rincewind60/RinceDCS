@@ -1,21 +1,11 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using HtmlAgilityPack;
+using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Windows.Devices.Geolocation;
-using HtmlAgilityPack;
-using Microsoft.UI.Xaml.Data;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
-using MoonSharp.Interpreter.Serialization.Json;
-using System.Text.Json;
-using SharpDX.DirectInput;
 
 namespace RinceDCS.Services;
 

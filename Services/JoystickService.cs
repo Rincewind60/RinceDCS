@@ -1,11 +1,8 @@
-﻿using RinceDCS.ServiceModels;
+﻿using RinceDCS.Models;
+using RinceDCS.ServiceModels;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpDX.DirectInput;
-using RinceDCS.Models;
 
 namespace RinceDCS.Services;
 

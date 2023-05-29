@@ -1,16 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.IO;
 using System.Drawing;
-using System.Text.Json.Serialization;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace RinceDCS.Services;
 

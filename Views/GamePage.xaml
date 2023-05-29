@@ -15,13 +15,15 @@
     <Page.Resources>
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ModeVisibilityConverter x:Key="ModeVisibilityConverter"/>
+        <local:AircraftVisibilityConverter x:Key="AircraftVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -35,14 +37,22 @@
             <AppBarSeparator/>
             <AppBarToggleButton Icon="View" Label="View" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"/>
             <AppBarToggleButton Icon="Manage" Label="Manage" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"/>
-            <AppBarToggleButton Icon="Edit" Label="Edit" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
             <AppBarToggleButton Icon="List" Label="Bindings" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
+            <AppBarToggleButton Icon="Edit" Label="Edit" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
             <AppBarSeparator/>
             <AppBarButton Label="About" Click="About_Click"/>
         </CommandBar>
-        
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal">
-            <TextBlock Text="Game Instance:" VerticalAlignment="Center" Margin="2"/>
+
+        <StackPanel
+            Grid.Row="1" 
+            Grid.Column="0" 
+            Grid.ColumnSpan="4" 
+            Orientation="Horizontal">
+            <TextBlock
+                Text="Game Instance:" 
+                VerticalAlignment="Center" 
+                Width="100"
+                Margin="18,2,2,2"/>
             <ComboBox
                 Name="InstancesCombo" 
                 ItemsSource="{x:Bind ViewModel.CurrentGame.Instances, Mode=OneWay}" 
@@ -54,26 +64,56 @@
                 Margin="2,0,2,0"
                 VerticalAlignment="Center">
             </ComboBox>
-            <Button Name="UpdateInstances" Click="UpdateInstances_Click" IsEnabled="{x:Bind ViewModel.IsGameLoaded, Mode=OneWay}" Margin="2,0,2,0">
+            <Button 
+                Name="UpdateInstances" 
+                Click="UpdateInstances_Click" 
+                IsEnabled="{x:Bind ViewModel.IsGameLoaded, Mode=OneWay}" 
+                Margin="2,0,2,0">
                 <SymbolIcon Symbol="Edit"/>
             </Button>
-            <TextBlock Text="Aircraft:" VerticalAlignment="Center" Margin="2,0,2,0"/>
-            <ComboBox
-                Name="AircraftCombo" 
-                ItemsSource="{x:Bind ViewModel.CurrentInstanceAircraft, Mode=OneWay}" 
-                SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}" 
-                SelectionChanged="AircraftCombo_SelectionChanged"
-                DisplayMemberPath="Name"
-                IsEnabled="{x:Bind ViewModel.IsGameLoaded}"
-                MinWidth="180"
-                Margin="2,0,2,0"
-                VerticalAlignment="Center">
-            </ComboBox>
+            <Button
+                Name="ExportPDFs"
+                Content="Export all Aircraft PDFs"
+                Margin="2,0,2,0"/>
+            <Button
+                Name="ExportKneepad"
+                Content="Export all Aircraft Kneepads"
+                Margin="2,0,2,0"/>
         </StackPanel>
+
+        <Border 
+            Grid.Row="2" 
+            Grid.Column="0" 
+            Grid.ColumnSpan="4" 
+            Margin="0,6,0,0" 
+            BorderThickness="0,1,0,0" 
+            BorderBrush="LightGray">
+            <StackPanel
+                Margin="0,6,0,0"
+                Orientation="Horizontal"
+                Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource AircraftVisibilityConverter}}">
+                <TextBlock 
+                    Text="Aircraft:" 
+                    VerticalAlignment="Center" 
+                    Width="100"
+                    Margin="18,0,2,0"/>
+                <ComboBox
+                    Name="AircraftCombo" 
+                    ItemsSource="{x:Bind ViewModel.CurrentInstanceAircraft, Mode=OneWay}" 
+                    SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}" 
+                    SelectionChanged="AircraftCombo_SelectionChanged"
+                    DisplayMemberPath="Name"
+                    IsEnabled="{x:Bind ViewModel.IsGameLoaded}"
+                    MinWidth="180"
+                    Margin="2,0,2,0"
+                    VerticalAlignment="Center">
+                </ComboBox>
+            </StackPanel>
+        </Border>
 
         <TabView
             Name="ViewJoystickLayouts"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             IsAddTabButtonVisible="False"
             Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=View}"
@@ -81,27 +121,27 @@
         </TabView>
         <TabView
             Name="ManageJoystickLayouts"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             IsAddTabButtonVisible="False"
             Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Manage}"
             Loaded="ManageJoystickLayouts_Loaded">
         </TabView>
+        <Frame
+            Name="BindingsTableFrame"
+            Grid.Row="3"
+            Grid.Column="0"
+            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Bindings}"
+            Loaded="BindingsTable_Loaded">
+        </Frame>
         <TabView
             Name="EditJoystickLayouts"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             IsAddTabButtonVisible="False"
             Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Edit}"
             Loaded="EditJoystickLayouts_Loaded">
         </TabView>
-        <Frame
-            Name="BindingsTableFrame"
-            Grid.Row="2"
-            Grid.Column="0"
-            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Bindings}"
-            Loaded="BindingsTable_Loaded">
-        </Frame>
 
     </Grid>
  

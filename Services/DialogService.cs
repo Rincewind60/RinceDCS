@@ -1,15 +1,12 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using RinceDCS.ServiceModels;
-using Windows.Storage.Pickers;
-using System.IO;
 using Windows.Storage;
-using Microsoft.UI.Xaml.Data;
+using Windows.Storage.Pickers;
 
 namespace RinceDCS.Services;
 

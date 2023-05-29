@@ -13,7 +13,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Width="1040">
+    Width="1060">
 
     <Page.Resources>
         <local:HideIfHeadingConverter x:Key="HideIfHeading"/>
@@ -33,7 +33,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="160"/>
                             <ColumnDefinition Width="440"/>
                             <ColumnDefinition Width="45"/>
                             <ColumnDefinition Width="300"/>

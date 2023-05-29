@@ -12,75 +12,77 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Border Margin="2,6,2,2" BorderThickness="1" BorderBrush="LightGray">
-        <Grid Margin="4">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <StackPanel
-                Grid.Row="0"
-                Grid.Column="0"
-                Orientation="Horizontal">
-                <TextBlock Text="Category:" Margin="12,0,0,0" VerticalAlignment="Center"/>
-                <ComboBox
-                    Name="CategoriesCombo" 
-                    ItemsSource="{x:Bind ViewModel.Categories}" 
-                    SelectedItem="{x:Bind ViewModel.CurrentCategory, Mode=TwoWay}"
-                    SelectionChanged="{x:Bind ViewModel.CurrentCategoryChanged}"
-                    DisplayMemberPath="CategoryName"
-                    Margin="6,0,0,0"
-                    MinWidth="180"
-                    VerticalAlignment="Center">
-                </ComboBox>
-                <ToggleButton
-                    Name="CommandsWithButtons" 
-                    Content="With Buttons" 
-                    IsChecked="{x:Bind ViewModel.ShowCommandsWithButtons, Mode=TwoWay}" 
-                    Command="{x:Bind ViewModel.CommandsWithButtonsChangedCommand}"
-                    Margin="6,0,0,0"/>
-            </StackPanel>
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Orientation="Horizontal">
+            <TextBlock
+                Text="Category:" 
+                Margin="12,0,0,0" 
+                Width="100"
+                VerticalAlignment="Center"/>
+            <ComboBox
+                Name="CategoriesCombo" 
+                ItemsSource="{x:Bind ViewModel.Categories}" 
+                SelectedItem="{x:Bind ViewModel.CurrentCategory, Mode=TwoWay}"
+                SelectionChanged="{x:Bind ViewModel.CurrentCategoryChanged}"
+                DisplayMemberPath="CategoryName"
+                Margin="6,0,0,0"
+                MinWidth="180"
+                VerticalAlignment="Center">
+            </ComboBox>
+            <ToggleButton
+                Name="CommandsWithButtons" 
+                Content="With Buttons" 
+                IsChecked="{x:Bind ViewModel.ShowCommandsWithButtons, Mode=TwoWay}" 
+                Command="{x:Bind ViewModel.CommandsWithButtonsChangedCommand}"
+                Margin="6,0,0,0"/>
+        </StackPanel>
         
-            <controls:DataGrid
-                Grid.Row="1"
-                Grid.Column="0"
-                x:Name="dataGrid"
-                Margin="12"
-                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                HorizontalScrollBarVisibility="Visible"
-                VerticalScrollBarVisibility="Visible"
-                AlternatingRowBackground="Snow"
-                AreRowDetailsFrozen="False"
-                AreRowGroupHeadersFrozen="True"
-                AutoGenerateColumns="False"
-                CanUserSortColumns="False"
-                CanUserReorderColumns="True"
-                CanUserResizeColumns="True"
-                ColumnHeaderHeight="32"
-                MaxColumnWidth="400"
-                FrozenColumnCount="0"
-                GridLinesVisibility="All"
-                HeadersVisibility="Column"
-                IsReadOnly="True"
-                SelectionMode="Single"
-                RowGroupHeaderPropertyNameAlternative="Range"
-                ItemsSource="{x:Bind ViewModel.FilteredBindings}">
-                <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="Command" Binding="{Binding CommandName}" Tag="Command" />
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading0, Mode=OneWay}" Binding="{Binding JoystickButton0}" Tag="JoystickButton0" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading0), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading1, Mode=OneWay}" Binding="{Binding JoystickButton1}" Tag="JoystickButton1" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading1), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading2, Mode=OneWay}" Binding="{Binding JoystickButton2}" Tag="JoystickButton2" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading2), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading3, Mode=OneWay}" Binding="{Binding JoystickButton3}" Tag="JoystickButton3" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading3), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading4, Mode=OneWay}" Binding="{Binding JoystickButton4}" Tag="JoystickButton4" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading4), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading5, Mode=OneWay}" Binding="{Binding JoystickButton5}" Tag="JoystickButton5" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading5), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading6, Mode=OneWay}" Binding="{Binding JoystickButton6}" Tag="JoystickButton6" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading6), Mode=OneWay}"/>
-                    <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading7, Mode=OneWay}" Binding="{Binding JoystickButton7}" Tag="JoystickButton7" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading7), Mode=OneWay}"/>
-                </controls:DataGrid.Columns>
-            </controls:DataGrid>
-        </Grid>
-    </Border>
+        <controls:DataGrid
+            Grid.Row="1"
+            Grid.Column="0"
+            x:Name="dataGrid"
+            Margin="12"
+            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Visible"
+            VerticalScrollBarVisibility="Visible"
+            AlternatingRowBackground="Snow"
+            AreRowDetailsFrozen="False"
+            AreRowGroupHeadersFrozen="True"
+            AutoGenerateColumns="False"
+            CanUserSortColumns="False"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            ColumnHeaderHeight="32"
+            MaxColumnWidth="400"
+            FrozenColumnCount="0"
+            GridLinesVisibility="All"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            SelectionMode="Single"
+            RowGroupHeaderPropertyNameAlternative="Range"
+            ItemsSource="{x:Bind ViewModel.FilteredBindings}">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Command" Binding="{Binding CommandName}" Tag="Command" />
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading0, Mode=OneWay}" Binding="{Binding JoystickButton0}" Tag="JoystickButton0" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading0), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading1, Mode=OneWay}" Binding="{Binding JoystickButton1}" Tag="JoystickButton1" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading1), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading2, Mode=OneWay}" Binding="{Binding JoystickButton2}" Tag="JoystickButton2" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading2), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading3, Mode=OneWay}" Binding="{Binding JoystickButton3}" Tag="JoystickButton3" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading3), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading4, Mode=OneWay}" Binding="{Binding JoystickButton4}" Tag="JoystickButton4" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading4), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading5, Mode=OneWay}" Binding="{Binding JoystickButton5}" Tag="JoystickButton5" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading5), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading6, Mode=OneWay}" Binding="{Binding JoystickButton6}" Tag="JoystickButton6" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading6), Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading7, Mode=OneWay}" Binding="{Binding JoystickButton7}" Tag="JoystickButton7" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading7), Mode=OneWay}"/>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
 </Page>
