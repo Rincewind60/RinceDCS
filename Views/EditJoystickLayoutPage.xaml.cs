@@ -9,12 +9,15 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
 using System;
+using System.IO;
 using System.Numerics;
+using Windows.Storage.Streams;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -49,12 +52,31 @@ namespace RinceDCS.Views
 
         public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
 
+        private void JoystickImage_Loaded(object sender, RoutedEventArgs e)
+        {
+            SetJoystickImageSource();
+        }
+
         private async void EditImage_Click(object sender, RoutedEventArgs e)
         {
             string newImageFile = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".png");
-            if (newImageFile != null)
+            if (!string.IsNullOrEmpty(newImageFile))
             {
-                ViewModel.Stick.ImagePath = newImageFile;
+                ViewModel.UpdateImage(newImageFile);
+                SetJoystickImageSource();
+            }
+        }
+
+        private async void SetJoystickImageSource()
+        {
+            using(MemoryStream stream = new(ViewModel.Stick.Image))
+            {
+                using(IRandomAccessStream random = stream.AsRandomAccessStream())
+                {
+                    BitmapImage image = new();
+                    await image.SetSourceAsync(random);
+                    JoystickImage.Source = image;
+                }
             }
         }
 

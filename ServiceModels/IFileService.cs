@@ -13,4 +13,6 @@ public interface IFileService
     public Task SaveAsGame(Game game);
 
     public Image OpenImageFile(string path);
+    
+    public byte[] ReadImageFile(string path);
 }

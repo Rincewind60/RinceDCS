@@ -61,6 +61,22 @@ public class FileService : IFileService
         }
     }
 
+    public byte[] ReadImageFile(string path)
+    {
+        FileInfo fileInfo = new(path);
+
+        // The byte[] to save the data in
+        byte[] data = new byte[fileInfo.Length];
+
+        // Load a filestream and put its content into the byte[]
+        using (FileStream fs = fileInfo.OpenRead())
+        {
+            fs.Read(data, 0, data.Length);
+        }
+
+        return data;
+    }
+
     private async Task SaveGameToPath(Game game, string savePath)
     {
         //  Update Save Path setting so we remember where to save to/open from

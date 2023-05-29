@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
+using RinceDCS.ServiceModels;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace RinceDCS.ViewModels;
@@ -44,5 +47,15 @@ public partial class EditJoystickViewModel : ObservableRecipient,
                     where gameStick.AttachedJoystick == AttachedStick
                     select gameStick).First();
         CurrentJoystickButton = null;
+    }
+
+    public void UpdateImage(string path)
+    {
+        Stick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(path);
+    }
+
+    public MemoryStream ReturnJoystickImageStream()
+    {
+        return new MemoryStream();
     }
 }

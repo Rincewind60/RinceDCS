@@ -112,7 +112,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Name="JoystickImage"
-                    Source="{x:Bind ViewModel.Stick.ImagePath}"
+                    Loaded="JoystickImage_Loaded"
                     ImageOpened="JoystickImage_ImageOpened" Stretch="None"
                     PointerPressed="JoystickImage_PointerPressed"
                     PointerMoved="JoystickImage_PointerMoved"

@@ -16,10 +16,9 @@ public partial class GameJoystick : ObservableObject
     private AttachedJoystick attachedJoystick;
 
     [ObservableProperty]
-    private string imagePath;
-
-    [ObservableProperty]
     private ObservableCollection<GameJoystickButton> buttons;
+
+    public byte[] Image {  get; set; }
 }
 
 public partial class GameJoystickButton : ObservableObject
