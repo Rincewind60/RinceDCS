@@ -174,7 +174,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
             List<CommandCategory> newCategories = new();
 
-            foreach (KeyValuePair<DCSBindingKey, DCSBinding> binding in BindingsData.Bindings)
+            foreach(KeyValuePair<DCSBindingKey, DCSBinding> binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings)
             {
                 BuildAircraftBindings(newCategories, binding.Value);
             }
@@ -235,29 +235,27 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
     private void BuildAircraftBindings(List<CommandCategory> newCategories, DCSBinding binding)
     {
-        if(binding.AircraftWithBinding.ContainsKey(CurrentAircraftKey))
+        DCSAircraftBinding dcsAircraftBinding = binding.AircraftWithBinding[CurrentAircraftKey];
+        CommandCategory category = new() { CategoryName = dcsAircraftBinding.CategoryName };
+
+        if (string.IsNullOrWhiteSpace(category.CategoryName))
         {
-            CommandCategory category = new() { CategoryName = binding.AircraftWithBinding[CurrentAircraftKey].CategoryName };
-
-            if (string.IsNullOrWhiteSpace(category.CategoryName))
-            {
-                category.CategoryName = "Uknown";
-            }
-
-            if(!newCategories.Any(cat => cat.CategoryName == category.CategoryName))
-            {
-                newCategories.Add(category); 
-            }
-
-            AircraftBinding aircraftBinding = new()
-            {
-                CategoryName = category.CategoryName,
-                CommandName = binding.AircraftWithBinding[CurrentAircraftKey].CommandName
-            };
-            BuildJoystickButtons(binding, aircraftBinding);
-
-            BindingsList.Add(aircraftBinding);
+            category.CategoryName = "Uknown";
         }
+
+        if(!newCategories.Any(cat => cat.CategoryName == category.CategoryName))
+        {
+            newCategories.Add(category); 
+        }
+
+        AircraftBinding aircraftBinding = new()
+        {
+            CategoryName = category.CategoryName,
+            CommandName = dcsAircraftBinding.CommandName
+        };
+        BuildJoystickButtons(binding, aircraftBinding);
+
+        BindingsList.Add(aircraftBinding);
     }
 
     private void BuildJoystickButtons(DCSBinding binding, AircraftBinding aircraftBinding)

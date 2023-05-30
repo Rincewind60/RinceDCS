@@ -6,7 +6,6 @@ using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Messages;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -152,9 +151,6 @@ public partial class GameViewModel : ObservableRecipient
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
             GameJoystick newJoystick = new() { AttachedJoystick = stick };
-
-            string joystickImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets\\DefaultJoystickImage.png");
-            newJoystick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(joystickImagePath);
 
             AddJoystickButtons(newJoystick);
 

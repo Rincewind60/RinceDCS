@@ -2,6 +2,7 @@
 using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,9 +92,14 @@ public class DCSService : IDCSService
             string id = row.ChildNodes[7].GetDirectInnerText().Trim();
 
             DCSBindingKey bindKey = new(id);
-            if (!data.Bindings.ContainsKey(bindKey))
+            DCSBinding binding;
+            if (data.Bindings.ContainsKey(bindKey))
             {
-                DCSBinding binding = new DCSBinding()
+                binding = data.Bindings[bindKey];
+            }
+            else
+            {
+                binding = new DCSBinding()
                 {
                     Key = new(id),
                     CommandName = name
@@ -101,13 +107,17 @@ public class DCSService : IDCSService
                 data.Bindings[bindKey] = binding;
             }
 
-            if (!data.Bindings[bindKey].AircraftWithBinding.ContainsKey(aircraft.Key))
+            if (!binding.AircraftWithBinding.ContainsKey(aircraft.Key))
             {
-                data.Bindings[bindKey].AircraftWithBinding[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, CommandName = name, CategoryName = category };
+                binding.AircraftWithBinding[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, CommandName = name, CategoryName = category };
             }
-            if (!data.Bindings[bindKey].JoysticksWithBinding.ContainsKey(stck.Key))
+            if (!binding.JoysticksWithBinding.ContainsKey(stck.Key))
             {
-                data.Bindings[bindKey].JoysticksWithBinding[stck.Key] = stck;
+                binding.JoysticksWithBinding[stck.Key] = stck;
+            }
+            if (!data.Aircraft[aircraft.Key].Bindings.ContainsKey(bindKey))
+            {
+                data.Aircraft[aircraft.Key].Bindings.Add(bindKey, binding);
             }
         }
     }

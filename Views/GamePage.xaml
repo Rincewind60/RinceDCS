@@ -29,17 +29,37 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <CommandBar Grid.Row="0" Grid.Column="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right" HorizontalAlignment="Left">
+        <CommandBar
+            Grid.Row="0" 
+            Grid.Column="0" 
+            Background="Transparent" 
+            IsOpen="False" 
+            DefaultLabelPosition="Right" 
+            HorizontalAlignment="Left">
             <AppBarButton Icon="NewFolder" Label="New" Command="{x:Bind ViewModel.NewCommand}"/>
             <AppBarButton Icon="OpenFile" Label="Open" Command="{x:Bind ViewModel.OpenCommand}"/>
             <AppBarButton Icon="Save" Label="Save" Command="{x:Bind ViewModel.SaveCommand}"/>
             <AppBarButton Icon="Save" Label="Save As" Command="{x:Bind ViewModel.SaveAsCommand}"/>
             <AppBarSeparator/>
-            <AppBarToggleButton Icon="View" Label="View" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"/>
-            <AppBarToggleButton Icon="Manage" Label="Manage" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"/>
-            <AppBarToggleButton Icon="List" Label="Bindings" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
-            <AppBarToggleButton Icon="Edit" Label="Edit" IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
+            <AppBarToggleButton 
+                Icon="View" 
+                Label="View" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"/>
+            <AppBarToggleButton 
+                Icon="Manage" 
+                Label="Manage" 
+                IsEnabled="False"
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"/>
+            <AppBarToggleButton 
+                Icon="List" 
+                Label="Bindings" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
+            <AppBarToggleButton
+                Icon="Edit" 
+                Label="Edit" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
             <AppBarSeparator/>
+            <AppBarButton Label="Help"/>
             <AppBarButton Label="About" Click="About_Click"/>
         </CommandBar>
 
@@ -74,10 +94,12 @@
             <Button
                 Name="ExportPDFs"
                 Content="Export all Aircraft PDFs"
+                IsEnabled="False"
                 Margin="2,0,2,0"/>
             <Button
                 Name="ExportKneepad"
                 Content="Export all Aircraft Kneepads"
+                IsEnabled="False"
                 Margin="2,0,2,0"/>
         </StackPanel>
 

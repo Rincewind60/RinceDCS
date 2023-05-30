@@ -82,8 +82,9 @@ namespace RinceDCS.Views
         private void ViewJoystickLayouts_Loaded(object sender, RoutedEventArgs e)
         {
             TabView tabView = sender as TabView;
+            GameAircraft currentAircraft = ViewModel.CurrentAircraft == null ? null : ViewModel.CurrentAircraft;
 
-            foreach(AttachedJoystick stick in ViewModel.AttachedJoysticks)
+            foreach (AttachedJoystick stick in ViewModel.AttachedJoysticks)
             {
                 TabViewItem newItem = new TabViewItem();
                 newItem.Header = stick.Name;
@@ -113,7 +114,7 @@ namespace RinceDCS.Views
                 newItem.IsClosable = false;
 
                 Frame frame = new Frame();
-                frame.Navigate(typeof(ManageJoystickLayoutPage), stick);
+                frame.Navigate(typeof(ManageJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, stick));
 
                 newItem.Content = frame;
                 tabView.TabItems.Add(newItem);

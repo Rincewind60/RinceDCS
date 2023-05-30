@@ -11,6 +11,8 @@ public record DCSButtonKey(string Name);
 public class DCSAircraft
 {
     public DCSAircraftKey Key { get; set; }
+
+    public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
 }
 
 public class DCSJoystick
@@ -32,36 +34,20 @@ public class DCSBinding
     public string CommandName { get; set; }
     public bool IsAxisBinding { get; set; }
     public bool IsKeyBinding { get { return !IsAxisBinding; } }
-    public Dictionary<DCSAircraftKey, DCSAircraftBinding> AircraftWithBinding { get; set; }
-    public Dictionary<DCSJoystickKey, DCSJoystick> JoysticksWithBinding { get; set; }
-    public Dictionary<Tuple<DCSAircraftKey, DCSJoystickKey>, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; }
-
-    public DCSBinding()
-    {
-        AircraftWithBinding = new();
-        JoysticksWithBinding = new();
-        AircraftJoystickBindings = new();
-    }
+    public Dictionary<DCSAircraftKey, DCSAircraftBinding> AircraftWithBinding { get; set; } = new();
+    public Dictionary<DCSJoystickKey, DCSJoystick> JoysticksWithBinding { get; set; } = new();
+    public Dictionary<Tuple<DCSAircraftKey, DCSJoystickKey>, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; } = new();
 }
 
 public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
-    public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; }
-    public List<DCSAxisButton> ChangedAxisButtons { get; set; }
-    public List<DCSButton> RemovedAxisButtons { get; set; }
-    public List<DCSKeyButton> AddedKeyButtons { get; set; }
-    public List<DCSButton> RemovedKeyButtons { get; set; }
-
-    public DCSAircraftJoystickBinding()
-    {
-        AssignedButtons = new();
-        ChangedAxisButtons = new();
-        RemovedAxisButtons = new();
-        AddedKeyButtons = new();
-        RemovedKeyButtons = new();
-    }
+    public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; } = new();
+    public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
+    public List<DCSButton> RemovedAxisButtons { get; set; } = new();
+    public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
+    public List<DCSButton> RemovedKeyButtons { get; set; } = new();
 }
 
 public class DCSButton
@@ -99,24 +85,12 @@ public class DCSAxisFilter
 
 public class DCSKeyButton : DCSButton
 {
-    public List<string> Modifiers { get; set; }
-
-    public DCSKeyButton()
-    {
-        Modifiers = new();
-    }
+    public List<string> Modifiers { get; set; } = new();
 }
 
 public class DCSData
 {
-    public Dictionary<DCSAircraftKey, DCSAircraft> Aircraft;
-    public Dictionary<DCSJoystickKey, DCSJoystick> Joysticks;
-    public Dictionary<DCSBindingKey, DCSBinding> Bindings;
-
-    public DCSData()
-    {
-        Aircraft = new();
-        Joysticks = new();
-        Bindings = new();
-    }
+    public Dictionary<DCSAircraftKey, DCSAircraft> Aircraft { get; set; } = new();
+    public Dictionary<DCSJoystickKey, DCSJoystick> Joysticks { get; set; } = new ();
+    public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
 }

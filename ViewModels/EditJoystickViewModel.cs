@@ -53,9 +53,4 @@ public partial class EditJoystickViewModel : ObservableRecipient,
     {
         Stick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(path);
     }
-
-    public MemoryStream ReturnJoystickImageStream()
-    {
-        return new MemoryStream();
-    }
 }

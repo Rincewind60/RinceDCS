@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -9,15 +11,15 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
+using RinceDCS.Views.Utilities;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Numerics;
-using Windows.Storage.Streams;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,9 +38,33 @@ namespace RinceDCS.Views
 
         private bool isDrawing = false;
 
+        public List<string> FontNames { get; set; } = new();
+        public List<int> FontSizes { get; set; } = new() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28 };
+
         public EditJoystickLayoutPage()
         {
             this.InitializeComponent();
+
+            InstalledFontCollection fonts = new InstalledFontCollection();
+            foreach(var font in fonts.Families)
+            {
+                FontNames.Add(font.Name);
+            }
+
+            WeakReferenceMessenger.Default.Register<PropertyChangedMessage<GameJoystick>>(this, (r, m) => {
+                if ((r is EditJoystickLayoutPage) && ViewModel != null)
+                {
+                    if (ViewModel.Stick.FontName == null)
+                    {
+                        ViewModel.Stick.FontName = FontFamily.XamlAutoFontFamily.Source;
+
+                    }
+                    if (ViewModel.Stick.FontSize == 0)
+                    {
+                        ViewModel.Stick.FontSize = (int)this.FontSize;
+                    }
+                }
+            });
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -69,15 +95,7 @@ namespace RinceDCS.Views
 
         private async void SetJoystickImageSource()
         {
-            using(MemoryStream stream = new(ViewModel.Stick.Image))
-            {
-                using(IRandomAccessStream random = stream.AsRandomAccessStream())
-                {
-                    BitmapImage image = new();
-                    await image.SetSourceAsync(random);
-                    JoystickImage.Source = image;
-                }
-            }
+            await ImageSourceUtil.SetSourceFromGameJoystick(JoystickImage, ViewModel.Stick);
         }
 
         private void Expand_Click(object sender, RoutedEventArgs e)
@@ -90,7 +108,7 @@ namespace RinceDCS.Views
             ViewModel.CurrentScale = ViewModel.Scales[Math.Min(CurrentScaleIndex() + 1, ViewModel.Scales.Length - 1)];
         }
 
-        private void JoystickScale_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Vector3 newScale = ScaleValues[CurrentScaleIndex()];
             if (imageActualWidth > 0)
@@ -166,7 +184,8 @@ namespace RinceDCS.Views
             PointerPoint point = GetImageMousePoint(sender, e);
 
             SetButtonDimensions(ViewModel.CurrentJoystickButton, point.Position.X, point.Position.Y);
-
+            
+            ViewModel.CurrentJoystickButton = null;
             isDrawing = false;
             e.Handled = true;
         }
