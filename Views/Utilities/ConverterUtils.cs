@@ -62,30 +62,3 @@ public class EnumToDisplayNameConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
-
-public class IntToDoubleConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language)
-    {
-        return value;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public class StringToFontFamilyConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language)
-    {
-        FontFamily family = new FontFamily(value.ToString());
-        return family;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
-    {
-        throw new NotImplementedException();
-    }
-}

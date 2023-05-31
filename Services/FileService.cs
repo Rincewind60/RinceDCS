@@ -82,13 +82,14 @@ public class FileService : IFileService
         //  Update Save Path setting so we remember where to save to/open from
         Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, savePath);
 
-        FileStream stream = File.Create(savePath);
-        JsonSerializerOptions options = new JsonSerializerOptions()
+        using (FileStream stream = File.Create(savePath))
         {
-            //ReferenceHandler = ReferenceHandler.Preserve,
-            WriteIndented = true
-        };
-        await JsonSerializer.SerializeAsync(stream, game, options);
-        stream.Dispose();
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                //ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            await JsonSerializer.SerializeAsync(stream, game, options);
+        }
     }
 }

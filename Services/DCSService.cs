@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace RinceDCS.Services;
 
@@ -38,10 +39,17 @@ public class DCSService : IDCSService
             BuildButtonBindingsFromSavedGame(data, savedGamesAircraftPath);
         }
 
-        //foreach(KeyValuePair<DCSBindingKey, DCSBinding> binding in data.Bindings)
-        //{
-        //    BuildAssignedButtons(binding.Value);
-        //}
+        using (FileStream stream = File.Create("D:\\OneDrive\\Documents\\DCSTool\\DCSData.json"))
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                //ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            JsonSerializer.Serialize(stream, data, options);
+        }
+
+
 
         return data;
     }
@@ -66,14 +74,14 @@ public class DCSService : IDCSService
 
     private void BuildBindingsFromHTMLFiles(DCSData data, string htmlFolderPath)
     {
-        foreach (KeyValuePair<DCSAircraftKey, DCSAircraft> aircraft in data.Aircraft)
+        foreach (DCSAircraft aircraft in data.Aircraft.Values)
         {
-            foreach (KeyValuePair<DCSJoystickKey, DCSJoystick> stick in data.Joysticks)
+            foreach (DCSJoystick stick in data.Joysticks.Values)
             {
-                string aircraftStickHtmlPath = htmlFolderPath + "\\" + aircraft.Key.Name + "\\" + stick.Value.Joystick.DCSName + ".html";
+                string aircraftStickHtmlPath = htmlFolderPath + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
                 if (File.Exists(aircraftStickHtmlPath))
                 {
-                    ReadAircraftStickHtmlFile(data, aircraft.Value, stick.Value, aircraftStickHtmlPath);
+                    ReadAircraftStickHtmlFile(data, aircraft, stick, aircraftStickHtmlPath);
                 }
             }
         }
@@ -124,15 +132,15 @@ public class DCSService : IDCSService
 
     private void BuildButtonBindingsFromSavedGame(DCSData data, string savedGamesAircraftPath)
     {
-        foreach(KeyValuePair<DCSAircraftKey, DCSAircraft> aircraft in data.Aircraft)
+        foreach(DCSAircraft aircraft in data.Aircraft.Values)
         {
             string aircraftJoystickFolderPath = savedGamesAircraftPath + "\\" + aircraft.Key.Name + "\\joystick";
-            foreach (KeyValuePair<DCSJoystickKey, DCSJoystick> stick in data.Joysticks)
+            foreach (DCSJoystick stick in data.Joysticks.Values)
             {
-                string aircraftStickPath = aircraftJoystickFolderPath + "\\" + stick.Value.Joystick.DCSName + ".diff.lua";
+                string aircraftStickPath = aircraftJoystickFolderPath + "\\" + stick.Joystick.DCSName + ".diff.lua";
                 if (File.Exists(aircraftStickPath))
                 {
-                    ReadAircraftStickLuaFile(data, aircraft.Value, stick.Value, aircraftStickPath);
+                    ReadAircraftStickLuaFile(data, aircraft, stick, aircraftStickPath);
                 }
             }
         }
@@ -361,7 +369,7 @@ public class DCSService : IDCSService
     private DCSAircraftJoystickBinding CreateBindingData(DCSAircraft aircraft, DCSJoystick stick, DCSBinding binding)
     {
         DCSAircraftJoystickBinding bindingData;
-        Tuple<DCSAircraftKey, DCSJoystickKey> bindingDataKey = Tuple.Create(aircraft.Key, stick.Key);
+        DCSAircraftJoystickKey bindingDataKey = new DCSAircraftJoystickKey(aircraft.Key.Name, stick.Key.Id);
 
         if (binding.AircraftJoystickBindings.ContainsKey(bindingDataKey))
         {
@@ -377,128 +385,4 @@ public class DCSService : IDCSService
 
         return bindingData;
     }
-
-    //private void BuildAssignedButtons(DCSBinding binding)
-    //{
-    //    foreach(KeyValuePair<Tuple<DCSAircraftKey, DCSJoystickKey>, DCSAircraftJoystickBinding> ajBinding in binding.AircraftJoystickBindings)
-    //    {
-    //        Dictionary<string, DCSButton> buttons = new();
-
-    //        foreach(DCSAxisButton button in ajBinding.Value.ChangedAxisButtons)
-    //        {
-    //            buttons[button.Name] = button;
-    //        }
-    //        foreach(DCSButton button in ajBinding.Value.RemovedAxisButtons)
-    //        {
-    //            if(buttons.ContainsKey(button.Name))
-    //            {
-    //                buttons.Remove(button.Name);
-    //            }
-    //        }
-    //        foreach (DCSKeyButton button in ajBinding.Value.AddedKeyButtons)
-    //        {
-    //            buttons[button.Name] = button;
-    //        }
-    //        foreach (DCSButton button in ajBinding.Value.RemovedKeyButtons)
-    //        {
-    //            if (buttons.ContainsKey(button.Name))
-    //            {
-    //                buttons.Remove(button.Name);
-    //            }
-    //        }
-
-    //        if(buttons.Count > 0)
-    //        {
-    //            ajBinding.Value.AssignedButtons = buttons.Values.ToList();
-    //        }
-    //    }
-    //}
-
-//private void GetAircraftFromFolder(Dictionary<string, DCSAircraftBinding> aircraft, string aircraftPath)
-//{
-//    foreach(string aircraftDirectory in Directory.GetDirectories(aircraftPath))
-//    {
-//        if (AreAircraftInSubDirectory(aircraftDirectory))
-//        {
-//            foreach(string subAircraftDirectory in Directory.GetDirectories(aircraftDirectory + "\\Input"))
-//            {
-//                AddAircraft(aircraft, subAircraftDirectory, sticks);
-//            }
-//        }
-//        else
-//        {
-//            AddAircraft(aircraft, aircraftDirectory, sticks);
-//        }
-//    }
-//}
-
-//private void AddAircraft(Dictionary<string, DCSAircraftBinding> aircraft, string aircraftDirectory)
-//{
-//    //string aircraftName = GetAircraftName(aircraftDirectory);
-//    //if (IsAircraft(aircraftName))
-//    //{
-//    //    List<DCSJoystickBindings> joystickBindings = GetJoystickBindings(aircraftDirectory, sticks);
-//    //    DCSAircraft newAircraft = new DCSAircraft()
-//    //    {
-//    //        Name = aircraftName,
-//    //        JoystickBindings = joystickBindings
-//    //    };
-
-//    //    aircraft.Add(aircraftName, newAircraft);
-//    //}
-//}
-
-//private List<DCSJoystickButtonBinding> GetJoystickBindings(string aircraftDirectory)
-//{
-//    List<DCSJoystickButtonBinding> joystickBindings = new(); 
-
-//    //foreach (string file in Directory.GetFiles(aircraftDirectory + "\\joystick"))
-//    //{
-//    //    string fileName = Path.GetFileNameWithoutExtension(file);
-//    //    if(sticks.Any(stick => stick.Name == fileName))
-//    //    {
-//    //        DCSJoystickButtonBinding bindings = new();
-
-//    //        joystickBindings.Add(bindings);
-//    //    }
-//    //}
-
-//    return joystickBindings;
-//}
-
-    //private bool AreAircraftInSubDirectory(string aircraftDirectory)
-    //{
-    //    return Directory.Exists(aircraftDirectory + "\\Input");
-    //}
-
-    //private static bool IsAircraft(string aircraftName)
-    //{
-    //    return  String.Compare(aircraftName, "Keyboard", true) != 0 &&
-    //            String.Compare(aircraftName, "Joystick", true) != 0 &&
-    //            String.Compare(aircraftName, "Mouse", true) != 0;
-    //}
-
-    //private static string GetAircraftName(string aircraftDirectory)
-    //{
-    //    return aircraftDirectory.Split('\\').Last();
-    //}
-
-    //private void GetAvailableAircracftBindings(string gameName)
-    //{
-    //    //string aircraftPath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath) + "\\" + gameName + "\\InputLayoutsTxt";
-
-    //    //foreach (string aircraftDirectory in Directory.GetDirectories(aircraftPath))
-    //    //{
-    //    //    foreach(AttachedJoystick stick in sticks)
-    //    //    {
-    //    //        string stickPath = aircraftDirectory + "\\" + stick.DCSName;
-    //    //        if (File.Exists(stickPath))
-    //    //        {
-    //    //            var doc = new HtmlDocument();
-    //    //            doc.Load(stickPath);
-    //    //        }
-    //    //    }
-    //    //}
-
-    //}
 }

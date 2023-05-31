@@ -1,22 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
-using SharpDX.DirectInput;
-using System.Linq;
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Collections;
-using Microsoft.UI.Xaml.Data;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace RinceDCS.ViewModels;
+
+using ButtonName = String;
+
+internal record ViewButtonKey(ButtonName buttonName, bool isModifier);
 
 public class ViewJoystickButton
 {
     public string CommandName { get; set; }
+    public string CategoryName { get; set; }
 
-    public GameJoystickButton GameJoystickButton { get; set; }
+    public GameJoystickButton BoundButton { get; set; }
 }
 
 public partial class ViewJoystickViewModel : ObservableRecipient,
@@ -31,6 +33,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     private AttachedJoystick attachedStick;
 
     [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
     private GameJoystick stick;
 
     private DCSData BindingsData { get; set; }
@@ -41,18 +44,25 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
 
-    public ViewJoystickViewModel(AttachedJoystick attachedStick)
+    public ViewJoystickViewModel(Game game, AttachedJoystick attachedStick, DCSData data, GameAircraft currentAircraft)
     {
-        IsActive = true;
-
         AttachedStick = attachedStick;
         CurrentScale = Scales[2];
+
+        BindingsData = data;
+        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
+        Stick = (from gameStick in game.Joysticks
+                 where gameStick.AttachedJoystick == AttachedStick
+                 select gameStick).First();
+
         ReBuildViewButtons();
+
+        IsActive = true;
     }
 
     public void Receive(PropertyChangedMessage<Game> message)
     {
-        Game game = message.NewValue as Game;
+        Game game = message.NewValue;
         if(game != null)
         {
             Stick = (from joystick in game.Joysticks
@@ -89,33 +99,67 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
         if (CurrentAircraftKey == null) return;
 
-        foreach (KeyValuePair<DCSBindingKey, DCSBinding> binding in BindingsData.Bindings)
+        Dictionary<ViewButtonKey, GameJoystickButton> aircraftButtons = GetJoystickButtonsOnLayout();
+
+        DCSAircraft dcsAircraft = BindingsData.Aircraft[CurrentAircraftKey];
+
+        foreach(DCSBinding binding in dcsAircraft.Bindings.Values)
         {
-            if (binding.Value.AircraftWithBinding.ContainsKey(CurrentAircraftKey))
-            {
-                BuildAircraftButtons(binding.Value);
-            }
+            DCSAircraftBinding aircraftBinding = binding.AircraftWithBinding[CurrentAircraftKey];
+            string commandName = aircraftBinding.CommandName;
+            string categoryName = aircraftBinding.CategoryName;
+
+            DCSAircraftJoystickKey key = new DCSAircraftJoystickKey(CurrentAircraftKey.Name, AttachedStick.JoystickGuid);
+            DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
+
+            BuildAssignedButtons(aircraftButtons, commandName, categoryName, bindingButtons);
         }
     }
 
-    private void BuildAircraftButtons(DCSBinding binding)
+    private Dictionary<ViewButtonKey, GameJoystickButton> GetJoystickButtonsOnLayout()
     {
-        string commandName = binding.AircraftWithBinding[CurrentAircraftKey].CommandName;
-        ViewJoystickButton aircraftButton = new()
-        {
-            CommandName = commandName,
-            GameJoystickButton = FindGameJoystickButton(commandName)
-        };
+        Dictionary<ViewButtonKey, GameJoystickButton> buttons = new();
 
-        ViewButtons.Add(aircraftButton);
+        foreach (GameJoystickButton button in Stick.Buttons)
+        {
+            if (button.OnLayout)
+            {
+                ViewButtonKey key = new(button.ButtonName, button.IsModifier);
+                buttons[key] = button;
+            }
+        }
+
+        return buttons;
     }
 
-    private GameJoystickButton FindGameJoystickButton(string commandName)
+    private void BuildAssignedButtons(
+        Dictionary<ViewButtonKey, GameJoystickButton> aircraftButtons, 
+        string commandName, 
+        string categoryName, 
+        DCSAircraftJoystickBinding bindingButtons)
     {
-        return null;
-
-        //var query = from button in Stick.Buttons
-        //            where button.CommandName == commandName
-        //            select button;
+        foreach (DCSButton button in bindingButtons.AssignedButtons.Values)
+        {
+            ViewButtonKey key;
+            if (button is DCSAxisButton)
+            {
+                key = new(button.Key.Name, false);
+            }
+            else
+            {
+                bool isModifer = ((DCSKeyButton)button).Modifiers.Count > 0;
+                key = new(button.Key.Name, isModifer);
+            }
+            if (aircraftButtons.ContainsKey(key))
+            {
+                ViewJoystickButton vwButton = new()
+                {
+                    CommandName = commandName,
+                    CategoryName = categoryName,
+                    BoundButton = aircraftButtons[key]
+                };
+                ViewButtons.Add(vwButton);
+            }
+        }
     }
 }

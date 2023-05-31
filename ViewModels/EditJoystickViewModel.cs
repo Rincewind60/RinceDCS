@@ -28,17 +28,17 @@ public partial class EditJoystickViewModel : ObservableRecipient,
 
     public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
 
-    public EditJoystickViewModel(Tuple<Game, AttachedJoystick> data)
+    public EditJoystickViewModel(Game game, AttachedJoystick attachedStick)
     {
         IsActive = true;
 
-        AttachedStick = data.Item2;
+        AttachedStick = attachedStick;
         CurrentJoystickButton = null;
         CurrentScale = Scales[2];
 
-        Stick = (from gameStick in data.Item1.Joysticks
-                    where gameStick.AttachedJoystick == AttachedStick
-                    select gameStick).First();
+        Stick = (from gameStick in game.Joysticks
+                 where gameStick.AttachedJoystick == AttachedStick
+                 select gameStick).First();
     }
 
     public void Receive(PropertyChangedMessage<Game> message)

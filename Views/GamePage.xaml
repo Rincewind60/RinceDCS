@@ -54,6 +54,7 @@
                 Icon="List" 
                 Label="Bindings" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
+            <AppBarSeparator/>
             <AppBarToggleButton
                 Icon="Edit" 
                 Label="Edit" 

@@ -8,6 +8,8 @@ public record DCSJoystickKey(Guid Id);
 public record DCSBindingKey(string Id);
 public record DCSButtonKey(string Name);
 
+public record DCSAircraftJoystickKey(string AircraftName, Guid JoystickID);
+
 public class DCSAircraft
 {
     public DCSAircraftKey Key { get; set; }
@@ -36,7 +38,7 @@ public class DCSBinding
     public bool IsKeyBinding { get { return !IsAxisBinding; } }
     public Dictionary<DCSAircraftKey, DCSAircraftBinding> AircraftWithBinding { get; set; } = new();
     public Dictionary<DCSJoystickKey, DCSJoystick> JoysticksWithBinding { get; set; } = new();
-    public Dictionary<Tuple<DCSAircraftKey, DCSJoystickKey>, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; } = new();
+    public Dictionary<DCSAircraftJoystickKey, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; } = new();
 }
 
 public class DCSAircraftJoystickBinding

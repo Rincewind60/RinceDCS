@@ -80,10 +80,11 @@ public partial class BindingsTableViewModel : ObservableRecipient,
     {
         FilteredBindings = new();
         Categories = new();
-        BindingsData = data;
-        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
         BindingsList = new();
         ShowCommandsWithButtons = false;
+
+        BindingsData = data;
+        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
 
         ReBuildBindings();
 
@@ -174,9 +175,9 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
             List<CommandCategory> newCategories = new();
 
-            foreach(KeyValuePair<DCSBindingKey, DCSBinding> binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings)
+            foreach(DCSBinding binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings.Values)
             {
-                BuildAircraftBindings(newCategories, binding.Value);
+                BuildAircraftBindings(newCategories, binding);
             }
 
             BindingsList.Sort();
@@ -261,7 +262,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
     private void BuildJoystickButtons(DCSBinding binding, AircraftBinding aircraftBinding)
     {
         int joystickCount = 0;
-        foreach (KeyValuePair<DCSJoystickKey, DCSJoystick> stick in binding.JoysticksWithBinding)
+        foreach (DCSJoystick stick in binding.JoysticksWithBinding.Values)
         {
             string button = BuildJoystickButtonLabel(binding, stick.Key);
             if (!string.IsNullOrWhiteSpace(button))
@@ -303,13 +304,13 @@ public partial class BindingsTableViewModel : ObservableRecipient,
     {
         string buttons = "";
         string modifiers = "";
-        Tuple<DCSAircraftKey, DCSJoystickKey> key = Tuple.Create(CurrentAircraftKey, joystickKey);
+        DCSAircraftJoystickKey key = new(CurrentAircraftKey.Name, joystickKey.Id);
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(KeyValuePair<DCSButtonKey, DCSButton> button in binding.AircraftJoystickBindings[key].AssignedButtons)
+            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
-                DCSKeyButton keyButton = button.Value as DCSKeyButton;
+                DCSKeyButton keyButton = button as DCSKeyButton;
                 if (keyButton != null)
                 {
                     foreach (string modifier in keyButton.Modifiers)

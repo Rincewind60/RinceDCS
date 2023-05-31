@@ -91,7 +91,7 @@ namespace RinceDCS.Views
                 newItem.IsClosable = false;
 
                 Frame frame = new Frame();
-                frame.Navigate(typeof(ViewJoystickLayoutPage), stick);
+                frame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, stick, ViewModel.CurrentInstanceBindingsData, currentAircraft));
 
                 newItem.Content = frame;
                 tabView.TabItems.Add(newItem);

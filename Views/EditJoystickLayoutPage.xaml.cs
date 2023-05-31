@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
+using RinceDCS.Views.Messages;
 using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
@@ -51,20 +52,7 @@ namespace RinceDCS.Views
                 FontNames.Add(font.Name);
             }
 
-            WeakReferenceMessenger.Default.Register<PropertyChangedMessage<GameJoystick>>(this, (r, m) => {
-                if ((r is EditJoystickLayoutPage) && ViewModel != null)
-                {
-                    if (ViewModel.Stick.FontName == null)
-                    {
-                        ViewModel.Stick.FontName = FontFamily.XamlAutoFontFamily.Source;
-
-                    }
-                    if (ViewModel.Stick.FontSize == 0)
-                    {
-                        ViewModel.Stick.FontSize = (int)this.FontSize;
-                    }
-                }
-            });
+            JoystickFontMessageHandler.Register(this, ViewModel == null ? null : ViewModel.Stick);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -73,7 +61,7 @@ namespace RinceDCS.Views
 
             Tuple<Game,AttachedJoystick> data = e.Parameter as Tuple<Game, AttachedJoystick>;
 
-            this.DataContext = new EditJoystickViewModel(data);
+            this.DataContext = new EditJoystickViewModel(data.Item1, data.Item2);
         }
 
         public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
@@ -103,11 +91,6 @@ namespace RinceDCS.Views
             ViewModel.CurrentScale = ViewModel.Scales[Math.Max(CurrentScaleIndex() - 1, 0)];
         }
 
-        private void Shrink_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.CurrentScale = ViewModel.Scales[Math.Min(CurrentScaleIndex() + 1, ViewModel.Scales.Length - 1)];
-        }
-
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Vector3 newScale = ScaleValues[CurrentScaleIndex()];
@@ -123,7 +106,12 @@ namespace RinceDCS.Views
                 JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength();
             }
             JoystickImage.Scale = newScale;
-//            JoystickCanvas.Scale = newScale;
+            //            JoystickCanvas.Scale = newScale;
+        }
+
+        private void Shrink_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.CurrentScale = ViewModel.Scales[Math.Min(CurrentScaleIndex() + 1, ViewModel.Scales.Length - 1)];
         }
 
         private int CurrentScaleIndex()

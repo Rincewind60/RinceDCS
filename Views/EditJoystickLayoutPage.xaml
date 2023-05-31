@@ -17,8 +17,6 @@
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
         <local:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
-        <convert:IntToDoubleConverter x:Key="IntToDoubleConverter"/>
-        <convert:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter"/>
 
         <Style x:Key="NonUsedStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Gray"/>
