@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace RinceDCS.Services;
 
@@ -38,18 +37,6 @@ public class DCSService : IDCSService
         {
             BuildButtonBindingsFromSavedGame(data, savedGamesAircraftPath);
         }
-
-        using (FileStream stream = File.Create("D:\\OneDrive\\Documents\\DCSTool\\DCSData.json"))
-        {
-            JsonSerializerOptions options = new JsonSerializerOptions()
-            {
-                //ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-            JsonSerializer.Serialize(stream, data, options);
-        }
-
-
 
         return data;
     }

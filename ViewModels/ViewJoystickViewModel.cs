@@ -110,9 +110,13 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
             string categoryName = aircraftBinding.CategoryName;
 
             DCSAircraftJoystickKey key = new DCSAircraftJoystickKey(CurrentAircraftKey.Name, AttachedStick.JoystickGuid);
-            DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
 
-            BuildAssignedButtons(aircraftButtons, commandName, categoryName, bindingButtons);
+            if(binding.AircraftJoystickBindings.ContainsKey(key))
+            {
+                DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
+
+                BuildAssignedButtons(aircraftButtons, commandName, categoryName, bindingButtons);
+            }
         }
     }
 
