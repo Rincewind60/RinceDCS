@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
+using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Messages;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,6 +33,7 @@ public partial class InstanceData : ObservableObject
     {
         get { return !string.IsNullOrWhiteSpace(GameExePath); }
     }
+
 
     public bool IsValid
     {
@@ -77,10 +80,14 @@ public partial class GameInstancesViewModel : ObservableObject
 
         instance.GameExePath = newPath;
 
-        if(string.IsNullOrEmpty(instance.Name))
+        string gameFolderPath = Path.GetDirectoryName(Path.GetDirectoryName(newPath));
+
+        if (string.IsNullOrEmpty(instance.Name))
         {
-            instance.Name = Path.GetDirectoryName(Path.GetDirectoryName(newPath)).Split('\\').Last();
+            instance.Name = gameFolderPath.Split('\\').Last();
         }
+
+        instance.SavedGameFolderPath = Ioc.Default.GetRequiredService<IDCSService>().GetSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
 
         ValidateInstances();
     }

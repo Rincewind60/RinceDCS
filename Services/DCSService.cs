@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using HtmlAgilityPack;
 using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
@@ -39,6 +40,27 @@ public class DCSService : IDCSService
         }
 
         return data;
+    }
+
+    public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
+    {
+        string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
+
+        if (!File.Exists(variantFilePath)) return currentSavedGamesFolder;
+
+        string variantName = File.ReadAllText(variantFilePath);
+
+        if(string.IsNullOrWhiteSpace(variantName)) return currentSavedGamesFolder;
+
+        string savedGamesFolder = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath);
+        string newSavedGamesFolder = savedGamesFolder + "\\DCS." + variantName;
+
+        if(Directory.Exists(newSavedGamesFolder))
+        {
+            return newSavedGamesFolder;
+        }
+
+        return currentSavedGamesFolder;
     }
 
     private static void BuildListOfJoysticks(DCSData data, List<AttachedJoystick> sticks)
