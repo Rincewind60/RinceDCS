@@ -44,16 +44,20 @@ public class DCSService : IDCSService
 
     public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
     {
-        string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
-
-        if (!File.Exists(variantFilePath)) return currentSavedGamesFolder;
-
-        string variantName = File.ReadAllText(variantFilePath);
-
-        if(string.IsNullOrWhiteSpace(variantName)) return currentSavedGamesFolder;
-
         string savedGamesFolder = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath);
-        string newSavedGamesFolder = savedGamesFolder + "\\DCS." + variantName;
+        string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
+        string variantName = null;
+
+        if (File.Exists(variantFilePath))
+        {
+            variantName = File.ReadAllText(variantFilePath);
+        }
+
+        string newSavedGamesFolder = savedGamesFolder + "\\DCS";
+        if (!string.IsNullOrWhiteSpace(variantName))
+        {
+            newSavedGamesFolder += "." + variantName;
+        }
 
         if(Directory.Exists(newSavedGamesFolder))
         {
