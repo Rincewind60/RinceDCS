@@ -12,7 +12,7 @@ public class ImageSourceUtil
 {
     public static async Task SetSourceFromGameJoystick(Image image, GameJoystick joystick)
     {
-        if (joystick == null)
+        if (joystick == null || joystick.Image == null)
         {
             image.Source = new BitmapImage(new Uri("ms-appx:///Assets/DefaultJoystickImage.png"));
         }

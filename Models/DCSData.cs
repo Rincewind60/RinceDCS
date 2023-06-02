@@ -10,8 +10,14 @@ public record DCSAircraftKey(string Name);
 public record DCSJoystickKey(Guid Id);
 public record DCSBindingKey(string Id);
 public record DCSButtonKey(string Name);
-
 public record DCSAircraftJoystickKey(string AircraftName, Guid JoystickID);
+
+public class DCSData
+{
+    public Dictionary<DCSAircraftKey, DCSAircraft> Aircraft { get; set; } = new();
+    public Dictionary<DCSJoystickKey, DCSJoystick> Joysticks { get; set; } = new();
+    public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
+}
 
 public class DCSAircraft
 {
@@ -26,13 +32,6 @@ public class DCSJoystick
     public AttachedJoystick Joystick { get; set; }
 }
 
-public class DCSAircraftBinding
-{
-    public DCSAircraftKey Key { get; set; }
-    public string CommandName { get; set; }
-    public string CategoryName { get; set; }
-}
-
 public class DCSBinding
 {
     public DCSBindingKey Key { get; set; }
@@ -44,11 +43,24 @@ public class DCSBinding
     public Dictionary<DCSAircraftJoystickKey, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; } = new();
 }
 
+public class DCSAircraftBinding
+{
+    public DCSAircraftKey Key { get; set; }
+    public string CommandName { get; set; }
+    public string CategoryName { get; set; }
+}
+
 public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
     public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; } = new();
+    public DCSButtonChanges CoreButtonChanges { get; set; } = new();
+    public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
+}
+
+public class DCSButtonChanges
+{
     public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
     public List<DCSButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
@@ -91,11 +103,4 @@ public class DCSAxisFilter
 public class DCSKeyButton : DCSButton
 {
     public List<string> Modifiers { get; set; } = new();
-}
-
-public class DCSData
-{
-    public Dictionary<DCSAircraftKey, DCSAircraft> Aircraft { get; set; } = new();
-    public Dictionary<DCSJoystickKey, DCSJoystick> Joysticks { get; set; } = new ();
-    public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
 }

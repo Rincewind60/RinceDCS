@@ -5,9 +5,11 @@ using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using SharpDX.DirectInput;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Windows.Devices.Geolocation;
 
 namespace RinceDCS.Services;
 
@@ -31,6 +33,12 @@ public class DCSService : IDCSService
         {
             BuildListOfAircraftFromHTMLFiles(data, htmlFilesFolder);
             BuildBindingsFromHTMLFiles(data, htmlFilesFolder);
+        }
+
+        string coreGameAircraftPath = Path.GetDirectoryName(Path.GetDirectoryName(gameExePath)) + "\\Mods\\Aircraft";
+        if (Directory.Exists(coreGameAircraftPath))
+        {
+            BuildButtonBindingsFromCoreGame(data, coreGameAircraftPath);
         }
 
         string savedGamesAircraftPath = savedGameFolderPath + "\\Config\\Input";
@@ -143,6 +151,30 @@ public class DCSService : IDCSService
         }
     }
 
+    private void BuildButtonBindingsFromCoreGame(DCSData data, string coreGameAircraftPath)
+    {
+        foreach(string aircraftDir in Directory.GetDirectories(coreGameAircraftPath))
+        {
+            string inputPath = aircraftDir + "\\input";
+            foreach (string aircraftInputDir in Directory.GetDirectories(inputPath))
+            {
+                string aircraftName = aircraftInputDir.Split("\\").Last();
+                if(data.Aircraft.ContainsKey(new(aircraftName)))
+                {
+                    string aircraftJoystickFolderPath = aircraftInputDir + "\\joystick";
+                    foreach (DCSJoystick stick in data.Joysticks.Values)
+                    {
+                        string aircraftStickPath = aircraftJoystickFolderPath + "\\" + stick.Joystick.Name + ".diff.lua";
+                        if (File.Exists(aircraftStickPath))
+                        {
+                            ReadAircraftStickLuaFile(data, data.Aircraft[new(aircraftName)], stick, aircraftStickPath, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void BuildButtonBindingsFromSavedGame(DCSData data, string savedGamesAircraftPath)
     {
         foreach(DCSAircraft aircraft in data.Aircraft.Values)
@@ -153,13 +185,13 @@ public class DCSService : IDCSService
                 string aircraftStickPath = aircraftJoystickFolderPath + "\\" + stick.Joystick.DCSName + ".diff.lua";
                 if (File.Exists(aircraftStickPath))
                 {
-                    ReadAircraftStickLuaFile(data, aircraft, stick, aircraftStickPath);
+                    ReadAircraftStickLuaFile(data, aircraft, stick, aircraftStickPath, false);
                 }
             }
         }
     }
 
-    private void ReadAircraftStickLuaFile(DCSData data, DCSAircraft aircraft, DCSJoystick stick, string aircraftStickPath)
+    private void ReadAircraftStickLuaFile(DCSData data, DCSAircraft aircraft, DCSJoystick stick, string aircraftStickPath, bool isCore)
     {
         Table table = Script.RunFile(aircraftStickPath).Table;
 
@@ -168,16 +200,16 @@ public class DCSService : IDCSService
             string key = table.Keys.ElementAt(i).String;
             if (key == "axisDiffs")
             {
-                ReadAxisDiffsLua(data, aircraft, stick, table.Values.ElementAt(i).Table);
+                ReadAxisDiffsLua(data, aircraft, stick, table.Values.ElementAt(i).Table, isCore);
             }
             else if(key == "keyDiffs")
             {
-                ReadKeyDiffsLua(data, aircraft, stick, table.Values.ElementAt(i).Table);
+                ReadKeyDiffsLua(data, aircraft, stick, table.Values.ElementAt(i).Table, isCore);
             }
         }
     }
 
-    private void ReadAxisDiffsLua(DCSData data, DCSAircraft aircraft, DCSJoystick stick, Table axisDiffsTable)
+    private void ReadAxisDiffsLua(DCSData data, DCSAircraft aircraft, DCSJoystick stick, Table axisDiffsTable, bool isCore)
     {
         for(int i = 0; i < axisDiffsTable.Keys.Count(); i++)
         {
@@ -185,6 +217,7 @@ public class DCSService : IDCSService
             DCSBinding binding = data.Bindings[bindingKey];
 
             DCSAircraftJoystickBinding bindingData = CreateBindingData(aircraft, stick, binding);
+            DCSButtonChanges changes = isCore ? bindingData.CoreButtonChanges : bindingData.SavedGamesButtonChanges;
 
             Table bindingsTable = axisDiffsTable.Values.ElementAt(i).Table;
 
@@ -193,11 +226,11 @@ public class DCSService : IDCSService
                 string sectionName = bindingsTable.Keys.ElementAt(j).String;
                 if (sectionName == "changed")
                 {
-                    ReadChangedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table);
+                    ReadChangedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
                 }
                 else if (sectionName == "removed")
                 {
-                    ReadRemovedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table);
+                    ReadRemovedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
                 }
                 else if (sectionName == "name")
                 {
@@ -207,14 +240,14 @@ public class DCSService : IDCSService
         }
     }
  
-    private void ReadChangedAxisLua(DCSAircraftJoystickBinding bindingData, Table changedTable)
+    private void ReadChangedAxisLua(DCSAircraftJoystickBinding bindingData, Table changedTable, DCSButtonChanges changes)
     {
         for (int i = 0; i < changedTable.Keys.Count(); i++)
         {
             Table table = changedTable.Values.ElementAt(i).Table;
 
             DCSAxisButton axisButton = new();
-            bindingData.ChangedAxisButtons.Add(axisButton);
+            changes.ChangedAxisButtons.Add(axisButton);
 
             for (int j = 0; j < table.Keys.Count(); j++)
             {
@@ -282,14 +315,14 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadRemovedAxisLua(DCSAircraftJoystickBinding bindingData, Table removedTable)
+    private void ReadRemovedAxisLua(DCSAircraftJoystickBinding bindingData, Table removedTable, DCSButtonChanges changes)
     {
         for (int i = 0; i < removedTable.Values.Count(); i++)
         {
             Table table = removedTable.Values.ElementAt(i).Table;
             string button = table.Values.ElementAt(i).String;
             DCSButton removedButton = new() { Key = new(button) };
-            bindingData.RemovedAxisButtons.Add(removedButton);
+            changes.RemovedAxisButtons.Add(removedButton);
 
             if(bindingData.AssignedButtons.ContainsKey(removedButton.Key))
             {
@@ -298,7 +331,7 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadKeyDiffsLua(DCSData data, DCSAircraft aircraft, DCSJoystick stick, Table keyDiffsTable)
+    private void ReadKeyDiffsLua(DCSData data, DCSAircraft aircraft, DCSJoystick stick, Table keyDiffsTable, bool isCore)
     {
         for (int i = 0; i < keyDiffsTable.Keys.Count(); i++)
         {
@@ -306,7 +339,7 @@ public class DCSService : IDCSService
             DCSBinding binding = data.Bindings[bindingKey];
 
             DCSAircraftJoystickBinding bindingData = CreateBindingData(aircraft, stick, binding);
-
+            DCSButtonChanges changes = isCore ? bindingData.CoreButtonChanges : bindingData.SavedGamesButtonChanges;
 
             Table bindingsTable = keyDiffsTable.Values.ElementAt(i).Table;
 
@@ -315,11 +348,11 @@ public class DCSService : IDCSService
                 string sectionName = bindingsTable.Keys.ElementAt(j).String;
                 if (sectionName == "added")
                 {
-                    ReadAddedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table);
+                    ReadAddedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
                 }
                 else if (sectionName == "removed")
                 {
-                    ReadRemovedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table);
+                    ReadRemovedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
                 }
                 else if (sectionName == "name")
                 {
@@ -329,7 +362,7 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadAddedKeyLua(DCSAircraftJoystickBinding bindingData, Table addedTable)
+    private void ReadAddedKeyLua(DCSAircraftJoystickBinding bindingData, Table addedTable, DCSButtonChanges changes)
     {
         for (int i = 0; i < addedTable.Values.Count(); i++)
         {
@@ -349,7 +382,7 @@ public class DCSService : IDCSService
                     ReadKeyModifersLua(newButton, table.Values.ElementAt(j).Table);
                 }
             }
-            bindingData.AddedKeyButtons.Add(newButton);
+            changes.AddedKeyButtons.Add(newButton);
 
             bindingData.AssignedButtons[newButton.Key] = newButton;
         }
@@ -363,14 +396,14 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadRemovedKeyLua(DCSAircraftJoystickBinding bindingData, Table removedTable)
+    private void ReadRemovedKeyLua(DCSAircraftJoystickBinding bindingData, Table removedTable, DCSButtonChanges changes)
     {
         for (int i = 0; i < removedTable.Values.Count(); i++)
         {
             Table table = removedTable.Values.ElementAt(i).Table;
             string button = table.Values.ElementAt(i).String;
             DCSButton removedButton = new() { Key = new(button) };
-            bindingData.RemovedKeyButtons.Add(removedButton);
+            changes.RemovedKeyButtons.Add(removedButton);
 
             if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
             {

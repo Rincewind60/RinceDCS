@@ -15,4 +15,6 @@ public interface IFileService
     public Image OpenImageFile(string path);
     
     public byte[] ReadImageFile(string path);
+
+    public string ReadTextFile(string path);
 }

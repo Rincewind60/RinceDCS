@@ -33,6 +33,8 @@ public partial class GameJoystickButton : ObservableObject
 
     public bool IsModifier { get; set; }
 
+    public bool IsKeyButton { get; set; }
+
     [property: JsonIgnore]
     public string ButtonLabel {  get {  return IsModifier ? "MOD+" + ButtonName : ButtonName; } }
 

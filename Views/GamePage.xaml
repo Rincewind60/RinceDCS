@@ -60,7 +60,7 @@
                 Label="Edit" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
             <AppBarSeparator/>
-            <AppBarButton Label="Help"/>
+            <AppBarButton Label="Help" Click="Help_Click"/>
             <AppBarButton Label="About" Click="About_Click"/>
         </CommandBar>
 

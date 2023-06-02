@@ -21,6 +21,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Security.EnterpriseData;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -150,6 +151,12 @@ namespace RinceDCS.Views
             GameAircraft currentAircraft = ViewModel.CurrentAircraft == null ? null : ViewModel.CurrentAircraft;
 
             BindingsTableFrame.Navigate(typeof(BindingsTablePage), Tuple.Create(ViewModel.CurrentInstanceBindingsData, currentAircraft));
+        }
+
+        private void Help_Click(object sender, RoutedEventArgs e)
+        {
+            HelpPage help = new();
+            Ioc.Default.GetRequiredService<IDialogService>().OpenInfoPageDialog("Help", help);
         }
     }
 

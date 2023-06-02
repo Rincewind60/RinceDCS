@@ -171,13 +171,18 @@ public partial class GameViewModel : ObservableRecipient
         joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Game" });
         joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Plane" });
         joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Joystick" });
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item });
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
+        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
+        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
         //  Now add copies of Buttons for when using Modifier
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsModifier = true });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsModifier = true });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsModifier = true });
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+    }
+
+    private bool IsKeyButton(string item)
+    {
+        return item.Contains("BTN");
     }
 
     private void ApplyChangesToModels()

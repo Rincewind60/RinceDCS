@@ -14,6 +14,11 @@
 
     <Page.Resources>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
+
+        <Style x:Key="ButtonFont" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{x:Bind ViewModel.Stick.FontName, Mode=OneWay}"/>
+            <Setter Property="FontSize" Value="{x:Bind ViewModel.Stick.FontSize, Mode=OneWay}"/>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -97,18 +102,17 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:ViewJoystickButton">
-                            <Border
-                                BorderThickness="2"
-                                BorderBrush="Black"
+                            <TextBlock
+                                Text="{x:Bind CommandName}"
+                                Style="{StaticResource ButtonFont}"
                                 MinWidth="60"
                                 MinHeight="24"
                                 Width="{x:Bind BoundButton.Width}"
                                 Height="{x:Bind BoundButton.Height}">
-                                <Border.RenderTransform>
+                                <TextBlock.RenderTransform>
                                     <TranslateTransform X="{x:Bind BoundButton.TopX}" Y="{x:Bind BoundButton.TopY}"/>
-                                </Border.RenderTransform>
-                                <TextBlock Text="{x:Bind CommandName}"/>
-                            </Border>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
