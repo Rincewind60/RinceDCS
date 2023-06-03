@@ -22,6 +22,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Security.EnterpriseData;
 using System.Threading.Tasks;
+using RinceDCS.Views.Utilities;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -155,8 +156,11 @@ namespace RinceDCS.Views
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            HelpPage help = new();
-            Ioc.Default.GetRequiredService<IDialogService>().OpenInfoPageDialog("Help", help);
+            var helpWindow = WindowHelper.CreateWindow();
+            HelpPage helpPage = new();
+            helpPage.RequestedTheme = this.ActualTheme;
+            helpWindow.Content = helpPage;
+            helpWindow.Activate();
         }
     }
 

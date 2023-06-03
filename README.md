@@ -1,13 +1,13 @@
 ## Rince DCS
 
-### Introduction
+### Purpose
 
-Rince DCS is a tool for creating Joystick images populated with your button bindings from DCS.
+### Dependencies
 
 
 #### Contents
 
-- [Introduction](ReadME.md)
+- [Introduction](Introduction.md)
 - [Getting Started](GettingStarted.md)
 - [Main Page](MainPage.md)
 - [Game Files](GameFiles.md)

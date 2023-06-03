@@ -16,7 +16,7 @@ public partial class HelpViewModel : ObservableRecipient
 
     public HelpViewModel()
     {
-        LinkToPage("README.md");
+        LinkToPage("Introduction.md");
     }
 
     public void LinkToPage(string fileName)

@@ -16,11 +16,11 @@
     <None Remove="Help\EditJoysticks.md" />
     <None Remove="Help\GameFiles.md" />
     <None Remove="Help\GettingStarted.md" />
+    <None Remove="Help\Introduction.md" />
     <None Remove="Help\MainPage.md" />
     <None Remove="Help\ManageJoysticks.md" />
     <None Remove="Help\ViewBindings.md" />
     <None Remove="Help\ViewJoysticks.md" />
-    <None Remove="README.md" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\BindingsTablePage.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
@@ -42,11 +42,12 @@
     <Content Include="Help\EditJoysticks.md" />
     <Content Include="Help\GameFiles.md" />
     <Content Include="Help\GettingStarted.md" />
+    <Content Include="Help\Introduction.md" />
     <Content Include="Help\MainPage.md" />
     <Content Include="Help\ManageJoysticks.md" />
     <Content Include="Help\ViewBindings.md" />
     <Content Include="Help\ViewJoysticks.md" />
-    <Content Include="Help\README.md" />
+    <Content Include="README.md" />
   </ItemGroup>
 
   <ItemGroup>

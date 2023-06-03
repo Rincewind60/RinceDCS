@@ -1,6 +1,9 @@
-﻿### View Joysticks
+﻿## Rince DCS
 
-Will detail View Joystick.
+### Introduction
+
+Rince DCS is a tool for creating Joystick images populated with your button bindings from DCS.
+
 
 #### Contents
 

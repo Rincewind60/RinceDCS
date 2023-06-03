@@ -4,7 +4,7 @@
 
 #### Contents
 
-- [Introduction](ReadME.md)
+- [Introduction](Introduction.md)
 - [Getting Started](GettingStarted.md)
 - [Main Page](MainPage.md)
 - [Game Files](GameFiles.md)
