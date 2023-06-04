@@ -33,7 +33,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="54"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -61,6 +61,7 @@
         <StackPanel
                 Grid.Column="1"
                 Grid.Row="0"
+                Height="40"
                 Orientation="Horizontal">
             <Button
                 Name="EditImage" 
@@ -69,15 +70,9 @@
                 Margin="2,0,2,0">
             </Button>
             <Button
-                Name="ExportPDF"
-                Content="Export PDF"
-                IsEnabled="False"
-                Margin="2,0,2,0"/>
-            <Button
-                Name="Print"
-                Content="Print"
-                Click="Print_Click"
-                IsEnabled="False"
+                Name="ExportImage"
+                Content="Export Image"
+                Click="ExportImage_Click"
                 Margin="2,0,2,0"/>
             <Button 
                 Name="Expand" 

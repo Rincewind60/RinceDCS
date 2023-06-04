@@ -22,7 +22,7 @@ public partial class EditJoystickViewModel : ObservableObject
     private GameJoystickButton currentButton;
 
     public ObservableCollection<string> FontNames { get; set; } = new();
-    public ObservableCollection<int> FontSizes { get; set; } = new() { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28 };
+    public ObservableCollection<int> FontSizes { get; set; } = new() { 11, 12, 14, 16, 18, 20, 22, 24, 26 };
 
     public ObservableCollection<string> Scales { get; set; } = new() { "400%", "200%", "100%", "75%", "50%", "25%" };
 

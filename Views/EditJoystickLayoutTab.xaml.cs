@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -192,8 +193,9 @@ namespace RinceDCS.Views
             return e.GetCurrentPoint(JoystickImage);
         }
 
-        private void Print_Click(object sender, RoutedEventArgs e)
+        private void ExportImage_Click(object sender, RoutedEventArgs e)
         {
+            Ioc.Default.GetRequiredService<IFileService>().ExportJoystickButtonNamesToPng(ViewModel.Stick);
         }
     }
 

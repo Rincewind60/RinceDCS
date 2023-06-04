@@ -1,4 +1,5 @@
-﻿using RinceDCS.Models;
+﻿using Microsoft.UI.Xaml;
+using RinceDCS.Models;
 using System.Drawing;
 using System.Threading.Tasks;
 
@@ -15,4 +16,6 @@ public interface IFileService
     public Image OpenImageFile(string path);
     
     public byte[] ReadImageFile(string path);
+
+    public void ExportJoystickButtonNamesToPng(GameJoystick joystick);
 }
