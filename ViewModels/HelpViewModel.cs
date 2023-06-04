@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ public partial class HelpViewModel : ObservableRecipient
     public void LinkToPage(string fileName)
     {
         string path = Windows.ApplicationModel.Package.Current.InstalledPath + "\\Help\\" + fileName;
-        MarkDownText = Ioc.Default.GetRequiredService<IFileService>().ReadTextFile(path);
+        string tocPath = Windows.ApplicationModel.Package.Current.InstalledPath + "\\Help\\TOC.md";
+        MarkDownText = File.ReadAllText(path) + File.ReadAllText(tocPath);
     }
 }

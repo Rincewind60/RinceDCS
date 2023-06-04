@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,26 @@ namespace RinceDCS.Views
         public ManageJoystickLayoutPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            Tuple<Game, DCSData, GameAircraft> data = e.Parameter as Tuple<Game, DCSData, GameAircraft>;
+
+            foreach (GameJoystick stick in data.Item1.Joysticks)
+            {
+                TabViewItem newItem = new TabViewItem();
+                newItem.Header = stick.AttachedJoystick.Name;
+                newItem.IsClosable = false;
+
+                Frame frame = new Frame();
+                frame.Navigate(typeof(ManageJoystickLayoutTab), Tuple.Create(stick, data.Item2, data.Item3));
+
+                newItem.Content = frame;
+                ManageJoystickLayouts.TabItems.Add(newItem);
+            }
         }
     }
 }

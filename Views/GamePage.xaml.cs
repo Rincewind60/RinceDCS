@@ -23,6 +23,8 @@ using Windows.Foundation.Collections;
 using Windows.Security.EnterpriseData;
 using System.Threading.Tasks;
 using RinceDCS.Views.Utilities;
+using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -76,84 +78,6 @@ namespace RinceDCS.Views
             ViewModel.CurrentAircraftChanged();
         }
 
-        /// <summary>
-        /// As each Joystick tab is loaded we create its view and pass in the appropriate JosStick model.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ViewJoystickLayouts_Loaded(object sender, RoutedEventArgs e)
-        {
-            TabView tabView = sender as TabView;
-            GameAircraft currentAircraft = ViewModel.CurrentAircraft == null ? null : ViewModel.CurrentAircraft;
-
-            foreach (AttachedJoystick stick in ViewModel.AttachedJoysticks)
-            {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = stick.Name;
-                newItem.IsClosable = false;
-
-                Frame frame = new Frame();
-                frame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, stick, ViewModel.CurrentInstanceBindingsData, currentAircraft));
-
-                newItem.Content = frame;
-                tabView.TabItems.Add(newItem);
-            }
-        }
-
-        /// <summary>
-        /// As each Joystick tab is loaded we create its view and pass in the appropriate JosStick model.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ManageJoystickLayouts_Loaded(object sender, RoutedEventArgs e)
-        {
-            TabView tabView = sender as TabView;
-
-            foreach (AttachedJoystick stick in ViewModel.AttachedJoysticks)
-            {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = stick.Name;
-                newItem.IsClosable = false;
-
-                Frame frame = new Frame();
-                frame.Navigate(typeof(ManageJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, stick));
-
-                newItem.Content = frame;
-                tabView.TabItems.Add(newItem);
-            }
-        }
-
-        /// <summary>
-        /// As each Joystick tab is loaded we create its view and pass in the appropriate JosStick model.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void EditJoystickLayouts_Loaded(object sender, RoutedEventArgs e)
-        {
-            TabView tabView = sender as TabView;
-
-            foreach (AttachedJoystick stick in ViewModel.AttachedJoysticks)
-            {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = stick.Name;
-                newItem.IsClosable = false;
-
-                Frame frame = new Frame();
-                frame.Navigate(typeof(EditJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, stick));
-
-                newItem.Content = frame;
-                tabView.TabItems.Add(newItem);
-            }
-        }
-
-        private void BindingsTable_Loaded(object sender, RoutedEventArgs e)
-        {
-            TabView tabView = sender as TabView;
-            GameAircraft currentAircraft = ViewModel.CurrentAircraft == null ? null : ViewModel.CurrentAircraft;
-
-            BindingsTableFrame.Navigate(typeof(BindingsTablePage), Tuple.Create(ViewModel.CurrentInstanceBindingsData, currentAircraft));
-        }
-
         private void Help_Click(object sender, RoutedEventArgs e)
         {
             var helpWindow = WindowHelper.CreateWindow();
@@ -161,6 +85,31 @@ namespace RinceDCS.Views
             helpPage.RequestedTheme = this.ActualTheme;
             helpWindow.Content = helpPage;
             helpWindow.Activate();
+        }
+
+        private void DetailsViewFrame_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+        }
+
+        private void ManageButton_Click(object sender, RoutedEventArgs e)
+        {
+            DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+        }
+
+        private void BindingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            DetailsViewFrame.Navigate(typeof(BindingsTablePage), Tuple.Create(ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            DetailsViewFrame.Navigate(typeof(EditJoystickLayoutPage), ViewModel.CurrentGame);
         }
     }
 
@@ -177,7 +126,7 @@ namespace RinceDCS.Views
 
             if(isChecked)
             {
-                DisplayMode mode;
+                DetailsDisplayMode mode;
                 Enum.TryParse(parameter.ToString(), true, out mode);
                 return mode;
             }
@@ -205,7 +154,7 @@ namespace RinceDCS.Views
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value.ToString() == DisplayMode.Edit.ToString() ? Visibility.Collapsed : Visibility.Visible;
+            return value.ToString() == DetailsDisplayMode.Edit.ToString() ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

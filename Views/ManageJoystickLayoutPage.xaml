@@ -11,7 +11,10 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <TextBlock Text="Manage Layout"/>
-    </Grid>
+    <TabView
+            Name="ManageJoystickLayouts"
+            Grid.Row="3"
+            Grid.Column="0"
+            IsAddTabButtonVisible="False"/>
+
 </Page>

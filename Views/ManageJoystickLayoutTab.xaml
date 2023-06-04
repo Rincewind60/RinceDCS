@@ -2,7 +2,7 @@
 <!-- Licensed under the MIT License. -->
 
 <Page
-    x:Class="RinceDCS.Views.EditJoystickLayoutPage"
+    x:Class="RinceDCS.Views.ManageJoystickLayoutTab"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RinceDCS.Views"
@@ -11,10 +11,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <TabView
-            Name="EditJoystickLayouts"
-            Grid.Row="3"
-            Grid.Column="0"
-            IsAddTabButtonVisible="False"/>
-
+    <Grid>
+        <TextBlock Text="Manage Layout"/>
+    </Grid>
 </Page>

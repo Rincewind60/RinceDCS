@@ -401,13 +401,16 @@ public class DCSService : IDCSService
         for (int i = 0; i < removedTable.Values.Count(); i++)
         {
             Table table = removedTable.Values.ElementAt(i).Table;
-            string button = table.Values.ElementAt(i).String;
-            DCSButton removedButton = new() { Key = new(button) };
-            changes.RemovedKeyButtons.Add(removedButton);
-
-            if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
+            for(int j = 0; j < table.Values.Count(); j++)
             {
-                bindingData.AssignedButtons.Remove(removedButton.Key);
+                string button = table.Values.ElementAt(j).String;
+                DCSButton removedButton = new() { Key = new(button) };
+                changes.RemovedKeyButtons.Add(removedButton);
+
+                if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
+                {
+                    bindingData.AssignedButtons.Remove(removedButton.Key);
+                }
             }
         }
     }

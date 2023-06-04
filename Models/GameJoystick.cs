@@ -19,12 +19,18 @@ public partial class GameJoystick : ObservableObject
     private ObservableCollection<GameJoystickButton> buttons;
 
     [ObservableProperty]
-    private string fontName;
+    private string font;
 
     [ObservableProperty]
     private int fontSize;
 
     public byte[] Image {  get; set; }
+
+    public GameJoystick()
+    {
+        Font = "Arial";
+        FontSize = 11;
+    }
 }
 
 public partial class GameJoystickButton : ObservableObject

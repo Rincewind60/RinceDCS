@@ -15,8 +15,9 @@ using System.Xml.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public enum DisplayMode
+public enum DetailsDisplayMode
 {
+    None,
     Bindings,
     View,
     Manage,
@@ -39,10 +40,6 @@ public partial class GameViewModel : ObservableRecipient
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private ObservableCollection<GameAircraft> currentInstanceAircraft;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
     private GameAircraft currentAircraft;
 
     [ObservableProperty]
@@ -52,17 +49,15 @@ public partial class GameViewModel : ObservableRecipient
     private bool isGameLoaded = false;
 
     [ObservableProperty]
-    private DisplayMode? joystickMode;
+    private DetailsDisplayMode? joystickMode;
 
     public GameViewModel()
     {
         IsActive = true;
 
-        JoystickMode = DisplayMode.View;
+        JoystickMode = DetailsDisplayMode.None;
 
         AttachedJoysticks = Ioc.Default.GetRequiredService<IJoystickService>().GetAttachedJoysticks();
-
-        currentInstanceAircraft = new();
 
         WeakReferenceMessenger.Default.Register<GameInstancesUpdatedMessage>(this, (r, m) =>
         {
@@ -126,9 +121,16 @@ public partial class GameViewModel : ObservableRecipient
 
     public void CurrentInstanceChanged()
     {
-        CurrentInstanceBindingsData = CurrentInstance == null ? null : CurrentInstance.BindingsData;
-        CurrentInstanceAircraft = CurrentInstance == null ? null : CurrentInstance.Aircraft;
-        SetCurrentAircraftForCurrentInstance();
+        if(CurrentInstance == null)
+        {
+            CurrentInstanceBindingsData = null;
+            CurrentAircraft = null;
+        }
+        else
+        {
+            CurrentInstanceBindingsData = CurrentInstance.BindingsData;
+            SetCurrentAircraftForCurrentInstance();
+        }
     }
 
     public void CurrentAircraftChanged()
@@ -136,7 +138,7 @@ public partial class GameViewModel : ObservableRecipient
         CurrentInstance.CurrentAircraftName = CurrentAircraft == null ? null : CurrentAircraft.Name;
     }
 
-    partial void OnJoystickModeChanged(DisplayMode? oldValue, DisplayMode? newValue)
+    partial void OnJoystickModeChanged(DetailsDisplayMode? oldValue, DetailsDisplayMode? newValue)
     {
         if (newValue == null)
         {

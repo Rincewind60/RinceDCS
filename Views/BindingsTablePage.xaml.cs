@@ -37,9 +37,9 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<DCSData,GameAircraft> tupleValue = e.Parameter as Tuple<DCSData, GameAircraft>;
+            Tuple<DCSData,GameAircraft> data = e.Parameter as Tuple<DCSData, GameAircraft>;
 
-            this.DataContext = new BindingsTableViewModel(tupleValue.Item1, tupleValue.Item2);
+            this.DataContext = new BindingsTableViewModel(data.Item1, data.Item2);
         }
         public BindingsTableViewModel ViewModel => (BindingsTableViewModel)DataContext;
 

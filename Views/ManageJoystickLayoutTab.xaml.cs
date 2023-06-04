@@ -9,11 +9,11 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
+using RinceDCS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -26,9 +26,9 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class EditJoystickLayoutPage : Page
+    public sealed partial class ManageJoystickLayoutTab : Page
     {
-        public EditJoystickLayoutPage()
+        public ManageJoystickLayoutTab()
         {
             this.InitializeComponent();
         }
@@ -37,20 +37,15 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Game game = (Game)e.Parameter;
+            Tuple<GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<GameJoystick, DCSData, GameAircraft>;
 
-            foreach (GameJoystick joystick in game.Joysticks)
-            {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = joystick.AttachedJoystick.Name;
-                newItem.IsClosable = false;
+            GameJoystick stick = data.Item1;
+            DCSData dcsData = data.Item2;
+            GameAircraft currentAircraft = data.Item3;
 
-                Frame frame = new Frame();
-                frame.Navigate(typeof(EditJoystickLayoutTab), joystick);
-
-                newItem.Content = frame;
-                EditJoystickLayouts.TabItems.Add(newItem);
-            }
+            this.DataContext = new ManageJoystickViewModel(stick, dcsData, currentAircraft);
         }
+
+        public ManageJoystickViewModel ViewModel => (ManageJoystickViewModel)DataContext;
     }
 }

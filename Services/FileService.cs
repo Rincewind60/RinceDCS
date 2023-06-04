@@ -77,11 +77,6 @@ public class FileService : IFileService
         return data;
     }
 
-    public string ReadTextFile(string path)
-    {
-        return File.ReadAllText(path);
-    }
-
     private async Task SaveGameToPath(Game game, string savePath)
     {
         //  Update Save Path setting so we remember where to save to/open from

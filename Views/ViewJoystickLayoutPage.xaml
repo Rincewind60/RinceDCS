@@ -6,118 +6,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RinceDCS.Views"
-    xmlns:vm="using:RinceDCS.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Page.Resources>
-        <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
-
-        <Style x:Key="ButtonFont" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{x:Bind ViewModel.Stick.FontName, Mode=OneWay}"/>
-            <Setter Property="FontSize" Value="{x:Bind ViewModel.Stick.FontSize, Mode=OneWay}"/>
-        </Style>
-    </Page.Resources>
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <StackPanel
-                Grid.Column="1"
-                Grid.Row="0"
-                Orientation="Horizontal">
-            <Button
-                Name="ExportPDF"
-                Content="Export PDF"
-                IsEnabled="False"
-                Margin="6,0,2,0"/>
-            <Button
-                Name="ExportKneepad"
-                Content="Export Kneepad"
-                IsEnabled="False"
-                Margin="2,0,2,0"/>
-            <Button
-                Name="Print"
-                Content="Print"
-                Click="Print_Click"
-                IsEnabled="False"
-                Margin="2,0,2,0"/>
-            <Button 
-                Name="Expand" 
-                Click="Expand_Click" 
-                Margin="2,0,2,0">
-                <SymbolIcon Symbol="Add"/>
-            </Button>
-            <ComboBox
-                Name="ScaleCombo"
-                ItemsSource="{x:Bind ViewModel.Scales}" 
-                SelectedItem="{x:Bind ViewModel.CurrentScale, Mode=TwoWay}" 
-                SelectionChanged="ScaleCombo_SelectionChanged"
-                VerticalAlignment="Center"
-                Margin="2,0,2,0"/>
-            <Button
-                Name="Shrink" 
-                Click="Shrink_Click" 
-                Margin="2,0,2,0">
-                <SymbolIcon Symbol="Remove"/>
-            </Button>
-        </StackPanel>
-
-        <ScrollViewer
-            Grid.Row="1"
-            Grid.Column="1"
-            Name="JoystickScrollViewer"
-            HorizontalScrollBarVisibility="Auto">
-            <Grid Name="JoystickScaleGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Image
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Name="JoystickImage"
-                    Loaded="JoystickImage_Loaded"
-                    ImageOpened="JoystickImage_ImageOpened" 
-                    Stretch="None"/>
-                <ItemsControl
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Name="ButtonsItemsControl"
-                    ItemsSource="{x:Bind ViewModel.ViewButtons}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:ViewJoystickButton">
-                            <TextBlock
-                                Text="{x:Bind CommandName}"
-                                Style="{StaticResource ButtonFont}"
-                                MinWidth="60"
-                                MinHeight="24"
-                                Width="{x:Bind BoundButton.Width}"
-                                Height="{x:Bind BoundButton.Height}">
-                                <TextBlock.RenderTransform>
-                                    <TranslateTransform X="{x:Bind BoundButton.TopX}" Y="{x:Bind BoundButton.TopY}"/>
-                                </TextBlock.RenderTransform>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
-        </ScrollViewer>
-    </Grid>
-
+    <TabView
+            Name="ViewJoystickLayouts"
+            Grid.Row="3"
+            Grid.Column="0"
+            IsAddTabButtonVisible="False"/>
 </Page>

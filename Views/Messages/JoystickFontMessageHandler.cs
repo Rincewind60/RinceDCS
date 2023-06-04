@@ -18,7 +18,7 @@ public class JoystickFontMessageHandler
         WeakReferenceMessenger.Default.Register<PropertyChangedMessage<GameJoystick>>(page, (r, m) => {
             if ((r is EditJoystickLayoutPage) && stick != null)
             {
-                stick.FontName = stick.FontName == null ? FontFamily.XamlAutoFontFamily.Source : stick.FontName;
+                stick.Font = stick.Font == null ? FontFamily.XamlAutoFontFamily.Source : stick.Font;
                 stick.FontSize = stick.FontSize == 0 ? (int)page.FontSize : stick.FontSize;
             }
         });

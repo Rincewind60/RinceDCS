@@ -41,10 +41,7 @@ public partial class CommandCategory : ObservableObject, IComparable<CommandCate
 }
 
 public partial class BindingsTableViewModel : ObservableRecipient,
-                                              IRecipient<PropertyChangedMessage<Game>>,
-                                              IRecipient<PropertyChangedMessage<GameInstance>>,
-                                              IRecipient<PropertyChangedMessage<GameAircraft>>,
-                                              IRecipient<PropertyChangedMessage<DCSData>>
+                                              IRecipient<PropertyChangedMessage<GameAircraft>>
 {
     public ObservableCollection<AircraftBinding> FilteredBindings { get; set; }
     public ObservableCollection<CommandCategory> Categories { get; set; }
@@ -91,29 +88,9 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         IsActive = true;
     }
 
-    public void Receive(PropertyChangedMessage<Game> message)
-    {
-        CurrentAircraftKey = null;
-        BindingsData = null;
-        ReBuildBindings();
-    }
-
-    public void Receive(PropertyChangedMessage<GameInstance> message)
-    {
-        CurrentAircraftKey = null;
-        BindingsData = null;
-        ReBuildBindings();
-    }
-
     public void Receive(PropertyChangedMessage<GameAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
-        ReBuildBindings();
-    }
-
-    public void Receive(PropertyChangedMessage<DCSData> message)
-    {
-        BindingsData = message.NewValue;
         ReBuildBindings();
     }
 

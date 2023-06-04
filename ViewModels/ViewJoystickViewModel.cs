@@ -22,20 +22,15 @@ public class ViewJoystickButton
 }
 
 public partial class ViewJoystickViewModel : ObservableRecipient,
-                                             IRecipient<PropertyChangedMessage<Game>>,
-                                             IRecipient<PropertyChangedMessage<GameInstance>>,
-                                             IRecipient<PropertyChangedMessage<GameAircraft>>,
-                                             IRecipient<PropertyChangedMessage<DCSData>>
+                                             IRecipient<PropertyChangedMessage<GameAircraft>>
 {
     public ObservableCollection<ViewJoystickButton> ViewButtons { get; set; } = new();
 
     [ObservableProperty]
-    private AttachedJoystick attachedStick;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
     private GameJoystick stick;
 
+    [ObservableProperty]
+    private AttachedJoystick attachedStick;
     private DCSData BindingsData { get; set; }
     private DCSAircraftKey CurrentAircraftKey { get; set; }
 
@@ -44,52 +39,22 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
 
-    public ViewJoystickViewModel(Game game, AttachedJoystick attachedStick, DCSData data, GameAircraft currentAircraft)
+    public ViewJoystickViewModel(GameJoystick stick, DCSData data, GameAircraft currentAircraft)
     {
-        AttachedStick = attachedStick;
-        CurrentScale = Scales[2];
-
+        Stick = stick;
+        AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
-        Stick = (from gameStick in game.Joysticks
-                 where gameStick.AttachedJoystick == AttachedStick
-                 select gameStick).First();
+        CurrentScale = Scales[2];
 
         ReBuildViewButtons();
 
         IsActive = true;
     }
 
-    public void Receive(PropertyChangedMessage<Game> message)
-    {
-        Game game = message.NewValue;
-        if(game != null)
-        {
-            Stick = (from joystick in game.Joysticks
-                     where joystick.AttachedJoystick == AttachedStick
-                     select joystick).First();
-        }
-        CurrentAircraftKey = null;
-        BindingsData = null;
-        ReBuildViewButtons();
-    }
-
-    public void Receive(PropertyChangedMessage<GameInstance> message)
-    {
-        CurrentAircraftKey = null;
-        BindingsData = null;
-        ReBuildViewButtons();
-    }
-
     public void Receive(PropertyChangedMessage<GameAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
-        ReBuildViewButtons();
-    }
-
-    public void Receive(PropertyChangedMessage<DCSData> message)
-    {
-        BindingsData = message.NewValue;
         ReBuildViewButtons();
     }
 

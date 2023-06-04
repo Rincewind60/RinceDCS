@@ -42,23 +42,31 @@
             <AppBarButton Icon="Save" Label="Save As" Command="{x:Bind ViewModel.SaveAsCommand}"/>
             <AppBarSeparator/>
             <AppBarToggleButton 
+                Name="ViewButton"
                 Icon="View" 
                 Label="View" 
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"/>
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"
+                Click="ViewButton_Click"/>
             <AppBarToggleButton 
+                Name="ManageButton"
                 Icon="Manage" 
                 Label="Manage" 
                 IsEnabled="False"
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"/>
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"
+                Click="ManageButton_Click"/>
             <AppBarToggleButton 
+                Name="BindingsButton"
                 Icon="List" 
                 Label="Bindings" 
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"/>
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"
+                Click="BindingsButton_Click"/>
             <AppBarSeparator/>
             <AppBarToggleButton
+                Name="EditButton"
                 Icon="Edit" 
                 Label="Edit" 
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"/>
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"
+                Click="EditButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Label="Help" Click="Help_Click"/>
             <AppBarButton Label="About" Click="About_Click"/>
@@ -122,7 +130,7 @@
                     Margin="18,0,2,0"/>
                 <ComboBox
                     Name="AircraftCombo" 
-                    ItemsSource="{x:Bind ViewModel.CurrentInstanceAircraft, Mode=OneWay}" 
+                    ItemsSource="{x:Bind ViewModel.CurrentInstance.Aircraft, Mode=OneWay}" 
                     SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}" 
                     SelectionChanged="AircraftCombo_SelectionChanged"
                     DisplayMemberPath="Name"
@@ -134,37 +142,11 @@
             </StackPanel>
         </Border>
 
-        <TabView
-            Name="ViewJoystickLayouts"
-            Grid.Row="3"
-            Grid.Column="0"
-            IsAddTabButtonVisible="False"
-            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=View}"
-            Loaded="ViewJoystickLayouts_Loaded">
-        </TabView>
-        <TabView
-            Name="ManageJoystickLayouts"
-            Grid.Row="3"
-            Grid.Column="0"
-            IsAddTabButtonVisible="False"
-            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Manage}"
-            Loaded="ManageJoystickLayouts_Loaded">
-        </TabView>
         <Frame
-            Name="BindingsTableFrame"
+            Name="DetailsViewFrame"
             Grid.Row="3"
             Grid.Column="0"
-            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Bindings}"
-            Loaded="BindingsTable_Loaded">
-        </Frame>
-        <TabView
-            Name="EditJoystickLayouts"
-            Grid.Row="3"
-            Grid.Column="0"
-            IsAddTabButtonVisible="False"
-            Visibility="{x:Bind ViewModel.JoystickMode, Mode=OneWay, Converter={StaticResource ModeVisibilityConverter}, ConverterParameter=Edit}"
-            Loaded="EditJoystickLayouts_Loaded">
-        </TabView>
+            Loaded="DetailsViewFrame_Loaded"/>
 
     </Grid>
  
