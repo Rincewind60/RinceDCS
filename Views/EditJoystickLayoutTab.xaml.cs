@@ -2,9 +2,6 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -13,16 +10,11 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Printing;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
-using RinceDCS.Utilities;
 using RinceDCS.ViewModels;
-using RinceDCS.Views.Messages;
 using RinceDCS.Views.Utilities;
-using SharpDX.DirectInput;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -198,37 +190,23 @@ namespace RinceDCS.Views
 
             return e.GetCurrentPoint(JoystickImage);
         }
-        private void ExportImage_Click(object sender, RoutedEventArgs e)
+
+        private async void ExportImage_Click(object sender, RoutedEventArgs e)
         {
+            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("Image.png", "PNG", ".png");
+            if(string.IsNullOrWhiteSpace(savePath)) { return; }
+
             System.Drawing.Image image = GraphicsUtils.CreateJoystickButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            image.Save("d:\\TestPnPFile.png", ImageFormat.Png);
+            image.Save(savePath, ImageFormat.Png);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            System.Drawing.Printing.PrintDocument printDoc = new();
-            printDoc.PrintPage += PrintJoystick;
-
-            System.Windows.Forms.PrintDialog pdi = new();
-            pdi.Document = pd;
-            if (pdi.ShowDialog() == DialogResult.OK)
+            using (System.Drawing.Printing.PrintDocument printDoc = new())
             {
-                pd.Print();
+                printDoc.PrintPage += PrintJoystick;
+                printDoc.Print();
             }
-            else
-            {
-                MessageBox.Show("Print Cancelled");
-            }
-
-
-
-            System.Windows.controls.printdialog
-            system.windows.forms.printdialog
-
-
-
-
-            printDoc.Print();
         }
 
         private void PrintJoystick(object o, PrintPageEventArgs e)

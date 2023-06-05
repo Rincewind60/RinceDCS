@@ -94,7 +94,8 @@ namespace RinceDCS.Views
 
         private void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+            string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
+            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
 
         private void ManageButton_Click(object sender, RoutedEventArgs e)

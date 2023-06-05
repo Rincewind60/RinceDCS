@@ -1,28 +1,17 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
+using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage.Streams;
-using RinceDCS.Views.Messages;
+using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.Numerics;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -49,13 +38,14 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<GameJoystick, DCSData, GameAircraft>;
+            Tuple<string, GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<string, GameJoystick, DCSData, GameAircraft>;
 
-            GameJoystick stick = data.Item1;
-            DCSData dcsData = data.Item2;
-            GameAircraft currentAircraft = data.Item3;
+            string instanceFolderName = data.Item1;
+            GameJoystick stick = data.Item2;
+            DCSData dcsData = data.Item3;
+            GameAircraft currentAircraft = data.Item4;
 
-            this.DataContext = new ViewJoystickViewModel(stick, dcsData, currentAircraft);
+            this.DataContext = new ViewJoystickViewModel(instanceFolderName, stick, dcsData, currentAircraft);
         }
 
         public ViewJoystickViewModel ViewModel => (ViewJoystickViewModel)DataContext;
@@ -116,9 +106,40 @@ namespace RinceDCS.Views
             JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength(imageActualWidth * newScale.X, GridUnitType.Pixel);
         }
 
-
-        private void Print_Click(object sender, RoutedEventArgs e)
+        private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
         {
+            string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath) + "\\" +
+                                ViewModel.InstanceFolderName + "\\Kneeboard\\" + ViewModel.CurrentAircraftKey.Name + "\\00_" +
+                                ViewModel.CurrentAircraftKey.Name + "__" + ViewModel.AttachedStick.DCSName + ".png";
+            if (string.IsNullOrWhiteSpace(savePath)) { return; }
+
+            System.Drawing.Image image = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            image.Save(savePath, ImageFormat.Png);
+        }
+
+        private async void ExportImage_Click(object sender, RoutedEventArgs e)
+        {
+            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("Image.png", "PNG", ".png");
+            if (string.IsNullOrWhiteSpace(savePath)) { return; }
+
+            System.Drawing.Image image = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            image.Save(savePath, ImageFormat.Png);
+        }
+
+        private void PrintImage_Click(object sender, RoutedEventArgs e)
+        {
+            using (System.Drawing.Printing.PrintDocument printDoc = new())
+            {
+                printDoc.PrintPage += PrintJoystick;
+                printDoc.Print();
+            }
+        }
+
+        private void PrintJoystick(object o, PrintPageEventArgs e)
+        {
+            System.Drawing.Image img = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            System.Drawing.Point loc = new(0, 0);
+            e.Graphics.DrawImage(img, loc);
         }
     }
 }

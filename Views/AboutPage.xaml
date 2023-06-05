@@ -13,7 +13,7 @@
 
     <StackPanel Orientation="Vertical">
         <TextBlock>DCS Tool</TextBlock>
-        <TextBlock>A Tool for creating controller images for kneepads etc.</TextBlock>
+        <TextBlock>A Tool for creating controller images for kneeboards etc.</TextBlock>
         <TextBlock>Version: 0.0.1.0</TextBlock>
     </StackPanel>
 </Page>

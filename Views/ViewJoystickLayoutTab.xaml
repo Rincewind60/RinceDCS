@@ -35,20 +35,19 @@
                 Grid.Row="0"
                 Orientation="Horizontal">
             <Button
-                Name="ExportPDF"
-                Content="Export PDF"
-                IsEnabled="False"
-                Margin="6,0,2,0"/>
-            <Button
-                Name="ExportKneepad"
-                Content="Export Kneepad"
-                IsEnabled="False"
+                Name="ExportKneeboard"
+                Content="Kneeboard"
+                Click="ExportKneeboard_Click"
                 Margin="2,0,2,0"/>
             <Button
-                Name="Print"
+                Name="ExportImage"
+                Content="Export"
+                Click="ExportImage_Click"
+                Margin="6,0,2,0"/>
+            <Button
+                Name="PrintImage"
                 Content="Print"
-                Click="Print_Click"
-                IsEnabled="False"
+                Click="PrintImage_Click"
                 Margin="2,0,2,0"/>
             <Button 
                 Name="Expand" 

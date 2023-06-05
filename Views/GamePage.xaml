@@ -106,8 +106,8 @@
                 IsEnabled="False"
                 Margin="2,0,2,0"/>
             <Button
-                Name="ExportKneepad"
-                Content="Export all Aircraft Kneepads"
+                Name="ExportKneeboard"
+                Content="Export all Aircraft Kneeboards"
                 IsEnabled="False"
                 Margin="2,0,2,0"/>
         </StackPanel>

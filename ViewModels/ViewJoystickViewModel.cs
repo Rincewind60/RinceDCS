@@ -31,21 +31,24 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     [ObservableProperty]
     private AttachedJoystick attachedStick;
-    private DCSData BindingsData { get; set; }
-    private DCSAircraftKey CurrentAircraftKey { get; set; }
+    public DCSData BindingsData { get; set; }
+    public DCSAircraftKey CurrentAircraftKey { get; set; }
 
     [ObservableProperty]
     private string currentScale;
 
     public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
 
-    public ViewJoystickViewModel(GameJoystick stick, DCSData data, GameAircraft currentAircraft)
+    public string InstanceFolderName { get; set; }
+
+    public ViewJoystickViewModel(string instanceFolderName, GameJoystick stick, DCSData data, GameAircraft currentAircraft)
     {
         Stick = stick;
         AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
         CurrentScale = Scales[2];
+        InstanceFolderName = instanceFolderName;
 
         ReBuildViewButtons();
 

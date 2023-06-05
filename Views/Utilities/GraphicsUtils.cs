@@ -1,9 +1,10 @@
 ﻿using RinceDCS.Models;
+using RinceDCS.ViewModels;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 
-namespace RinceDCS.Utilities;
+namespace RinceDCS.Views.Utilities;
 
 public class GraphicsUtils
 {
@@ -27,6 +28,29 @@ public class GraphicsUtils
                         RectangleF rect = new((float)(button.TopX+2), (float)(button.TopY+2), (float)(button.Width-4), (float)(button.Height-4));
                         gfx.DrawString(button.ButtonLabel, font, brush, rect);
                     }
+                }
+            }
+
+            return image;
+        }
+    }
+
+    public static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, ObservableCollection<ViewJoystickButton> viewButtons, string fontName, int fontSiZe)
+    {
+        using (var stream = new MemoryStream(imageBytes))
+        {
+            Image image = Image.FromStream(stream, false, false);
+
+            Font font = new(fontName, fontSiZe, FontStyle.Regular, GraphicsUnit.Pixel);
+            SolidBrush brush = new(Color.Black);
+            Pen pen = new Pen(brush);
+
+            using (Graphics gfx = Graphics.FromImage(image))
+            {
+                foreach (ViewJoystickButton button in viewButtons)
+                {
+                    RectangleF rect = new((float)(button.BoundButton.TopX + 2), (float)(button.BoundButton.TopY + 2), (float)(button.BoundButton.Width - 4), (float)(button.BoundButton.Height - 4));
+                    gfx.DrawString(button.CommandName, font, brush, rect);
                 }
             }
 
