@@ -13,13 +13,19 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Printing;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using RinceDCS.Utilities;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Messages;
 using RinceDCS.Views.Utilities;
+using SharpDX.DirectInput;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.Drawing.Text;
 using System.Numerics;
 
@@ -192,10 +198,44 @@ namespace RinceDCS.Views
 
             return e.GetCurrentPoint(JoystickImage);
         }
-
         private void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            Ioc.Default.GetRequiredService<IFileService>().ExportJoystickButtonNamesToPng(ViewModel.Stick);
+            System.Drawing.Image image = GraphicsUtils.CreateJoystickButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            image.Save("d:\\TestPnPFile.png", ImageFormat.Png);
+        }
+
+        private void PrintImage_Click(object sender, RoutedEventArgs e)
+        {
+            System.Drawing.Printing.PrintDocument printDoc = new();
+            printDoc.PrintPage += PrintJoystick;
+
+            System.Windows.Forms.PrintDialog pdi = new();
+            pdi.Document = pd;
+            if (pdi.ShowDialog() == DialogResult.OK)
+            {
+                pd.Print();
+            }
+            else
+            {
+                MessageBox.Show("Print Cancelled");
+            }
+
+
+
+            System.Windows.controls.printdialog
+            system.windows.forms.printdialog
+
+
+
+
+            printDoc.Print();
+        }
+
+        private void PrintJoystick(object o, PrintPageEventArgs e)
+        {
+            System.Drawing.Image img = GraphicsUtils.CreateJoystickButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            System.Drawing.Point loc = new(0, 0);
+            e.Graphics.DrawImage(img, loc);
         }
     }
 

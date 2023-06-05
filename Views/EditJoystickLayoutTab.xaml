@@ -74,6 +74,11 @@
                 Content="Export Image"
                 Click="ExportImage_Click"
                 Margin="2,0,2,0"/>
+            <Button
+                Name="PrintImage"
+                Content="Print Image"
+                Click="PrintImage_Click"
+                Margin="2,0,2,0"/>
             <Button 
                 Name="Expand" 
                 Click="Expand_Click" 

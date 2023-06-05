@@ -16,6 +16,4 @@ public interface IFileService
     public Image OpenImageFile(string path);
     
     public byte[] ReadImageFile(string path);
-
-    public void ExportJoystickButtonNamesToPng(GameJoystick joystick);
 }

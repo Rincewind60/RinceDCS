@@ -1,13 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using RinceDCS.Utilities;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace RinceDCS.Services;
 
@@ -93,31 +92,6 @@ public class FileService : IFileService
                 WriteIndented = true
             };
             await JsonSerializer.SerializeAsync(stream, game, options);
-        }
-    }
-
-    public void ExportJoystickButtonNamesToPng(GameJoystick joystick)
-    {
-        using (var stream = new MemoryStream(joystick.Image))
-        {
-            Image image = Image.FromStream(stream, false, false);
-
-            Font font = new(joystick.Font, joystick.FontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            SolidBrush brush = new(Color.Black);
-
-            using(Graphics gfx = Graphics.FromImage(image))
-            {
-                foreach(GameJoystickButton button in joystick.Buttons)
-                {
-                    if(button.OnLayout)
-                    {
-                        RectangleF rect = new((float)button.TopX, (float)button.TopY, (float)button.Width, (float)button.Height);
-                        gfx.DrawString(button.ButtonLabel, font, brush, rect);
-                    }
-                }
-            }
-
-            image.Save("d:\\TestPnPFile.png",ImageFormat.Png);
         }
     }
 }
