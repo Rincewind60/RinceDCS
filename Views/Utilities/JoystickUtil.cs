@@ -2,11 +2,8 @@
 using Microsoft.UI.Xaml.Media.Imaging;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
-using RinceDCS.ViewModels;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -45,17 +42,25 @@ public class JoystickUtil
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static void PrintButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
+    public static async void PrintButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
     {
         using (PrintDocument printDoc = new())
         {
-            printDoc.PrintPage += (sender, args) =>
+            PrintPage pp = new(printDoc);
+            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Print Joystick", pp, "Print", null, null, "Cancel");
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
-                Image img = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
-                Point loc = new(0, 0);
-                args.Graphics.DrawImage(img, loc);
-            };
-            printDoc.Print();
+                printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
+                printDoc.PrintPage += (sender, args) =>
+                {
+                    Image img = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
+                    PaperSize size = printDoc.DefaultPageSettings.PaperSize;
+                    Rectangle rect = new(20, 20, size.Width - 40, size.Height - 40);
+                    args.Graphics.DrawImage(img, rect);
+                };
+                printDoc.Print();
+            }
         }
     }
 
@@ -76,18 +81,25 @@ public class JoystickUtil
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static void PrintAssigedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize)
+    public static async void PrintAssigedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize)
     {
         using (PrintDocument printDoc = new())
         {
-            printDoc.PrintPage += (sender, args) =>
-            {
-                Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
-                Point loc = new(0, 0);
-                args.Graphics.DrawImage(img, loc);
+            PrintPage pp = new(printDoc);
+            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Print Assigned Buttons", pp, "Print", null, null, "Cancel");
 
-            };
-            printDoc.Print();
+            if(result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
+                printDoc.PrintPage += (sender, args) =>
+                {
+                    Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
+                    PaperSize size = printDoc.DefaultPageSettings.PaperSize;
+                    Rectangle rect = new(20, 20, size.Width-40, size.Height-40);
+                    args.Graphics.DrawImage(img, rect);
+                };
+                printDoc.Print();
+            }
         }
     }
 
