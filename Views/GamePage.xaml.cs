@@ -25,6 +25,8 @@ using System.Threading.Tasks;
 using RinceDCS.Views.Utilities;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging;
+using RinceDCS.ViewModels.Helper;
+using RinceDCS.ViewModels.Messages;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,6 +43,16 @@ namespace RinceDCS.Views
             this.InitializeComponent();
 
             this.DataContext = new GameViewModel();
+
+            WeakReferenceMessenger.Default.Register<ExportAssignedButtonsImageMessage>(this, (r, m) =>
+            {
+                JoystickUtil.ExportAssignedButtonsImage(m.Stick.Image, m.AssignedButtons, m.Stick.Font, m.Stick.FontSize, m.SaveFilePath);
+            });
+
+            WeakReferenceMessenger.Default.Register<ExportKneeboardMessage>(this, (r, m) =>
+            {
+                JoystickUtil.ExportKneeboard(m.Stick.Image, m.AssignedButtons, m.AircraftName, m.Stick.AttachedJoystick.DCSName, ViewModel.CurrentInstance.SavedGameFolderPath, m.Stick.Font, m.Stick.FontSize);
+            });
         }
 
         public GameViewModel ViewModel => (GameViewModel)DataContext;
@@ -87,25 +99,23 @@ namespace RinceDCS.Views
             helpWindow.Activate();
         }
 
-        private void DetailsViewFrame_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void ViewButton_Click(object sender, RoutedEventArgs e)
         {
             string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
-            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage), Tuple.Create(instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
+                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
 
         private void ManageButton_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage), Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+            DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage), 
+                Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
 
         private void BindingsButton_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(BindingsTablePage), Tuple.Create(ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+            DetailsViewFrame.Navigate(typeof(BindingsTablePage), 
+                Tuple.Create(ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)

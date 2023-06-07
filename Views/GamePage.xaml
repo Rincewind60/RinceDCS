@@ -101,14 +101,14 @@
                 <SymbolIcon Symbol="Edit"/>
             </Button>
             <Button
-                Name="ExportPDFs"
-                Content="Export all Aircraft PDFs"
-                IsEnabled="False"
+                Name="ExportKneeboards"
+                Content="All Kneeboards"
+                Command="{x:Bind ViewModel.ExportKneeboardsCommand}"
                 Margin="2,0,2,0"/>
             <Button
-                Name="ExportKneeboard"
-                Content="Export all Aircraft Kneeboards"
-                IsEnabled="False"
+                Name="ExportImages"
+                Content="Export All"
+                Command="{x:Bind ViewModel.ExportImagesCommand}"
                 Margin="2,0,2,0"/>
         </StackPanel>
 
@@ -145,9 +145,7 @@
         <Frame
             Name="DetailsViewFrame"
             Grid.Row="3"
-            Grid.Column="0"
-            Loaded="DetailsViewFrame_Loaded"/>
-
+            Grid.Column="0"/>
     </Grid>
  
 </Page>

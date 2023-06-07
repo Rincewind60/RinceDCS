@@ -4,8 +4,10 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using RinceDCS.ViewModels.Helper;
 using RinceDCS.ViewModels.Messages;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -117,6 +119,38 @@ public partial class GameViewModel : ObservableRecipient
     private void Exit()
     {
 
+    }
+
+    [RelayCommand]
+    private async void ExportImages()
+    {
+        string exportFolder = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFolder();
+        JoystickVMHelper helper = new(CurrentInstanceBindingsData);
+        foreach(GameJoystick stick in CurrentGame.Joysticks)
+        {
+            Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
+            foreach(GameAircraft aircraft in CurrentInstance.Aircraft)
+            {
+                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(buttonsOnLayout, CurrentInstance.Name, aircraft.Name, stick.AttachedJoystick);
+                string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
+                WeakReferenceMessenger.Default.Send(new ExportAssignedButtonsImageMessage(stick, assignedButtons, saveFilePath));
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void ExportKneeboards()
+    {
+        JoystickVMHelper helper = new(CurrentInstanceBindingsData);
+        foreach (GameJoystick stick in CurrentGame.Joysticks)
+        {
+            Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
+            foreach (GameAircraft aircraft in CurrentInstance.Aircraft)
+            {
+                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(buttonsOnLayout, CurrentInstance.Name, aircraft.Name, stick.AttachedJoystick);
+                WeakReferenceMessenger.Default.Send(new ExportKneeboardMessage(stick, assignedButtons, aircraft.Name));
+            }
+        }
     }
 
     public void CurrentInstanceChanged()

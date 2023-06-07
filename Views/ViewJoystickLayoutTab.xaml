@@ -6,6 +6,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RinceDCS.Views"
+    xmlns:models="using:RinceDCS.Models"
     xmlns:vm="using:RinceDCS.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -93,14 +94,14 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Name="ButtonsItemsControl"
-                    ItemsSource="{x:Bind ViewModel.ViewButtons}">
+                    ItemsSource="{x:Bind ViewModel.AssignedButtons}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:ViewJoystickButton">
+                        <DataTemplate x:DataType="models:GameAssignedButton">
                             <TextBlock
                                 Text="{x:Bind CommandName}"
                                 Style="{StaticResource ButtonFont}"

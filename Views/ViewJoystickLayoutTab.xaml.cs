@@ -10,9 +10,12 @@ using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Numerics;
+using Windows.Networking;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -38,21 +41,22 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<string, GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<string, GameJoystick, DCSData, GameAircraft>;
+            Tuple<string, string, GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<string, string, GameJoystick, DCSData, GameAircraft>;
 
-            string instanceFolderName = data.Item1;
-            GameJoystick stick = data.Item2;
-            DCSData dcsData = data.Item3;
-            GameAircraft currentAircraft = data.Item4;
+            string instanceName = data.Item1;
+            string savedGamesFolder = data.Item2;
+            GameJoystick stick = data.Item3;
+            DCSData dcsData = data.Item4;
+            GameAircraft currentAircraft = data.Item5;
 
-            this.DataContext = new ViewJoystickViewModel(instanceFolderName, stick, dcsData, currentAircraft);
+            this.DataContext = new ViewJoystickViewModel(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
         }
 
         public ViewJoystickViewModel ViewModel => (ViewJoystickViewModel)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
-            await ImageSourceUtil.SetSourceFromGameJoystick(JoystickImage, ViewModel.Stick);
+            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
         }
 
         private void Expand_Click(object sender, RoutedEventArgs e)
@@ -108,38 +112,19 @@ namespace RinceDCS.Views
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
         {
-            string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath) + "\\" +
-                                ViewModel.InstanceFolderName + "\\Kneeboard\\" + ViewModel.CurrentAircraftKey.Name + "\\00_" +
-                                ViewModel.CurrentAircraftKey.Name + "__" + ViewModel.AttachedStick.DCSName + ".png";
-            if (string.IsNullOrWhiteSpace(savePath)) { return; }
-
-            System.Drawing.Image image = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            image.Save(savePath, ImageFormat.Png);
+            JoystickUtil.ExportKneeboard(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.CurrentAircraftKey.Name, ViewModel.AttachedStick.DCSName, ViewModel.SavedGamesFolder, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
 
         private async void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("Image.png", "PNG", ".png");
-            if (string.IsNullOrWhiteSpace(savePath)) { return; }
+            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("JoystickLabels.png", "PNG", ".png");
 
-            System.Drawing.Image image = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            image.Save(savePath, ImageFormat.Png);
+            JoystickUtil.ExportAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize, savePath);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            using (System.Drawing.Printing.PrintDocument printDoc = new())
-            {
-                printDoc.PrintPage += PrintJoystick;
-                printDoc.Print();
-            }
-        }
-
-        private void PrintJoystick(object o, PrintPageEventArgs e)
-        {
-            System.Drawing.Image img = GraphicsUtils.CreateJoystickAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.ViewButtons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            System.Drawing.Point loc = new(0, 0);
-            e.Graphics.DrawImage(img, loc);
+            JoystickUtil.PrintAssigedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
     }
 }

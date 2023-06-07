@@ -16,9 +16,11 @@ using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.Drawing.Text;
+using System.Linq;
 using System.Numerics;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -78,7 +80,7 @@ namespace RinceDCS.Views
 
         private async void SetJoystickImageSource()
         {
-            await ImageSourceUtil.SetSourceFromGameJoystick(JoystickImage, ViewModel.Stick);
+            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
         }
 
         private void Expand_Click(object sender, RoutedEventArgs e)
@@ -191,31 +193,16 @@ namespace RinceDCS.Views
             return e.GetCurrentPoint(JoystickImage);
         }
 
-        private async void ExportImage_Click(object sender, RoutedEventArgs e)
+        private void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("Image.png", "PNG", ".png");
-            if(string.IsNullOrWhiteSpace(savePath)) { return; }
-
-            System.Drawing.Image image = GraphicsUtils.CreateJoystickButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            image.Save(savePath, ImageFormat.Png);
+            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            using (System.Drawing.Printing.PrintDocument printDoc = new())
-            {
-                printDoc.PrintPage += PrintJoystick;
-                printDoc.Print();
-            }
+            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
-
-        private void PrintJoystick(object o, PrintPageEventArgs e)
-        {
-            System.Drawing.Image img = GraphicsUtils.CreateJoystickButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-            System.Drawing.Point loc = new(0, 0);
-            e.Graphics.DrawImage(img, loc);
-        }
-    }
+     }
 
     public class ButtonOnLayoutConverter : IValueConverter
     {

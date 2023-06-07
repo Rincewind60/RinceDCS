@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace RinceDCS.Models;
@@ -60,3 +62,12 @@ public partial class GameJoystickButton : ObservableObject
     private bool onLayout;
 }
 
+public record GameAssignedButtonKey(string buttonName, bool isModifier);
+
+public class GameAssignedButton
+{
+    public string CommandName { get; set; }
+    public string CategoryName { get; set; }
+
+    public GameJoystickButton BoundButton { get; set; }
+}
