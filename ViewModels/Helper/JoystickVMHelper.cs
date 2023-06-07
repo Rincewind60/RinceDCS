@@ -40,7 +40,9 @@ public class JoystickVMHelper
         DCSAircraftKey aircraftKey = new(aircraftName);
         DCSAircraft dcsAircraft = Data.Aircraft[aircraftKey];
 
-        BuildAppButtons(assignedButtons, buttonsOnLayout, instanceName, aircraftName, stick.Name);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Game", instanceName);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Plane", aircraftName);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Joystick", stick.Name);
 
         foreach (DCSBinding binding in dcsAircraft.Bindings.Values)
         {
@@ -64,37 +66,16 @@ public class JoystickVMHelper
     private void BuildAppButtons(
         List<GameAssignedButton> assignedButtons,
         Dictionary< GameAssignedButtonKey, GameJoystickButton > buttonsOnLayout,
-        string instanceName, 
-        string aircraftName,
-        string stickName
+        string buttonName, 
+        string commandName
         )
     {
-        GameAssignedButtonKey key = new("Game", false);
+        GameAssignedButtonKey key = new("buttonName", false);
         if (buttonsOnLayout.ContainsKey(key))
         {
             GameAssignedButton button = new()
             {
-                CommandName = instanceName,
-                BoundButton = buttonsOnLayout[key]
-            };
-            assignedButtons.Add(button);
-        }
-        key = new("Plane", false);
-        if (buttonsOnLayout.ContainsKey(key))
-        {
-            GameAssignedButton button = new()
-            {
-                CommandName = aircraftName,
-                BoundButton = buttonsOnLayout[key]
-            };
-            assignedButtons.Add(button);
-        }
-        key = new("Joystick", false);
-        if (buttonsOnLayout.ContainsKey(key))
-        {
-            GameAssignedButton button = new()
-            {
-                CommandName = stickName,
+                CommandName = commandName,
                 BoundButton = buttonsOnLayout[key]
             };
             assignedButtons.Add(button);

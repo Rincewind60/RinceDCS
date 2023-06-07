@@ -60,7 +60,7 @@
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
-            CanUserSortColumns="False"
+            CanUserSortColumns="True"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             ColumnHeaderHeight="32"
@@ -71,9 +71,10 @@
             IsReadOnly="True"
             SelectionMode="Single"
             RowGroupHeaderPropertyNameAlternative="Range"
-            ItemsSource="{x:Bind ViewModel.FilteredBindings}">
+            ItemsSource="{x:Bind ViewModel.FilteredBindings, Mode=OneWay}"
+            Sorting="dataGrid_Sorting">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Command" Binding="{Binding CommandName}" Tag="Command" />
+                <controls:DataGridTextColumn Header="Command" Binding="{Binding CommandName}" Tag="CommandName" />
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading0, Mode=OneWay}" Binding="{Binding JoystickButton0}" Tag="JoystickButton0" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading0), Mode=OneWay}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading1, Mode=OneWay}" Binding="{Binding JoystickButton1}" Tag="JoystickButton1" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading1), Mode=OneWay}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.JoystickHeading2, Mode=OneWay}" Binding="{Binding JoystickButton2}" Tag="JoystickButton2" Visibility="{x:Bind local:BindingsTablePage.IsJoystickColumnVisible(ViewModel.JoystickHeading2), Mode=OneWay}"/>

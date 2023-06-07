@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.WinUI.UI;
 using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,8 @@ public partial class CommandCategory : ObservableObject, IComparable<CommandCate
 public partial class BindingsTableViewModel : ObservableRecipient,
                                               IRecipient<PropertyChangedMessage<GameAircraft>>
 {
-    public ObservableCollection<AircraftBinding> FilteredBindings { get; set; }
+    [ObservableProperty]
+    public ObservableCollection<AircraftBinding> filteredBindings;
     public ObservableCollection<CommandCategory> Categories { get; set; }
 
     [ObservableProperty]
@@ -73,12 +75,16 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
     private List<AircraftBinding> BindingsList { get; set; }
 
+    string SortColumn { get; set; }
+    bool IsSortedAscending { get; set; }
+
     public BindingsTableViewModel(DCSData data, GameAircraft currentAircraft)
     {
         FilteredBindings = new();
         Categories = new();
         BindingsList = new();
         ShowCommandsWithButtons = false;
+        SortColumn = null;
 
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
@@ -96,23 +102,30 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
     public void CurrentCategoryChanged()
     {
-        FilterBindings();
+        FilterSortBindings();
     }
 
     [RelayCommand]
     private void CommandsWithButtonsChanged()
     {
-        FilterBindings();
+        FilterSortBindings();
     }
 
-    private void FilterBindings()
+    public void UpdateSortColumn(string column, bool isAscending)
+    {
+        SortColumn = column;
+        IsSortedAscending = isAscending;
+        FilterSortBindings();
+    }
+
+    private void FilterSortBindings()
     {
         if (CurrentCategory == null)
         {
             return;
         }
 
-        FilteredBindings.Clear();
+        List<AircraftBinding> newBindings = new();
         foreach (AircraftBinding binding in BindingsList)
         {
             if (CurrentCategory.CategoryName == "All" || binding.CategoryName == CurrentCategory.CategoryName)
@@ -128,15 +141,32 @@ public partial class BindingsTableViewModel : ObservableRecipient,
                        !string.IsNullOrWhiteSpace(binding.JoystickButton6) ||
                        !string.IsNullOrWhiteSpace(binding.JoystickButton7))
                     {
-                        FilteredBindings.Add(binding);
+                        newBindings.Add(binding);
                     }
                 }
                 else
                 {
-                    FilteredBindings.Add(binding);
+                    newBindings.Add(binding);
                 }
             }
         }
+
+        if(string.IsNullOrWhiteSpace(SortColumn))
+        {
+            FilteredBindings = new(newBindings);
+        }
+        else
+        {
+            if(IsSortedAscending)
+            {
+                FilteredBindings = new(newBindings.OrderBy(bind => typeof(AircraftBinding).GetProperty(SortColumn).GetValue(bind)));
+            }
+            else
+            {
+                FilteredBindings = new(newBindings.OrderByDescending(bind => typeof(AircraftBinding).GetProperty(SortColumn).GetValue(bind)));
+            }
+        }
+
     }
 
     private void ReBuildBindings()
@@ -159,11 +189,6 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
             BindingsList.Sort();
 
-            foreach (AircraftBinding binding in BindingsList)
-            {
-                FilteredBindings.Add(binding);
-            }
-
             newCategories.Sort();
             Categories.Add(new CommandCategory() { CategoryName = "All" });
             foreach (CommandCategory category in newCategories)
@@ -171,6 +196,8 @@ public partial class BindingsTableViewModel : ObservableRecipient,
                 Categories.Add(category);
             }
             CurrentCategory = Categories[0];
+
+            FilterSortBindings();
         }
     }
 

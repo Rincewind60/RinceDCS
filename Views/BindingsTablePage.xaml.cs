@@ -17,6 +17,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using CommunityToolkit.WinUI.UI.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -51,6 +52,29 @@ namespace RinceDCS.Views
         private void CategoriesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void dataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
+        {
+            string sortColumn = e.Column.Tag.ToString();
+            if(e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            {
+                ViewModel.UpdateSortColumn(sortColumn, true);
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+            }
+            else
+            {
+                ViewModel.UpdateSortColumn(sortColumn, false);
+                e.Column.SortDirection= DataGridSortDirection.Descending;
+            }
+
+            foreach(var col in dataGrid.Columns)
+            {
+                if(col.Tag.ToString() != sortColumn)
+                {
+                    col.SortDirection = null;
+                }
+            }
         }
     }
 }
