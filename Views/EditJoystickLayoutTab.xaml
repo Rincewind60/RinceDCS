@@ -150,7 +150,6 @@
                     Grid.Column="0"
                     Name="JoystickImage"
                     Loaded="JoystickImage_Loaded"
-                    ImageOpened="JoystickImage_ImageOpened" Stretch="None"
                     PointerPressed="JoystickImage_PointerPressed"
                     PointerMoved="JoystickImage_PointerMoved"
                     PointerReleased="JoystickImage_PointerReleased"/>

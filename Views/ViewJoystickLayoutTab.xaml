@@ -88,7 +88,6 @@
                     Grid.Column="0"
                     Name="JoystickImage"
                     Loaded="JoystickImage_Loaded"
-                    ImageOpened="JoystickImage_ImageOpened" 
                     Stretch="None"/>
                 <ItemsControl
                     Grid.Row="0"

@@ -27,10 +27,7 @@ namespace RinceDCS.Views
     /// </summary>
     public sealed partial class ViewJoystickLayoutTab : Page
     {
-        private Vector3[] ScaleValues = { new Vector3(4.0F), new Vector3(2.0F), new Vector3(1.0F), new Vector3(0.75F), new Vector3(0.50F), new Vector3(0.25F) };
-
-        private double imageActualHeight = 0;
-        private double imageActualWidth = 0;
+        private float[] ZoomFactors = { 4F, 2F, 1F, 0.75F, 0.5F, 0.25F };
 
         public ViewJoystickLayoutTab()
         {
@@ -66,20 +63,7 @@ namespace RinceDCS.Views
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Vector3 newScale = ScaleValues[CurrentScaleIndex()];
-            if (imageActualWidth > 0)
-            {
-                JoystickScaleGrid.RowDefinitions[0].Height = new GridLength(imageActualHeight * newScale.X, GridUnitType.Pixel);
-                JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength(imageActualWidth * newScale.X, GridUnitType.Pixel);
-            }
-            else
-            {
-                //  Set to a default
-                JoystickScaleGrid.RowDefinitions[0].Height = new GridLength();
-                JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength();
-            }
-            JoystickImage.Scale = newScale;
-            //            JoystickCanvas.Scale = newScale;
+            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[CurrentScaleIndex()]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
@@ -98,16 +82,6 @@ namespace RinceDCS.Views
             }
 
             return 2;   //  Default to 100%
-        }
-
-        private void JoystickImage_ImageOpened(object sender, RoutedEventArgs e)
-        {
-            imageActualHeight = ((Image)sender).ActualHeight;
-            imageActualWidth = ((Image)sender).ActualWidth;
-
-            Vector3 newScale = ScaleValues[CurrentScaleIndex()];
-            JoystickScaleGrid.RowDefinitions[0].Height = new GridLength(imageActualHeight * newScale.X, GridUnitType.Pixel);
-            JoystickScaleGrid.ColumnDefinitions[0].Width = new GridLength(imageActualWidth * newScale.X, GridUnitType.Pixel);
         }
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
