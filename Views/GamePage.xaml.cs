@@ -27,6 +27,7 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.ViewModels.Helper;
 using RinceDCS.ViewModels.Messages;
+using Windows.ApplicationModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -93,6 +94,7 @@ namespace RinceDCS.Views
         private void Help_Click(object sender, RoutedEventArgs e)
         {
             var helpWindow = WindowHelper.CreateWindow();
+            helpWindow.Title = AppInfo.Current.DisplayInfo.DisplayName + " - Help";
             HelpPage helpPage = new();
             helpPage.RequestedTheme = this.ActualTheme;
             helpWindow.Content = helpPage;

@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
@@ -43,6 +44,12 @@ namespace RinceDCS.Views
         private void MarkdownText_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             ViewModel.LinkToPage(e.Link);
+        }
+
+        private void MarkdownTextBlock_ImageResolving(object sender, ImageResolvingEventArgs e)
+        {
+            e.Image = new BitmapImage(new Uri(ViewModel.GetAbsolutePath(e.Url)));
+            e.Handled = true;
         }
     }
 }

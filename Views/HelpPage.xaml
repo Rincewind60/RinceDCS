@@ -16,6 +16,7 @@
         <controls:MarkdownTextBlock
             Text="{x:Bind ViewModel.MarkDownText, Mode=OneWay}"
             LinkClicked="MarkdownText_LinkClicked"
+            ImageResolving="MarkdownTextBlock_ImageResolving"
             Margin="6">
         </controls:MarkdownTextBlock>
     </Grid>

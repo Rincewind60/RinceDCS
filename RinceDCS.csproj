@@ -16,6 +16,8 @@
     <None Remove="Help\EditJoysticks.md" />
     <None Remove="Help\GameFiles.md" />
     <None Remove="Help\GettingStarted.md" />
+    <None Remove="Help\InstancesDialog.md" />
+    <None Remove="Help\InstancesDialog.png" />
     <None Remove="Help\Introduction.md" />
     <None Remove="Help\MainPage.md" />
     <None Remove="Help\ManageJoysticks.md" />
@@ -47,6 +49,8 @@
     <Content Include="Help\EditJoysticks.md" />
     <Content Include="Help\GameFiles.md" />
     <Content Include="Help\GettingStarted.md" />
+    <Content Include="Help\InstancesDialog.md" />
+    <Content Include="Help\InstancesDialog.png" />
     <Content Include="Help\Introduction.md" />
     <Content Include="Help\MainPage.md" />
     <Content Include="Help\ManageJoysticks.md" />

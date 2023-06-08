@@ -67,6 +67,7 @@ public partial class GameInstancesViewModel : ObservableObject
     public void AddInstance()
     {
         Instances.Add(new InstanceData() { Name = "", GameExePath = "", SavedGameFolderPath = "", IsHeading = false });
+        ValidateInstances();
     }
 
     public void Save()
