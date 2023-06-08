@@ -58,30 +58,17 @@ namespace RinceDCS.Views
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = ViewModel.Scales[Math.Max(CurrentScaleIndex() - 1, 0)];
+            ViewModel.CurrentScale = Math.Max(ViewModel.CurrentScale - 1, 0);
         }
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[CurrentScaleIndex()]);
+            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.CurrentScale]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = ViewModel.Scales[Math.Min(CurrentScaleIndex() + 1, ViewModel.Scales.Length - 1)];
-        }
-
-        private int CurrentScaleIndex()
-        {
-            for (var i = 0; i < ViewModel.Scales.Length; i++)
-            {
-                if (ViewModel.Scales[i] == ViewModel.CurrentScale)
-                {
-                    return i;
-                }
-            }
-
-            return 2;   //  Default to 100%
+            ViewModel.CurrentScale = Math.Min(ViewModel.CurrentScale + 1, ViewModel.Scales.Length - 1);
         }
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)

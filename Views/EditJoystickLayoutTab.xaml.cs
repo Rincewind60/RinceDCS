@@ -81,41 +81,26 @@ namespace RinceDCS.Views
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = ViewModel.Scales[Math.Max(CurrentScaleIndex() - 1, 0)];
+            ViewModel.CurrentScale = Math.Max(ViewModel.CurrentScale - 1, 0);
         }
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[CurrentScaleIndex()]);
+            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.CurrentScale]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = ViewModel.Scales[Math.Min(CurrentScaleIndex() + 1, ViewModel.Scales.Count - 1)];
-        }
-
-        private int CurrentScaleIndex()
-        {
-            for (var i = 0; i < ViewModel.Scales.Count; i++)
-            {
-                if (ViewModel.Scales[i] == ViewModel.CurrentScale)
-                {
-                    return i;
-                }
-            }
-
-            return 2;   //  Default to 100%
+            ViewModel.CurrentScale = Math.Min(ViewModel.CurrentScale + 1, ViewModel.Scales.Count - 1);
         }
 
         private void JoystickImage_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if(ViewModel.CurrentButton == null) { isDrawing = false; return; }
+            if (ViewModel.CurrentButton == null) { isDrawing = false; return; }
 
             PointerPoint point = GetImageMousePoint(sender, e);
 
-            ViewModel.CurrentButton.TopX = point.Position.X;
-            ViewModel.CurrentButton.TopY = point.Position.Y;
-            ViewModel.CurrentButton.OnLayout = true;
+            ViewModel.PlaceButtonOnJoystick(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
 
             isDrawing = true;
 
@@ -128,9 +113,9 @@ namespace RinceDCS.Views
 
             PointerPoint point = GetImageMousePoint(sender, e);
 
-            if(!point.IsInContact) { isDrawing = false;  return; }
+            if (!point.IsInContact) { isDrawing = false; return; }
 
-            SetButtonDimensions(ViewModel.CurrentButton, point.Position.X, point.Position.Y);
+            ViewModel.UpdateButtonDimensions(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
 
             e.Handled = true;
         }
@@ -141,17 +126,11 @@ namespace RinceDCS.Views
 
             PointerPoint point = GetImageMousePoint(sender, e);
 
-            SetButtonDimensions(ViewModel.CurrentButton, point.Position.X, point.Position.Y);
-            
+            ViewModel.UpdateButtonDimensions(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
+
             ViewModel.CurrentButton = null;
             isDrawing = false;
             e.Handled = true;
-        }
-
-        private void SetButtonDimensions(GameJoystickButton button, double newX, double newY)
-        {
-            button.Width = Math.Max(0, (int)(newX - button.TopX));
-            button.Height = Math.Max(0, (int)(newY - button.TopY));
         }
 
         private PointerPoint GetImageMousePoint(object sender, PointerRoutedEventArgs e)
@@ -175,7 +154,31 @@ namespace RinceDCS.Views
         {
             JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
-     }
+
+        private void Border_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            GameJoystickButton button = ((Border)sender).DataContext as GameJoystickButton;
+            switch (e.Key)
+            {
+                case Windows.System.VirtualKey.Up:
+                    button.TopY = Math.Max(button.TopY - 1, 0);
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Right:
+                    button.TopX = button.TopX + 1;
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Down:
+                    button.TopY = button.TopY + 1;
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Left:
+                    button.TopX = Math.Max(button.TopX - 1, 0);
+                    e.Handled = true;
+                    break;
+            }
+        }
+    }
 
     public class ButtonOnLayoutConverter : IValueConverter
     {

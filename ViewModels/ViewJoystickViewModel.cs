@@ -25,7 +25,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     public DCSAircraftKey CurrentAircraftKey { get; set; }
 
     [ObservableProperty]
-    private string currentScale;
+    private int currentScale;
 
     public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
 
@@ -39,7 +39,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
         AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
-        CurrentScale = Scales[2];
+        CurrentScale = 2;
         InstanceName = instanceName;
         SavedGamesFolder = savedGamesFolder;
 

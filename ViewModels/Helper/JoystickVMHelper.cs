@@ -70,7 +70,7 @@ public class JoystickVMHelper
         string commandName
         )
     {
-        GameAssignedButtonKey key = new("buttonName", false);
+        GameAssignedButtonKey key = new(buttonName, false);
         if (buttonsOnLayout.ContainsKey(key))
         {
             GameAssignedButton button = new()
