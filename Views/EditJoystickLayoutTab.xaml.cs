@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.WinUI.Helpers;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -22,6 +23,7 @@ using System.Drawing.Printing;
 using System.Drawing.Text;
 using System.Linq;
 using System.Numerics;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -55,6 +57,8 @@ namespace RinceDCS.Views
             }
 
             this.DataContext = new EditJoystickViewModel(joystick, fontNames);
+
+            ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.FontColor));
         }
 
         public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
@@ -176,6 +180,40 @@ namespace RinceDCS.Views
                     button.TopX = Math.Max(button.TopX - 1, 0);
                     e.Handled = true;
                     break;
+            }
+        }
+
+        private void JoysticButton_GotFocus(object sender, RoutedEventArgs e)
+        {
+            GameJoystickButton button = ((TextBox)sender).DataContext as GameJoystickButton;
+            ViewModel.CurrentButton = button;
+        }
+
+        private void ApplyColor_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Stick.FontColor = ColorPicker.Color.ToHex();
+            ColorButton.Background = new SolidColorBrush(ColorPicker.Color);
+            ColorPickerFlyout.Hide();
+        }
+
+        private void CancelColor_Click(object sender, RoutedEventArgs e)
+        {
+            ColorPickerFlyout.Hide();
+        }
+
+        private void ColorPickerFlyout_Opening(object sender, object e)
+        {
+            //ColorPicker.Color = CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(ViewModel.Stick.FontColor);
+        }
+
+        private async void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
+            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Joystick Settings", page,"Save",null,null,"Cancel");
+            if(result == ContentDialogResult.Primary)
+            {
+                ViewModel.Stick.DefaultLabelHeight = page.ViewModel.DefaultHeight;
+                ViewModel.Stick.DefaultLabelWidth = page.ViewModel.DefaultWidth;
             }
         }
     }

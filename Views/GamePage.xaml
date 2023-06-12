@@ -52,6 +52,7 @@
                 Icon="Manage" 
                 Label="Manage" 
                 IsEnabled="False"
+                Visibility="Collapsed"
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"
                 Click="ManageButton_Click"/>
             <AppBarToggleButton 
@@ -64,7 +65,7 @@
             <AppBarToggleButton
                 Name="EditButton"
                 Icon="Edit" 
-                Label="Edit" 
+                Label="Sticks" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"
                 Click="EditButton_Click"/>
             <AppBarSeparator/>

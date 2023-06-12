@@ -26,12 +26,24 @@ public partial class GameJoystick : ObservableObject
     [ObservableProperty]
     private int fontSize;
 
+    [ObservableProperty]
+    private string fontColor;
+
+    [ObservableProperty]
+    private int defaultLabelHeight;
+
+    [ObservableProperty]
+    private int defaultLabelWidth;
+
     public byte[] Image {  get; set; }
 
     public GameJoystick()
     {
         Font = "Arial";
-        FontSize = 11;
+        FontSize = 14;
+        FontColor = "#000000";
+        DefaultLabelHeight = 40;
+        DefaultLabelWidth = 120;
     }
 }
 
@@ -47,10 +59,10 @@ public partial class GameJoystickButton : ObservableObject
     public string ButtonLabel {  get {  return IsModifier ? "MOD+" + ButtonName : ButtonName; } }
 
     [ObservableProperty]
-    private double topX;
+    private int topX;
 
     [ObservableProperty]
-    private double topY;
+    private int topY;
 
     [ObservableProperty]
     private int width;

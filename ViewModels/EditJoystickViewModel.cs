@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Media;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,9 +16,6 @@ namespace RinceDCS.ViewModels;
 
 public partial class EditJoystickViewModel : ObservableObject
 {
-    public static int DefaultButtonHeight = 24;
-    public static int DefaultButtonWidth = 48;
-
     [ObservableProperty]
     private GameJoystick stick;
 
@@ -53,8 +51,8 @@ public partial class EditJoystickViewModel : ObservableObject
     {
         button.TopX = x;
         button.TopY = y;
-        button.Width = DefaultButtonWidth;
-        button.Height = DefaultButtonHeight;
+        button.Width = Stick.DefaultLabelWidth;
+        button.Height = Stick.DefaultLabelHeight;
         button.OnLayout = true;
     }
 
@@ -63,5 +61,4 @@ public partial class EditJoystickViewModel : ObservableObject
         button.Width = Math.Max(0, (int)(newRight - button.TopX));
         button.Height = Math.Max(0, (int)(newBottom - button.TopY));
     }
-
 }

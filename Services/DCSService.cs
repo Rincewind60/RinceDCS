@@ -117,7 +117,7 @@ public class DCSService : IDCSService
         {
             HtmlNode row = rows[i];
             string name = row.ChildNodes[3].GetDirectInnerText().Trim();
-            string category = row.ChildNodes[5].GetDirectInnerText().Trim();
+            string category = row.ChildNodes[5].GetDirectInnerText().Trim().Split(";").First();
             string id = row.ChildNodes[7].GetDirectInnerText().Trim();
 
             DCSBindingKey bindKey = new(id);
@@ -131,7 +131,8 @@ public class DCSService : IDCSService
                 binding = new DCSBinding()
                 {
                     Key = new(id),
-                    CommandName = name
+                    CommandName = name,
+                    IsAxisBinding = id.StartsWith("a")
                 };
                 data.Bindings[bindKey] = binding;
             }
