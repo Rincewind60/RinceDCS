@@ -225,7 +225,11 @@ public class DCSService : IDCSService
             for (int j = 0; j < bindingsTable.Keys.Count(); j++)
             {
                 string sectionName = bindingsTable.Keys.ElementAt(j).String;
-                if (sectionName == "changed")
+                if(sectionName == "added")
+                {
+                    ReadAddedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
+                }
+                else if (sectionName == "changed")
                 {
                     ReadChangedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, changes);
                 }
@@ -240,7 +244,33 @@ public class DCSService : IDCSService
             }
         }
     }
- 
+
+    private void ReadAddedAxisLua(DCSAircraftJoystickBinding bindingData, Table addedTable, DCSButtonChanges changes)
+    {
+        for (int i = 0; i < addedTable.Keys.Count(); i++)
+        {
+            Table table = addedTable.Values.ElementAt(i).Table;
+
+            DCSAxisButton axisButton = new();
+            changes.AddedAxisButtons.Add(axisButton);
+
+            for (int j = 0; j < table.Keys.Count(); j++)
+            {
+                string key = table.Keys.ElementAt(j).String;
+                if (key == "filter")
+                {
+                    ReadAxisFilterLua(axisButton, table.Values.ElementAt(j).Table);
+                }
+                else if (key == "key")
+                {
+                    axisButton.Key = new(table.Values.ElementAt(j).String);
+                }
+            }
+
+            bindingData.AssignedButtons[axisButton.Key] = axisButton;
+        }
+    }
+
     private void ReadChangedAxisLua(DCSAircraftJoystickBinding bindingData, Table changedTable, DCSButtonChanges changes)
     {
         for (int i = 0; i < changedTable.Keys.Count(); i++)
@@ -255,7 +285,7 @@ public class DCSService : IDCSService
                 string key = table.Keys.ElementAt(j).String;
                 if (key == "filter")
                 {
-                    ReadChangedAxisFilterLua(axisButton, table.Values.ElementAt(j).Table);
+                    ReadAxisFilterLua(axisButton, table.Values.ElementAt(j).Table);
                 }
                 else if (key == "key")
                 {
@@ -267,7 +297,7 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadChangedAxisFilterLua(DCSAxisButton axisButton, Table filterTable)
+    private void ReadAxisFilterLua(DCSAxisButton axisButton, Table filterTable)
     {
         for (int j = 0; j < filterTable.Keys.Count(); j++)
         {

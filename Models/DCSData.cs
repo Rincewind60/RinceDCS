@@ -61,6 +61,7 @@ public class DCSAircraftJoystickBinding
 
 public class DCSButtonChanges
 {
+    public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
     public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
     public List<DCSButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();

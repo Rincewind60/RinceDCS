@@ -212,8 +212,7 @@ namespace RinceDCS.Views
             ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Joystick Settings", page,"Save",null,null,"Cancel");
             if(result == ContentDialogResult.Primary)
             {
-                ViewModel.Stick.DefaultLabelHeight = page.ViewModel.DefaultHeight;
-                ViewModel.Stick.DefaultLabelWidth = page.ViewModel.DefaultWidth;
+                ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);
             }
         }
     }

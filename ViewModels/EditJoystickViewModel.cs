@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
@@ -13,6 +14,14 @@ using System.IO;
 using System.Linq;
 
 namespace RinceDCS.ViewModels;
+
+public partial class JoystickButton : ObservableObject
+{
+    public GameJoystickButton StickButton { get; set; }
+
+    [ObservableProperty]
+    private bool isSelected;
+}
 
 public partial class EditJoystickViewModel : ObservableObject
 {
@@ -60,5 +69,11 @@ public partial class EditJoystickViewModel : ObservableObject
     {
         button.Width = Math.Max(0, (int)(newRight - button.TopX));
         button.Height = Math.Max(0, (int)(newBottom - button.TopY));
+    }
+
+    public void UpdateSettings(int defaultHeight, int defaultWidth)
+    {
+        Stick.DefaultLabelHeight = defaultHeight;
+        Stick.DefaultLabelWidth = defaultWidth;
     }
 }

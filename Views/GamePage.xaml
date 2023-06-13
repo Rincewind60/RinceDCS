@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RinceDCS.Views"
     xmlns:models="using:RinceDCS.Models"
+    xmlns:utils="using:RinceDCS.Views.Utilities"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -15,6 +16,7 @@
     <Page.Resources>
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ModeVisibilityConverter x:Key="ModeVisibilityConverter"/>
+        <utils:NullToFalseConverter x:Key="NullToFalseConverter"/>
         <local:AircraftVisibilityConverter x:Key="AircraftVisibilityConverter"/>
     </Page.Resources>
 
@@ -46,6 +48,7 @@
                 Icon="View" 
                 Label="View" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=View}"
+                IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="ViewButton_Click"/>
             <AppBarToggleButton 
                 Name="ManageButton"
@@ -60,6 +63,7 @@
                 Icon="List" 
                 Label="Bindings" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"
+                IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="BindingsButton_Click"/>
             <AppBarSeparator/>
             <AppBarToggleButton
