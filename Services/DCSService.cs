@@ -235,7 +235,7 @@ public class DCSService : IDCSService
                 }
                 else if (sectionName == "name")
                 {
-                    string name = bindingsTable.Values.ElementAt(j).String;
+                    string _name = bindingsTable.Values.ElementAt(j).String;
                 }
             }
         }
@@ -357,7 +357,7 @@ public class DCSService : IDCSService
                 }
                 else if (sectionName == "name")
                 {
-                    string name = bindingsTable.Values.ElementAt(j).String;
+                    string _name = bindingsTable.Values.ElementAt(j).String;
                 }
             }
         }
@@ -419,7 +419,7 @@ public class DCSService : IDCSService
     private DCSAircraftJoystickBinding CreateBindingData(DCSAircraft aircraft, DCSJoystick stick, DCSBinding binding)
     {
         DCSAircraftJoystickBinding bindingData;
-        DCSAircraftJoystickKey bindingDataKey = new DCSAircraftJoystickKey(aircraft.Key.Name, stick.Key.Id);
+        DCSAircraftJoystickKey bindingDataKey = new(aircraft.Key.Name, stick.Key.Id);
 
         if (binding.AircraftJoystickBindings.ContainsKey(bindingDataKey))
         {
@@ -427,9 +427,11 @@ public class DCSService : IDCSService
         }
         else
         {
-            bindingData = new DCSAircraftJoystickBinding();
-            bindingData.AircraftKey = aircraft.Key;
-            bindingData.JoystickKey = stick.Key;
+            bindingData = new DCSAircraftJoystickBinding
+            {
+                AircraftKey = aircraft.Key,
+                JoystickKey = stick.Key
+            };
             binding.AircraftJoystickBindings[bindingDataKey] = bindingData;
         }
 

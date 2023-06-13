@@ -74,7 +74,7 @@ public partial class GameJoystickButton : ObservableObject
     private bool onLayout;
 }
 
-public record GameAssignedButtonKey(string buttonName, bool isModifier);
+public record GameAssignedButtonKey(string ButtonName, bool IsModifier);
 
 public class GameAssignedButton
 {

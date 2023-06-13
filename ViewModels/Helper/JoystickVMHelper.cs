@@ -50,7 +50,7 @@ public class JoystickVMHelper
             string commandName = aircraftBinding.CommandName;
             string categoryName = aircraftBinding.CategoryName;
 
-            DCSAircraftJoystickKey key = new DCSAircraftJoystickKey(aircraftKey.Name, stick.JoystickGuid);
+            DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.JoystickGuid);
 
             if (binding.AircraftJoystickBindings.ContainsKey(key))
             {

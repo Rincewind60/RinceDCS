@@ -55,8 +55,10 @@ public class DialogService : IDialogService
 
     public async Task<string> OpenPickFile(string fileTypeFilter)
     {
-        var picker = new Windows.Storage.Pickers.FileOpenPicker();
-        picker.ViewMode = PickerViewMode.List;
+        var picker = new Windows.Storage.Pickers.FileOpenPicker
+        {
+            ViewMode = PickerViewMode.List
+        };
         picker.FileTypeFilter.Add(fileTypeFilter);
 
         // Retrieve the window handle (HWND) of the current WinUI 3 window.
@@ -87,9 +89,11 @@ public class DialogService : IDialogService
     /// <returns></returns>
     public async Task<string> OpenPickSaveFile(string suggestedFileName, string fileTypeLabel, string fileTypeFilter)
     {
-        var picker = new Windows.Storage.Pickers.FileSavePicker();
-        picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-        picker.SuggestedFileName = suggestedFileName;
+        var picker = new Windows.Storage.Pickers.FileSavePicker
+        {
+            SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+            SuggestedFileName = suggestedFileName
+        };
         picker.FileTypeChoices.Add(fileTypeLabel, new List<string>() { fileTypeFilter });
 
         // Retrieve the window handle (HWND) of the current WinUI 3 window.
@@ -111,9 +115,11 @@ public class DialogService : IDialogService
 
     public async Task<string> OpenPickFolder()
     {
-        var picker = new Windows.Storage.Pickers.FolderPicker();
-        picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-        picker.ViewMode = PickerViewMode.List;
+        var picker = new Windows.Storage.Pickers.FolderPicker
+        {
+            SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+            ViewMode = PickerViewMode.List
+        };
         picker.FileTypeFilter.Add("*");
 
         // Retrieve the window handle (HWND) of the current WinUI 3 window.
@@ -145,21 +151,22 @@ public class DialogService : IDialogService
         string cancelButtonText = null
         )
     {
-        ContentDialog dialog = new ContentDialog();
+        ContentDialog dialog = new()
+        {
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            XamlRoot = parent.XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = title,
+            PrimaryButtonText = primaryButtonText,
+            SecondaryButtonText = secondaryButtonText,
+            CloseButtonText = string.IsNullOrWhiteSpace(cancelButtonText) ? "Close" : cancelButtonText,
+            DefaultButton = ContentDialogButton.Close,
+            Content = content,
+            MinWidth = 600,
+            MinHeight = 400
+        };
 
-        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-        dialog.XamlRoot = parent.XamlRoot;
-        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-        dialog.Title = title;
-        dialog.PrimaryButtonText = primaryButtonText;
-        dialog.SecondaryButtonText = secondaryButtonText;
-        dialog.CloseButtonText = string.IsNullOrWhiteSpace(cancelButtonText) ? "Close" : cancelButtonText;
-        dialog.DefaultButton = ContentDialogButton.Close;
-        dialog.Content = content;
-        dialog.MinWidth = 600;
-        dialog.MinHeight = 400;
-
-        if(primaryButtonEnabledBinding != null)
+        if (primaryButtonEnabledBinding != null)
         {
             dialog.SetBinding(ContentDialog.IsPrimaryButtonEnabledProperty, primaryButtonEnabledBinding);
         }

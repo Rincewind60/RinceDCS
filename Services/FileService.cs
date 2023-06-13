@@ -54,11 +54,12 @@ public class FileService : IFileService
 
     public Image OpenImageFile(string path)
     {
-        using (var fileSrtream = new FileStream(path, FileMode.Open, FileAccess.Read))
+        Image image;
+        using (FileStream fs = new(path, FileMode.Open, FileAccess.Read))
         {
-            Image image = Image.FromStream(fileSrtream, false, false);
-            return image;
+            image = Image.FromStream(fs, false, false);
         }
+        return image;
     }
 
     public byte[] ReadImageFile(string path)
@@ -86,7 +87,6 @@ public class FileService : IFileService
         {
             JsonSerializerOptions options = new JsonSerializerOptions()
             {
-                //ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
             };
             await JsonSerializer.SerializeAsync(stream, game, options);
