@@ -131,7 +131,7 @@ public partial class GameViewModel : ObservableRecipient
             Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
             foreach(GameAircraft aircraft in CurrentInstance.Aircraft)
             {
-                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(buttonsOnLayout, CurrentInstance.Name, aircraft.Name, stick.AttachedJoystick);
+                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
                 string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
                 WeakReferenceMessenger.Default.Send(new ExportAssignedButtonsImageMessage(stick, assignedButtons, saveFilePath));
             }
@@ -147,7 +147,7 @@ public partial class GameViewModel : ObservableRecipient
             Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
             foreach (GameAircraft aircraft in CurrentInstance.Aircraft)
             {
-                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(buttonsOnLayout, CurrentInstance.Name, aircraft.Name, stick.AttachedJoystick);
+                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
                 WeakReferenceMessenger.Default.Send(new ExportKneeboardMessage(stick, assignedButtons, aircraft.Name));
             }
         }
@@ -204,16 +204,16 @@ public partial class GameViewModel : ObservableRecipient
 
         joystick.Buttons = new ObservableCollection<GameJoystickButton>();
 
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Game" });
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Plane" });
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Joystick" });
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item) });
+        joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = "Game" });
+        joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = "Plane" });
+        joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = "Joystick" });
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item) });
+        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item) });
+        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item) });
         //  Now add copies of Buttons for when using Modifier
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
+        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton(joystick) { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true });
     }
 
     private bool IsKeyButton(string item)

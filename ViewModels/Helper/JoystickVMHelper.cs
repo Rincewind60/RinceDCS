@@ -31,7 +31,7 @@ public class JoystickVMHelper
         return buttons;
     }
 
-    public List<GameAssignedButton> GetAssignedButtons(Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout, string instanceName, string aircraftName, AttachedJoystick stick)
+    public List<GameAssignedButton> GetAssignedButtons(GameJoystick stick, Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout, string instanceName, string aircraftName)
     {
         List<GameAssignedButton> assignedButtons = new();
 
@@ -40,9 +40,9 @@ public class JoystickVMHelper
         DCSAircraftKey aircraftKey = new(aircraftName);
         DCSAircraft dcsAircraft = Data.Aircraft[aircraftKey];
 
-        BuildAppButtons(assignedButtons, buttonsOnLayout, "Game", instanceName);
-        BuildAppButtons(assignedButtons, buttonsOnLayout, "Plane", aircraftName);
-        BuildAppButtons(assignedButtons, buttonsOnLayout, "Joystick", stick.Name);
+        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Game", instanceName);
+        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Plane", aircraftName);
+        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Joystick", stick.AttachedJoystick.Name);
 
         foreach (DCSBinding binding in dcsAircraft.Bindings.Values)
         {
@@ -50,13 +50,13 @@ public class JoystickVMHelper
             string commandName = aircraftBinding.CommandName;
             string categoryName = aircraftBinding.CategoryName;
 
-            DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.JoystickGuid);
+            DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.AttachedJoystick.JoystickGuid);
 
             if (binding.AircraftJoystickBindings.ContainsKey(key))
             {
                 DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
 
-                BuildAssignedButtons(assignedButtons, buttonsOnLayout, commandName, categoryName, bindingButtons);
+                BuildAssignedButtons(stick, assignedButtons, buttonsOnLayout, commandName, categoryName, bindingButtons);
             }
         }
 
@@ -64,6 +64,7 @@ public class JoystickVMHelper
     }
 
     private void BuildAppButtons(
+        GameJoystick stick,
         List<GameAssignedButton> assignedButtons,
         Dictionary< GameAssignedButtonKey, GameJoystickButton > buttonsOnLayout,
         string buttonName, 
@@ -73,16 +74,13 @@ public class JoystickVMHelper
         GameAssignedButtonKey key = new(buttonName, false);
         if (buttonsOnLayout.ContainsKey(key))
         {
-            GameAssignedButton button = new()
-            {
-                CommandName = commandName,
-                BoundButton = buttonsOnLayout[key]
-            };
+            GameAssignedButton button = new(commandName, "", buttonsOnLayout[key], stick);
             assignedButtons.Add(button);
         }
     }
 
     private void BuildAssignedButtons(
+        GameJoystick stick,
         List<GameAssignedButton> assignedButtons,
         Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout,
         string commandName,
@@ -103,12 +101,7 @@ public class JoystickVMHelper
             }
             if (buttonsOnLayout.ContainsKey(key))
             {
-                GameAssignedButton vwButton = new()
-                {
-                    CommandName = commandName,
-                    CategoryName = categoryName,
-                    BoundButton = buttonsOnLayout[key]
-                };
+                GameAssignedButton vwButton = new(commandName, categoryName, buttonsOnLayout[key], stick);
                 assignedButtons.Add(vwButton);
             }
         }

@@ -16,9 +16,10 @@
     <Page.Resources>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
 
+        <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
+
         <Style x:Key="ButtonFont" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{x:Bind ViewModel.Stick.Font, Mode=OneWay}"/>
-            <Setter Property="FontSize" Value="{x:Bind ViewModel.Stick.FontSize, Mode=OneWay}"/>
+            <Setter Property="Foreground" Value="{StaticResource ButtonTextBrush}"/>
         </Style>
     </Page.Resources>
 
@@ -107,7 +108,9 @@
                                 MinWidth="60"
                                 MinHeight="24"
                                 Width="{x:Bind BoundButton.Width}"
-                                Height="{x:Bind BoundButton.Height}">
+                                Height="{x:Bind BoundButton.Height}"
+                                FontFamily="{x:Bind Font}"
+                                FontSize="{x:Bind FontSize}">
                                 <TextBlock.RenderTransform>
                                     <TranslateTransform X="{x:Bind BoundButton.TopX}" Y="{x:Bind BoundButton.TopY}"/>
                                 </TextBlock.RenderTransform>

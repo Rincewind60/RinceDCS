@@ -72,6 +72,20 @@ public partial class GameJoystickButton : ObservableObject
 
     [ObservableProperty]
     private bool onLayout;
+
+    [property: JsonIgnore]
+    public string Font { get { return Stick.Font; } }
+
+    [property: JsonIgnore]
+    public int FontSize { get { return Stick.FontSize; } }
+
+    [property: JsonIgnore]
+    public GameJoystick Stick { get; set; }
+
+    public GameJoystickButton(GameJoystick stick)
+    {
+        Stick = stick;
+    }
 }
 
 public record GameAssignedButtonKey(string ButtonName, bool IsModifier);
@@ -80,6 +94,16 @@ public class GameAssignedButton
 {
     public string CommandName { get; set; }
     public string CategoryName { get; set; }
-
     public GameJoystickButton BoundButton { get; set; }
+    public string Font { get { return Stick.Font; } }
+    public int FontSize { get { return Stick.FontSize; } }
+    private GameJoystick Stick { get; set; }
+
+    public GameAssignedButton(string commandName, string categoryName, GameJoystickButton boundButton, GameJoystick stick)
+    {
+        CommandName = commandName;
+        CategoryName = categoryName;
+        BoundButton = boundButton;
+        Stick = stick;
+    }
 }

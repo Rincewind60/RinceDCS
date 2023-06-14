@@ -89,6 +89,10 @@ namespace RinceDCS.Views
         private void AircraftCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewModel.CurrentAircraftChanged();
+            if(ViewModel.JoystickMode == DetailsDisplayMode.View)
+            {
+                NavigateToViewPage();
+            }
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -103,12 +107,10 @@ namespace RinceDCS.Views
 
         private void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
-            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
-                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+            NavigateToViewPage();
         }
 
-        private void ManageButton_Click(object sender, RoutedEventArgs e)
+         private void ManageButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage), 
                 Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
@@ -123,6 +125,13 @@ namespace RinceDCS.Views
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditJoystickLayoutPage), ViewModel.CurrentGame);
+        }
+
+        private void NavigateToViewPage()
+        {
+            string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
+            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
+                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
     }
 

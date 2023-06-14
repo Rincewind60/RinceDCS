@@ -19,6 +19,15 @@ public class FileService : IFileService
         {
             FileStream stream = File.OpenRead(savePath);
             game = await JsonSerializer.DeserializeAsync<Game>(stream);
+
+            foreach(GameJoystick stick in game.Joysticks)
+            {
+                foreach(GameJoystickButton button in stick.Buttons)
+                {
+                    button.Stick = stick;
+                }
+            }
+
             stream.Dispose();
         }
 

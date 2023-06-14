@@ -58,6 +58,6 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     {
         JoystickVMHelper helper = new(BindingsData);
         Dictionary<GameAssignedButtonKey, GameJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
-        AssignedButtons = new(helper.GetAssignedButtons(buttonsOnLayout, InstanceName, CurrentAircraftKey.Name, AttachedStick));
+        AssignedButtons = new(helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftKey.Name));
     }
 }
