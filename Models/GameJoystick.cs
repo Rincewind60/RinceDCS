@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Windows.Gaming.Input;
 
 namespace RinceDCS.Models;
 
@@ -45,6 +47,26 @@ public partial class GameJoystick : ObservableObject
         DefaultLabelHeight = 40;
         DefaultLabelWidth = 120;
     }
+
+    partial void OnFontChanged(string value)
+    {
+        if (Buttons == null) return;
+
+        foreach (GameJoystickButton button in Buttons)
+        {
+            button.Font = value;
+        }
+    }
+
+    partial void OnFontSizeChanged(int value)
+    {
+        if (Buttons == null) return;
+
+        foreach (GameJoystickButton button in Buttons)
+        {
+            button.FontSize = value;
+        }
+    }
 }
 
 public partial class GameJoystickButton : ObservableObject
@@ -73,19 +95,13 @@ public partial class GameJoystickButton : ObservableObject
     [ObservableProperty]
     private bool onLayout;
 
+    [ObservableProperty]
     [property: JsonIgnore]
-    public string Font { get { return Stick.Font; } }
+    private string font;
 
+    [ObservableProperty]
     [property: JsonIgnore]
-    public int FontSize { get { return Stick.FontSize; } }
-
-    [property: JsonIgnore]
-    public GameJoystick Stick { get; set; }
-
-    public GameJoystickButton(GameJoystick stick)
-    {
-        Stick = stick;
-    }
+    private int fontSize;
 }
 
 public record GameAssignedButtonKey(string ButtonName, bool IsModifier);

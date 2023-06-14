@@ -24,7 +24,8 @@ public class FileService : IFileService
             {
                 foreach(GameJoystickButton button in stick.Buttons)
                 {
-                    button.Stick = stick;
+                    button.Font = stick.Font;
+                    button.FontSize = stick.FontSize;
                 }
             }
 

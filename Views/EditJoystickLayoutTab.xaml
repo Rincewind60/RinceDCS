@@ -246,8 +246,8 @@
                                     Name="JoysticButton"
                                     Text="{x:Bind ButtonLabel, Mode=OneWay}" 
                                     Style="{StaticResource ButtonFont}" 
-                                    FontFamily="{x:Bind Font}"
-                                    FontSize="{x:Bind FontSize}"
+                                    FontFamily="{x:Bind Font, Mode=OneWay}"
+                                    FontSize="{x:Bind FontSize, Mode=OneWay}"
                                     IsTabStop="True"
                                     GotFocus="JoysticButton_GotFocus"/>
                             </Border>
