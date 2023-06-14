@@ -6,6 +6,7 @@ using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Helper;
 using RinceDCS.ViewModels.Messages;
+using SharpDX.DirectInput;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -204,16 +205,28 @@ public partial class GameViewModel : ObservableRecipient
 
         joystick.Buttons = new ObservableCollection<GameJoystickButton>();
 
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Game", Font = joystick.Font, FontSize = joystick.FontSize });
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Plane", Font = joystick.Font, FontSize = joystick.FontSize });
-        joystick.Buttons.Add(new GameJoystickButton() { ButtonName = "Joystick", Font = joystick.Font, FontSize = joystick.FontSize });
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), Font = joystick.Font, FontSize = joystick.FontSize });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), Font = joystick.Font, FontSize = joystick.FontSize });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), Font = joystick.Font, FontSize = joystick.FontSize });
+        joystick.Buttons.Add(NewJoystickButton("Game", joystick));
+        joystick.Buttons.Add(NewJoystickButton("Plane", joystick));
+        joystick.Buttons.Add(NewJoystickButton("Joystick", joystick));
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
+        foreach (string item in info.POVs) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
+        foreach (string item in info.Buttons) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
         //  Now add copies of Buttons for when using Modifier
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true, Font = joystick.Font, FontSize = joystick.FontSize });
-        foreach (string item in info.POVs) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true, Font = joystick.Font, FontSize = joystick.FontSize });
-        foreach (string item in info.Buttons) joystick.Buttons.Add(new GameJoystickButton() { ButtonName = item, IsKeyButton = IsKeyButton(item), IsModifier = true, Font = joystick.Font, FontSize = joystick.FontSize });
+        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+        foreach (string item in info.POVs) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+        foreach (string item in info.Buttons) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+    }
+
+    private GameJoystickButton NewJoystickButton(string name, GameJoystick stick, bool isKey = true, bool isModifier = false)
+    {
+        return new GameJoystickButton()
+        {
+            ButtonName = name,
+            Font = stick.Font,
+            FontSize = stick.FontSize,
+            IsKeyButton = isKey,
+            IsModifier = isModifier
+        };
     }
 
     private bool IsKeyButton(string item)

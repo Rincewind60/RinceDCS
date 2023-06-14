@@ -15,14 +15,6 @@ using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public partial class JoystickButton : ObservableObject
-{
-    public GameJoystickButton StickButton { get; set; }
-
-    [ObservableProperty]
-    private bool isSelected;
-}
-
 public partial class EditJoystickViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -32,7 +24,7 @@ public partial class EditJoystickViewModel : ObservableObject
     private GameJoystickButton currentButton;
 
     public ObservableCollection<string> FontNames { get; set; } = new();
-    public ObservableCollection<int> FontSizes { get; set; } = new() { 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32 };
+    public ObservableCollection<int> FontSizes { get; set; } = new() { 20, 22, 24, 26, 28, 32, 36, 40 };
 
     public ObservableCollection<string> Scales { get; set; } = new() { "400%", "200%", "100%", "75%", "50%", "25%" };
 
@@ -49,6 +41,15 @@ public partial class EditJoystickViewModel : ObservableObject
         }
 
         CurrentScale = 2;
+    }
+
+    partial void OnCurrentButtonChanged(GameJoystickButton oldValue, GameJoystickButton newValue)
+    {
+        if(oldValue != null)
+        {
+            oldValue.IsSelected = false;
+        }
+        newValue.IsSelected = true;
     }
 
     public void UpdateImage(string path)

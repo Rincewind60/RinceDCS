@@ -95,8 +95,7 @@ public class JoystickUtil
                 {
                     Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
                     PaperSize size = printDoc.DefaultPageSettings.PaperSize;
-                    Rectangle rect = new(20, 20, size.Width-40, size.Height-40);
-                    args.Graphics.DrawImage(img, rect);
+                    args.Graphics.DrawImage(img, printDoc.DefaultPageSettings.PrintableArea);
                 };
                 printDoc.Print();
             }
@@ -120,7 +119,7 @@ public class JoystickUtil
                     if (button.OnLayout)
                     {
                         gfx.DrawRectangle(pen, (int)button.TopX, (int)button.TopY, (int)button.Width, (int)button.Height);
-                        RectangleF rect = new((float)(button.TopX + 2), (float)(button.TopY + 2), (float)(button.Width - 4), (float)(button.Height - 4));
+                        RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(button.Width - 2), (float)(button.Height - 2));
                         gfx.DrawString(button.ButtonLabel, font, brush, rect);
                     }
                 }
@@ -130,20 +129,20 @@ public class JoystickUtil
         }
     }
 
-    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSiZe)
+    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
             Image image = Image.FromStream(stream, false, false);
 
-            Font font = new(fontName, fontSiZe, FontStyle.Regular, GraphicsUnit.Pixel);
+            Font font = new(fontName, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
             SolidBrush brush = new(Color.Black);
 
             using (Graphics gfx = Graphics.FromImage(image))
             {
                 foreach (GameAssignedButton button in assignedButtons)
                 {
-                    RectangleF rect = new((float)(button.BoundButton.TopX + 2), (float)(button.BoundButton.TopY + 2), (float)(button.BoundButton.Width - 4), (float)(button.BoundButton.Height - 4));
+                    RectangleF rect = new((float)(button.BoundButton.TopX), (float)(button.BoundButton.TopY), (float)(button.BoundButton.Width), (float)(fontSize+4));
                     gfx.DrawString(button.CommandName, font, brush, rect);
                 }
             }

@@ -102,6 +102,10 @@ public partial class GameJoystickButton : ObservableObject
     [ObservableProperty]
     [property: JsonIgnore]
     private int fontSize;
+
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private bool isSelected;
 }
 
 public record GameAssignedButtonKey(string ButtonName, bool IsModifier);

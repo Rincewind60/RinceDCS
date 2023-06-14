@@ -17,6 +17,7 @@
         <local:ModeConverter x:Key="ModeConverter"/>
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
         <local:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
+        <local:SelectedButtonBackgroundConverter x:Key="SelectedButtonBackgroundConverter"/>
 
         <Style x:Key="NonUsedStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Gray"/>
@@ -236,7 +237,8 @@
                                 Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
                                 Width="{x:Bind Width, Mode=OneWay}"
                                 Height="{x:Bind Height, Mode=OneWay}"
-                                KeyDown="Border_KeyDown">
+                                KeyDown="Border_KeyDown"
+                                Background="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBackgroundConverter}}">
                                 <Border.RenderTransform>
                                     <TranslateTransform
                                         X="{x:Bind TopX, Mode=OneWay}" 

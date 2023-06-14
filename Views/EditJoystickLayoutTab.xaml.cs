@@ -180,12 +180,16 @@ namespace RinceDCS.Views
                     button.TopX = Math.Max(button.TopX - 1, 0);
                     e.Handled = true;
                     break;
+                case Windows.System.VirtualKey.Delete:
+                    button.OnLayout = false;
+                    e.Handled = true;
+                    break;
             }
         }
 
         private void JoysticButton_GotFocus(object sender, RoutedEventArgs e)
         {
-            GameJoystickButton button = ((TextBox)sender).DataContext as GameJoystickButton;
+            GameJoystickButton button = ((TextBlock)sender).DataContext as GameJoystickButton;
             ViewModel.CurrentButton = button;
         }
 
@@ -235,6 +239,26 @@ namespace RinceDCS.Views
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             return (bool)value == true ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Gray);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class SelectedButtonBackgroundConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if(value == null || (bool)value == false)
+            {
+                return null;
+            }
+            else
+            {
+                return new SolidColorBrush(Colors.AliceBlue);
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
