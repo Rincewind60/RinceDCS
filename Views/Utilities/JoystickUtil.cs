@@ -142,8 +142,10 @@ public class JoystickUtil
                     if (button.OnLayout)
                     {
                         gfx.DrawRectangle(pen, (int)button.TopX, (int)button.TopY, (int)button.Width, (int)button.Height);
+                        StringFormat format = StringFormat.GenericDefault;
+                        format.Trimming = StringTrimming.EllipsisCharacter;
                         RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(button.Width - 2), (float)(button.Height - 2));
-                        gfx.DrawString(button.ButtonLabel, font, brush, rect);
+                        gfx.DrawString(button.ButtonLabel, font, brush, rect, format);
                     }
                 }
             }
@@ -165,7 +167,8 @@ public class JoystickUtil
             {
                 foreach (GameAssignedButton button in assignedButtons)
                 {
-                    StringFormat format = StringFormat.GenericTypographic;
+                    StringFormat format = StringFormat.GenericDefault;
+                    format.Trimming = StringTrimming.EllipsisCharacter;
                     if (button.BoundButton.Alignment == "Left")
                     {
                         format.Alignment = StringAlignment.Near;
