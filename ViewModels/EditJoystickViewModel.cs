@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.UI.Xaml.Controls;
@@ -39,22 +40,48 @@ public partial class EditJoystickViewModel : ObservableObject
         {
             FontNames.Add(font);
         }
-
         CurrentScale = 2;
     }
 
-    partial void OnCurrentButtonChanged(GameJoystickButton oldValue, GameJoystickButton newValue)
+    [RelayCommand]
+    private void AlignButtonLeft()
     {
-        if(oldValue != null)
-        {
-            oldValue.IsSelected = false;
-        }
-        newValue.IsSelected = true;
+        if(CurrentButton == null) return;
+
+        CurrentButton.Alignment = "Left";
+    }
+
+    [RelayCommand]
+    private void AlignButtonCenter()
+    {
+        if(CurrentButton == null) return;
+
+        CurrentButton.Alignment = "Center";
+    }
+
+    [RelayCommand]
+    private void AlignButtonRight()
+    {
+        if(CurrentButton == null) return;
+
+        CurrentButton.Alignment = "Right";
+    }
+
+    public void UpdateSettings(int defaultHeight, int defaultWidth)
+    {
+        Stick.DefaultLabelHeight = defaultHeight;
+        Stick.DefaultLabelWidth = defaultWidth;
     }
 
     public void UpdateImage(string path)
     {
         Stick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(path);
+    }
+
+    partial void OnCurrentButtonChanged(GameJoystickButton oldValue, GameJoystickButton newValue)
+    {
+        if(oldValue != null) oldValue.IsSelected = false;
+        if(newValue != null) newValue.IsSelected = true;
     }
 
     public void PlaceButtonOnJoystick(GameJoystickButton button, int x, int y)
@@ -70,11 +97,5 @@ public partial class EditJoystickViewModel : ObservableObject
     {
         button.Width = Math.Max(0, (int)(newRight - button.TopX));
         button.Height = Math.Max(0, (int)(newBottom - button.TopY));
-    }
-
-    public void UpdateSettings(int defaultHeight, int defaultWidth)
-    {
-        Stick.DefaultLabelHeight = defaultHeight;
-        Stick.DefaultLabelWidth = defaultWidth;
     }
 }

@@ -51,6 +51,12 @@
                 Content="Print"
                 Click="PrintImage_Click"
                 Margin="2,0,2,0"/>
+            <Border
+                BorderBrush="LightGray"
+                BorderThickness="2"
+                Width="1"
+                Height="32"
+                Margin="4,0,4,0"/>
             <Button 
                 Name="Expand" 
                 Click="Expand_Click" 
@@ -110,7 +116,8 @@
                                 Width="{x:Bind BoundButton.Width}"
                                 Height="{x:Bind BoundButton.Height}"
                                 FontFamily="{x:Bind Font}"
-                                FontSize="{x:Bind FontSize}">
+                                FontSize="{x:Bind FontSize}"
+                                TextAlignment="{x:Bind BoundButton.Alignment, Mode=OneWay}">
                                 <TextBlock.RenderTransform>
                                     <TranslateTransform X="{x:Bind BoundButton.TopX}" Y="{x:Bind BoundButton.TopY}"/>
                                 </TextBlock.RenderTransform>

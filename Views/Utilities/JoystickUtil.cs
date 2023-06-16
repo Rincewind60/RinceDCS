@@ -55,9 +55,8 @@ public class JoystickUtil
                 printDoc.PrintPage += (sender, args) =>
                 {
                     Image img = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
-                    PaperSize size = printDoc.DefaultPageSettings.PaperSize;
-                    Rectangle rect = new(20, 20, size.Width - 40, size.Height - 40);
-                    args.Graphics.DrawImage(img, rect);
+                    Rectangle margins = CalculateImageRectangle(sender, args, printDoc, img);
+                    args.Graphics.DrawImage(img, margins);
                 };
                 printDoc.Print();
             }
@@ -91,15 +90,39 @@ public class JoystickUtil
             if(result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
+                printDoc.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
+
                 printDoc.PrintPage += (sender, args) =>
                 {
                     Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
-                    PaperSize size = printDoc.DefaultPageSettings.PaperSize;
-                    args.Graphics.DrawImage(img, printDoc.DefaultPageSettings.PrintableArea);
+                    Rectangle margins = CalculateImageRectangle(sender, args, printDoc, img);
+
+                    args.Graphics.DrawImage(img, margins);
                 };
                 printDoc.Print();
             }
         }
+    }
+
+    private static Rectangle CalculateImageRectangle(object sender, PrintPageEventArgs args, PrintDocument printDoc, Image img)
+    {
+        Rectangle margins = args.MarginBounds;
+
+        if ((double)img.Width / (double)img.Height > (double)margins.Width / (double)margins.Height) // image is wider
+        {
+            margins.Height = (int)((double)img.Height / (double)img.Width * (double)margins.Width);
+        }
+        else
+        {
+            margins.Width = (int)((double)img.Width / (double)img.Height * (double)margins.Height);
+        }
+        //Calculating optimal orientation.
+        printDoc.DefaultPageSettings.Landscape = margins.Width > margins.Height;
+        //Putting image in center of page.
+        margins.Y = (int)((((PrintDocument)(sender)).DefaultPageSettings.PaperSize.Height - margins.Height) / 2);
+        margins.X = (int)((((PrintDocument)(sender)).DefaultPageSettings.PaperSize.Width - margins.Width) / 2);
+
+        return margins;
     }
 
     private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
@@ -142,8 +165,21 @@ public class JoystickUtil
             {
                 foreach (GameAssignedButton button in assignedButtons)
                 {
+                    StringFormat format = StringFormat.GenericTypographic;
+                    if (button.BoundButton.Alignment == "Left")
+                    {
+                        format.Alignment = StringAlignment.Near;
+                    }
+                    else if(button.BoundButton.Alignment == "Center")
+                    {
+                        format.Alignment = StringAlignment.Center;
+                    }
+                    else if(button.BoundButton.Alignment == "Right")
+                    {
+                        format.Alignment = StringAlignment.Far;
+                    }
                     RectangleF rect = new((float)(button.BoundButton.TopX), (float)(button.BoundButton.TopY), (float)(button.BoundButton.Width), (float)(fontSize+4));
-                    gfx.DrawString(button.CommandName, font, brush, rect);
+                    gfx.DrawString(button.CommandName, font, brush, rect, format);
                 }
             }
 

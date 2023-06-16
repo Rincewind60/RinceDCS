@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using RinceDCS.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -96,6 +97,12 @@ public partial class GameJoystickButton : ObservableObject
     private bool onLayout;
 
     [ObservableProperty]
+    private string alignment;
+
+    /// <summary>
+    /// TODO: These proeprties should be removed, need to create a ViewModel version of GameJoystickButton and put them there.
+    /// </summary>
+    [ObservableProperty]
     [property: JsonIgnore]
     private string font;
 
@@ -106,6 +113,22 @@ public partial class GameJoystickButton : ObservableObject
     [ObservableProperty]
     [property: JsonIgnore]
     private bool isSelected;
+
+    public GameJoystickButton()
+    {
+        Alignment = "Left";
+    }
+
+    partial void OnAlignmentChanged(string oldValue, string newValue)
+    {
+        if (newValue == null)
+        {
+#pragma warning disable MVVMTK0034
+            alignment = oldValue;
+#pragma warning restore MVVMTK0034
+        }
+    }
+
 }
 
 public record GameAssignedButtonKey(string ButtonName, bool IsModifier);

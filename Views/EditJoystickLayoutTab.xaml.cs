@@ -23,7 +23,9 @@ using System.Drawing.Printing;
 using System.Drawing.Text;
 using System.Linq;
 using System.Numerics;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -98,6 +100,52 @@ namespace RinceDCS.Views
             ViewModel.CurrentScale = Math.Min(ViewModel.CurrentScale + 1, ViewModel.Scales.Count - 1);
         }
 
+        private PointerPoint GetImageMousePoint(object sender, PointerRoutedEventArgs e)
+        {
+            Pointer pointer = e.Pointer;
+
+            if (pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return null;
+            }
+
+            return e.GetCurrentPoint(JoystickImage);
+        }
+
+        private void ExportImage_Click(object sender, RoutedEventArgs e)
+        {
+            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+        }
+
+        private void PrintImage_Click(object sender, RoutedEventArgs e)
+        {
+            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+        }
+
+
+        private void ApplyColor_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Stick.FontColor = ColorPicker.Color.ToHex();
+            ColorButton.Background = new SolidColorBrush(ColorPicker.Color);
+            ColorPickerFlyout.Hide();
+        }
+
+        private void CancelColor_Click(object sender, RoutedEventArgs e)
+        {
+            ColorPickerFlyout.Hide();
+        }
+
+        private async void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
+            string stickName = ViewModel.Stick.AttachedJoystick.Name;
+            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog(stickName + " edit Settings", page,"Save",null,null,"Cancel");
+            if(result == ContentDialogResult.Primary)
+            {
+                ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);
+            }
+        }
+
         private void JoystickImage_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (ViewModel.CurrentButton == null) { isDrawing = false; return; }
@@ -137,87 +185,55 @@ namespace RinceDCS.Views
             e.Handled = true;
         }
 
-        private PointerPoint GetImageMousePoint(object sender, PointerRoutedEventArgs e)
+        private void JoysticButton_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            Pointer pointer = e.Pointer;
+            Border border = (Border)sender;
 
-            if (pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            if (ViewModel.CurrentButton == (GameJoystickButton)border.DataContext &&
+                InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.LeftControl) == CoreVirtualKeyStates.Down)
             {
-                return null;
+                ViewModel.CurrentButton = null;
             }
-
-            return e.GetCurrentPoint(JoystickImage);
-        }
-
-        private void ExportImage_Click(object sender, RoutedEventArgs e)
-        {
-            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-        }
-
-        private void PrintImage_Click(object sender, RoutedEventArgs e)
-        {
-            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
-        }
-
-        private void Border_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            GameJoystickButton button = ((Border)sender).DataContext as GameJoystickButton;
-            switch (e.Key)
+            else
             {
-                case Windows.System.VirtualKey.Up:
-                    button.TopY = Math.Max(button.TopY - 1, 0);
-                    e.Handled = true;
-                    break;
-                case Windows.System.VirtualKey.Right:
-                    button.TopX = button.TopX + 1;
-                    e.Handled = true;
-                    break;
-                case Windows.System.VirtualKey.Down:
-                    button.TopY = button.TopY + 1;
-                    e.Handled = true;
-                    break;
-                case Windows.System.VirtualKey.Left:
-                    button.TopX = Math.Max(button.TopX - 1, 0);
-                    e.Handled = true;
-                    break;
-                case Windows.System.VirtualKey.Delete:
-                    button.OnLayout = false;
-                    e.Handled = true;
-                    break;
+                border.Focus(FocusState.Pointer);
             }
         }
 
         private void JoysticButton_GotFocus(object sender, RoutedEventArgs e)
         {
-            GameJoystickButton button = ((TextBlock)sender).DataContext as GameJoystickButton;
+            GameJoystickButton button = ((Border)sender).DataContext as GameJoystickButton;
             ViewModel.CurrentButton = button;
         }
 
-        private void ApplyColor_Click(object sender, RoutedEventArgs e)
+        private void ButtonsItemsControl_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            ViewModel.Stick.FontColor = ColorPicker.Color.ToHex();
-            ColorButton.Background = new SolidColorBrush(ColorPicker.Color);
-            ColorPickerFlyout.Hide();
-        }
+            if (ViewModel.CurrentButton == null) return;
 
-        private void CancelColor_Click(object sender, RoutedEventArgs e)
-        {
-            ColorPickerFlyout.Hide();
-        }
-
-        private void ColorPickerFlyout_Opening(object sender, object e)
-        {
-            //ColorPicker.Color = CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(ViewModel.Stick.FontColor);
-        }
-
-        private async void Settings_Click(object sender, RoutedEventArgs e)
-        {
-            JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
-            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Joystick Settings", page,"Save",null,null,"Cancel");
-            if(result == ContentDialogResult.Primary)
+            switch (e.Key)
             {
-                ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);
+                case Windows.System.VirtualKey.Up:
+                    ViewModel.CurrentButton.TopY = Math.Max(ViewModel.CurrentButton.TopY - 1, 0);
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Right:
+                    ViewModel.CurrentButton.TopX = ViewModel.CurrentButton.TopX + 1;
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Down:
+                    ViewModel.CurrentButton.TopY = ViewModel.CurrentButton.TopY + 1;
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Left:
+                    ViewModel.CurrentButton.TopX = Math.Max(ViewModel.CurrentButton.TopX - 1, 0);
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Delete:
+                    ViewModel.CurrentButton.OnLayout = false;
+                    e.Handled = true;
+                    break;
             }
+
         }
     }
 
@@ -264,6 +280,48 @@ namespace RinceDCS.Views
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class SelectedButtonBorderConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value == null || (bool)value == false)
+            {
+                return new SolidColorBrush(Colors.Black);
+            }
+            else
+            {
+                return new SolidColorBrush(Colors.Blue);
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class AlignmentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value.ToString() == parameter.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            bool isChecked = (bool)value;
+
+            if (isChecked)
+            {
+                return parameter.ToString();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

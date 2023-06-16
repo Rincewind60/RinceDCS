@@ -6,7 +6,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RinceDCS.Views"
-    xmlns:convert="using:RinceDCS.Views.Utilities"
+    xmlns:utils="using:RinceDCS.Views.Utilities"
     xmlns:models="using:RinceDCS.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,6 +18,9 @@
         <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
         <local:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
         <local:SelectedButtonBackgroundConverter x:Key="SelectedButtonBackgroundConverter"/>
+        <local:SelectedButtonBorderConverter x:Key="SelectedButtonBorderConverter"/>
+        <local:AlignmentConverter x:Key="AlignmentConverter"/>
+        <utils:NullToFalseConverter x:Key="NullToFalseConverter"/>
 
         <Style x:Key="NonUsedStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Gray"/>
@@ -84,6 +87,12 @@
                 Content="Print"
                 Click="PrintImage_Click"
                 Margin="2,0,2,0"/>
+            <Border
+                BorderBrush="LightGray"
+                BorderThickness="2"
+                Width="1"
+                Height="32"
+                Margin="4,0,4,0"/>
             <Button 
                 Name="Expand" 
                 Click="Expand_Click" 
@@ -103,6 +112,12 @@
                 Margin="2,0,2,0">
                 <SymbolIcon Symbol="Remove"/>
             </Button>
+            <Border
+                BorderBrush="LightGray"
+                BorderThickness="2"
+                Width="1"
+                Height="32"
+                Margin="4,0,4,0"/>
             <TextBlock
                 Text="Font:"
                 VerticalAlignment="Center"
@@ -137,7 +152,7 @@
                 Margin="2,0,2,0"/>
             <Button Name="ColorButton" Width="32" Height="32">
                 <Button.Flyout>
-                    <Flyout x:Name="ColorPickerFlyout" Opening="ColorPickerFlyout_Opening">
+                    <Flyout x:Name="ColorPickerFlyout">
                         <StackPanel>
                             <TextBlock Text="Select color for Button labels"/>
                             <ColorPicker
@@ -159,6 +174,36 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
+            <Border
+                BorderBrush="LightGray"
+                BorderThickness="2"
+                Width="1"
+                Height="32"
+                Margin="4,0,4,0"/>
+            <ToggleButton
+                Name="FloatLeft"
+                Margin="2,0,2,0"
+                IsChecked="{x:Bind ViewModel.CurrentButton.Alignment, Mode=TwoWay, Converter={StaticResource AlignmentConverter}, ConverterParameter=Left}"
+                IsEnabled="{x:Bind ViewModel.CurrentButton, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
+                Command="{x:Bind ViewModel.AlignButtonLeftCommand}">
+                <SymbolIcon Symbol="AlignLeft"/>
+            </ToggleButton>
+            <ToggleButton 
+                Name="FloatCenter" 
+                Margin="2,0,2,0"
+                IsChecked="{x:Bind ViewModel.CurrentButton.Alignment, Mode=TwoWay, Converter={StaticResource AlignmentConverter}, ConverterParameter=Center}"
+                IsEnabled="{x:Bind ViewModel.CurrentButton, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
+                Command="{x:Bind ViewModel.AlignButtonCenterCommand}">
+                <SymbolIcon Symbol="AlignCenter"/>
+            </ToggleButton>
+            <ToggleButton 
+                Name="FloatRight" 
+                Margin="2,0,2,0"
+                IsChecked="{x:Bind ViewModel.CurrentButton.Alignment, Mode=TwoWay, Converter={StaticResource AlignmentConverter}, ConverterParameter=Right}"
+                IsEnabled="{x:Bind ViewModel.CurrentButton, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
+                Command="{x:Bind ViewModel.AlignButtonRightCommand}">
+                <SymbolIcon Symbol="AlignRight"/>
+            </ToggleButton>
             <TextBlock
                 Text="X:"
                 VerticalAlignment="Center"
@@ -221,6 +266,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Name="ButtonsItemsControl"
+                    PreviewKeyDown="ButtonsItemsControl_PreviewKeyDown"
                     ItemsSource="{x:Bind ViewModel.Stick.Buttons}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -230,14 +276,17 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:GameJoystickButton">
                             <Border
+                                Name="JoysticButton"
+                                IsTabStop="True"
+                                GotFocus="JoysticButton_GotFocus"
+                                PointerPressed="JoysticButton_PointerPressed"
                                 BorderThickness="2"
-                                BorderBrush="Black"
+                                BorderBrush="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBorderConverter}}"
                                 MinWidth="60"
                                 MinHeight="24"
                                 Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
                                 Width="{x:Bind Width, Mode=OneWay}"
                                 Height="{x:Bind Height, Mode=OneWay}"
-                                KeyDown="Border_KeyDown"
                                 Background="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBackgroundConverter}}">
                                 <Border.RenderTransform>
                                     <TranslateTransform
@@ -245,13 +294,11 @@
                                         Y="{x:Bind TopY, Mode=OneWay}"/>
                                 </Border.RenderTransform>
                                 <TextBlock
-                                    Name="JoysticButton"
                                     Text="{x:Bind ButtonLabel, Mode=OneWay}" 
                                     Style="{StaticResource ButtonFont}" 
                                     FontFamily="{x:Bind Font, Mode=OneWay}"
                                     FontSize="{x:Bind FontSize, Mode=OneWay}"
-                                    IsTabStop="True"
-                                    GotFocus="JoysticButton_GotFocus"/>
+                                    TextAlignment="{x:Bind Alignment, Mode=OneWay}"/>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
