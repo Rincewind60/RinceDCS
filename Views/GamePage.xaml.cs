@@ -98,7 +98,7 @@ namespace RinceDCS.Views
         private void Help_Click(object sender, RoutedEventArgs e)
         {
             var helpWindow = WindowHelper.CreateWindow();
-            helpWindow.Title = AppInfo.Current.DisplayInfo.DisplayName + " - Help";
+            helpWindow.Title = "Rince DCS - Help";
             HelpPage helpPage = new();
             helpPage.RequestedTheme = this.ActualTheme;
             helpWindow.Content = helpPage;

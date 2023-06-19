@@ -12,8 +12,18 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <StackPanel Orientation="Vertical">
-        <TextBlock>DCS Tool</TextBlock>
-        <TextBlock>A Tool for creating controller images for kneeboards etc.</TextBlock>
-        <TextBlock>Version: 0.0.1.0</TextBlock>
+        <RichTextBlock Margin="20,20,20,0">
+            <Paragraph>
+                <Run FontWeight="Bold">Rince DCS</Run>
+            </Paragraph>
+        </RichTextBlock>
+
+        <TextBlock Margin="20" Width="460" TextWrapping="WrapWholeWords">Rince DCS is a tool that allows you to configure and generate Joysticks images for DCS. You assign Buttons to locations on the Joystick image and can then view/print/save as images/export to Kneeboards your Joystick configurations.</TextBlock>
+
+        <RichTextBlock Margin="20,0,20,20">
+            <Paragraph>
+                Version: <Run x:Name="VersionNumber" FontWeight="Light"/>
+            </Paragraph>
+        </RichTextBlock>
     </StackPanel>
 </Page>

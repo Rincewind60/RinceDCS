@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.ServiceModels;
+using System;
 using System.Drawing;
 using System.IO;
 
@@ -25,6 +26,6 @@ public partial class HelpViewModel : ObservableRecipient
 
     public string GetAbsolutePath(string fileName)
     {
-        return Windows.ApplicationModel.Package.Current.InstalledPath + "\\Help\\" + fileName;
+        return AppDomain.CurrentDomain.BaseDirectory + "\\Help\\" + fileName;
     }
 }

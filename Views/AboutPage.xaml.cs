@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -29,6 +31,9 @@ namespace RinceDCS.Views
         public AboutPage()
         {
             this.InitializeComponent();
+
+            Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+            VersionNumber.Text = ver.ToString(4);
         }
     }
 }
