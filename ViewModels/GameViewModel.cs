@@ -69,8 +69,12 @@ public partial class GameViewModel : ObservableRecipient
             AddNewInstances(m.Value);
         });
 
-        Open();
-        if(CurrentGame == null)
+        string savedPath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
+        if(!string.IsNullOrWhiteSpace(savedPath))
+        {
+            Open();
+        }
+        if (CurrentGame == null)
         {
             New();
         }

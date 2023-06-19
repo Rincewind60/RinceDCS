@@ -1,4 +1,5 @@
-﻿using RinceDCS.ServiceModels;
+﻿using RinceDCS.Properties;
+using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -14,12 +15,10 @@ public class SettingsService : ISettingsService
         {
             case RinceDCSSettings.SavedGamesPath:
                 return GetKnownFolderPath(key);
-            default:
-                {
-                    ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                    return (string)localSettings.Values[key.ToString()];
-                }
+            case RinceDCSSettings.LastSavePath:
+                return Settings.Default.LastSavePath;
         }
+        return null;
     }
 
     public void SetSetting(RinceDCSSettings key, string value)
@@ -28,12 +27,10 @@ public class SettingsService : ISettingsService
         {
             case RinceDCSSettings.SavedGamesPath:
                 break;
-            default:
-                {
-                    ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                    localSettings.Values[key.ToString()] = value;
-                    break;
-                }
+            case RinceDCSSettings.LastSavePath:
+                Settings.Default.LastSavePath = value;
+                Settings.Default.Save();
+                break;
         }
     }
 

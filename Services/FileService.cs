@@ -15,6 +15,12 @@ public class FileService : IFileService
         Game game = null;
 
         string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
+
+        if(string.IsNullOrEmpty(savePath))
+        {
+            savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".json");
+        }
+
         if(File.Exists(savePath))
         {
             FileStream stream = File.OpenRead(savePath);

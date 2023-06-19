@@ -31,7 +31,7 @@ namespace RinceDCS
         public MainWindow()
         {
             this.InitializeComponent();
-            Title = AppInfo.Current.DisplayInfo.DisplayName;
+            Title = "Rince DCS";
         }
 
         public void StartApp()
