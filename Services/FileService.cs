@@ -101,7 +101,7 @@ public class FileService : IFileService
 
         using (FileStream stream = File.Create(savePath))
         {
-            JsonSerializerOptions options = new JsonSerializerOptions()
+            JsonSerializerOptions options = new()
             {
                 WriteIndented = true
             };

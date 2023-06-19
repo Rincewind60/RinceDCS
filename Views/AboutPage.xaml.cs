@@ -32,8 +32,7 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-            VersionNumber.Text = ver.ToString(4);
+            VersionNumber.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString(4);
         }
     }
 }

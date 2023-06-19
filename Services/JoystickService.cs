@@ -17,7 +17,7 @@ public class JoystickService : IJoystickService
     private List<AttachedJoystick> sticks;
 
     //  Used to help build list of available joystick axes, an array of built in enum values, used to quiry DirectInput.
-    private static List<JoystickOffset> JoystickAxisOffsets = new List<JoystickOffset>() { JoystickOffset.X, JoystickOffset.Y, JoystickOffset.Z, JoystickOffset.RotationX, JoystickOffset.RotationY, JoystickOffset.RotationZ, JoystickOffset.Sliders0, JoystickOffset.Sliders1 };
+    private static List<JoystickOffset> JoystickAxisOffsets = new() { JoystickOffset.X, JoystickOffset.Y, JoystickOffset.Z, JoystickOffset.RotationX, JoystickOffset.RotationY, JoystickOffset.RotationZ, JoystickOffset.Sliders0, JoystickOffset.Sliders1 };
     private static string[] DCSjoystickAxisLabels = { "JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"};
 
     public List<AttachedJoystick> GetAttachedJoysticks()

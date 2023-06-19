@@ -85,7 +85,7 @@ public partial class GameViewModel : ObservableRecipient
     {
         Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, null);
 
-        Game newGame = new Game();
+        Game newGame = new();
         LoadJoysticks(newGame);
 
         SetCurrentGame(newGame);
@@ -174,7 +174,7 @@ public partial class GameViewModel : ObservableRecipient
 
     public void CurrentAircraftChanged()
     {
-        CurrentInstance.CurrentAircraftName = CurrentAircraft == null ? null : CurrentAircraft.Name;
+        CurrentInstance.CurrentAircraftName = CurrentAircraft != null ? CurrentAircraft.Name : null;
     }
 
     partial void OnJoystickModeChanged(DetailsDisplayMode? oldValue, DetailsDisplayMode? newValue)

@@ -1,3 +1,0 @@
-﻿### Manage Joysticks
-
-**TBD**

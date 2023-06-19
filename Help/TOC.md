@@ -6,6 +6,5 @@
 - [Main Page](MainPage.md)
 - [Game Files](GameFiles.md)
 - [View Joysticks](ViewJoysticks.md)
-- [Manage Joysticks](ManageJoysticks.md)
-- [View Bindings](ViewBindings.md)
+- [View Bindings](Bindings.md)
 - [Edit Joysticks](EditJoysticks.md)
