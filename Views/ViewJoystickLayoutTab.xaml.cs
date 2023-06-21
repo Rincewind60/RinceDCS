@@ -2,13 +2,17 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -86,6 +90,19 @@ namespace RinceDCS.Views
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
             JoystickUtil.PrintAssigedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+        }
+    }
+
+    public class IsValidBackgroundConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (bool)value == true ? null : new SolidColorBrush(Colors.LightPink);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -169,20 +169,20 @@ public class JoystickUtil
                 {
                     StringFormat format = StringFormat.GenericDefault;
                     format.Trimming = StringTrimming.EllipsisCharacter;
-                    if (button.BoundButton.Alignment == "Left")
+                    if (button.JoystickButton.Alignment == "Left")
                     {
                         format.Alignment = StringAlignment.Near;
                     }
-                    else if(button.BoundButton.Alignment == "Center")
+                    else if(button.JoystickButton.Alignment == "Center")
                     {
                         format.Alignment = StringAlignment.Center;
                     }
-                    else if(button.BoundButton.Alignment == "Right")
+                    else if(button.JoystickButton.Alignment == "Right")
                     {
                         format.Alignment = StringAlignment.Far;
                     }
-                    RectangleF rect = new((float)(button.BoundButton.TopX), (float)(button.BoundButton.TopY), (float)(button.BoundButton.Width), (float)(fontSize+4));
-                    gfx.DrawString(button.CommandName, font, brush, rect, format);
+                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(button.JoystickButton.Width), (float)(fontSize+4));
+                    gfx.DrawString(button.Label, font, brush, rect, format);
                 }
             }
 

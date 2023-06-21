@@ -55,7 +55,6 @@ public class DCSAircraftJoystickBinding
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
     public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; } = new();
-    public DCSButtonChanges CoreButtonChanges { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
 

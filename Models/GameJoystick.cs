@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using RinceDCS.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -133,20 +134,40 @@ public partial class GameJoystickButton : ObservableObject
 
 public record GameAssignedButtonKey(string ButtonName, bool IsModifier);
 
-public class GameAssignedButton
+public class GameAssignedCommand
 {
-    public string CommandName { get; set; }
-    public string CategoryName { get; set; }
-    public GameJoystickButton BoundButton { get; set; }
-    public string Font { get { return Stick.Font; } }
-    public int FontSize { get { return Stick.FontSize; } }
-    private GameJoystick Stick { get; set; }
+    public string BindID { get; }
+    public string CommandName { get; }
+    public string CategoryName { get; }
 
-    public GameAssignedButton(string commandName, string categoryName, GameJoystickButton boundButton, GameJoystick stick)
+    public GameAssignedCommand(string bindID, string commandName, string categoryName)
     {
+        BindID = bindID;
         CommandName = commandName;
         CategoryName = categoryName;
-        BoundButton = boundButton;
-        Stick = stick;
+    }
+}
+
+public class GameAssignedButton
+{
+    public GameJoystickButton JoystickButton { get; }
+
+    public List<GameAssignedCommand> Commands { get; } = new();
+
+    public string Label { get
+        {
+            string label = Commands[0].CommandName; 
+            for(int i = 1; i < Commands.Count; i++)
+            {
+                label += "|" + Commands[i].CommandName;
+            }
+            return label;
+        } }
+
+    public bool IsValid { get { return Commands.Count == 1; } }
+
+    public GameAssignedButton(GameJoystickButton joyButton)
+    {
+        JoystickButton = joyButton;
     }
 }

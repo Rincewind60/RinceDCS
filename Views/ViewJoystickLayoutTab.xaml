@@ -14,7 +14,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <local:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
+        <local:IsValidBackgroundConverter x:Key="IsValidBackgroundConverter"/>
 
         <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
 
@@ -108,20 +108,22 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:GameAssignedButton">
-                            <TextBlock
-                                Text="{x:Bind CommandName}"
+                            <Border Background="{x:Bind IsValid, Converter={StaticResource IsValidBackgroundConverter}}">
+                                <TextBlock
+                                Text="{x:Bind Label}"
                                 Style="{StaticResource ButtonFont}"
                                 MinWidth="60"
                                 MinHeight="24"
-                                Width="{x:Bind BoundButton.Width}"
-                                Height="{x:Bind BoundButton.Height}"
-                                FontFamily="{x:Bind Font}"
-                                FontSize="{x:Bind FontSize}"
-                                TextAlignment="{x:Bind BoundButton.Alignment, Mode=OneWay}">
-                                <TextBlock.RenderTransform>
-                                    <TranslateTransform X="{x:Bind BoundButton.TopX}" Y="{x:Bind BoundButton.TopY}"/>
-                                </TextBlock.RenderTransform>
-                            </TextBlock>
+                                Width="{x:Bind JoystickButton.Width}"
+                                Height="{x:Bind JoystickButton.Height}"
+                                FontFamily="{x:Bind JoystickButton.Font}"
+                                FontSize="{x:Bind JoystickButton.FontSize}"
+                                TextAlignment="{x:Bind JoystickButton.Alignment, Mode=OneWay}">
+                                </TextBlock>
+                                <Border.RenderTransform>
+                                    <TranslateTransform X="{x:Bind JoystickButton.TopX}" Y="{x:Bind JoystickButton.TopY}"/>
+                                </Border.RenderTransform>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -56,7 +56,7 @@ public class JoystickVMHelper
             {
                 DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
 
-                BuildAssignedButtons(stick, assignedButtons, buttonsOnLayout, commandName, categoryName, bindingButtons);
+                BuildAssignedButtons(stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
             }
         }
 
@@ -74,7 +74,8 @@ public class JoystickVMHelper
         GameAssignedButtonKey key = new(buttonName, false);
         if (buttonsOnLayout.ContainsKey(key))
         {
-            GameAssignedButton button = new(commandName, "", buttonsOnLayout[key], stick);
+            GameAssignedButton button = new(buttonsOnLayout[key]);
+            button.Commands.Add(new("", commandName, ""));
             assignedButtons.Add(button);
         }
     }
@@ -83,6 +84,7 @@ public class JoystickVMHelper
         GameJoystick stick,
         List<GameAssignedButton> assignedButtons,
         Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout,
+        string bindingId,
         string commandName,
         string categoryName,
         DCSAircraftJoystickBinding bindingButtons)
@@ -101,9 +103,24 @@ public class JoystickVMHelper
             }
             if (buttonsOnLayout.ContainsKey(key))
             {
-                GameAssignedButton vwButton = new(commandName, categoryName, buttonsOnLayout[key], stick);
-                assignedButtons.Add(vwButton);
+                GameAssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
+                vwButton.Commands.Add(new(bindingId, commandName, categoryName));
             }
         }
+    }
+
+    private GameAssignedButton GetAssignedButtons(List<GameAssignedButton> assignedButtons, GameJoystickButton gameJoystickButton)
+    {
+        foreach(GameAssignedButton button in assignedButtons)
+        {
+            if(button.JoystickButton.ButtonName == gameJoystickButton.ButtonName &&
+                button.JoystickButton.IsModifier == gameJoystickButton.IsModifier) {
+                return button;
+            }
+        }
+
+        GameAssignedButton assigned = new(gameJoystickButton);
+        assignedButtons.Add(assigned); 
+        return assigned;
     }
 }
