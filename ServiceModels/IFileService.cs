@@ -7,7 +7,7 @@ namespace RinceDCS.ServiceModels;
 
 public interface IFileService
 {
-    public Task<Game> OpenGame();
+    public Task<Game> OpenGame(string path);
 
     public Task SaveGame(Game game);
 

@@ -10,20 +10,13 @@ namespace RinceDCS.Services;
 
 public class FileService : IFileService
 {
-    public async Task<Game> OpenGame()
+    public async Task<Game> OpenGame(string path)
     {
         Game game = null;
 
-        string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
-
-        if(string.IsNullOrEmpty(savePath))
+        if(File.Exists(path))
         {
-            savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".json");
-        }
-
-        if(File.Exists(savePath))
-        {
-            FileStream stream = File.OpenRead(savePath);
+            FileStream stream = File.OpenRead(path);
             game = await JsonSerializer.DeserializeAsync<Game>(stream);
 
             foreach(GameJoystick stick in game.Joysticks)
@@ -36,6 +29,8 @@ public class FileService : IFileService
             }
 
             stream.Dispose();
+
+            Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, path);
         }
 
         return game;

@@ -72,7 +72,7 @@ public partial class GameViewModel : ObservableRecipient
         string savedPath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
         if(!string.IsNullOrWhiteSpace(savedPath))
         {
-            Open();
+            DoOpen(savedPath);
         }
         if (CurrentGame == null)
         {
@@ -92,13 +92,31 @@ public partial class GameViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private void Open()
+    private async void Open()
     {
-        Game openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame()).GetAwaiter().GetResult();
+        if(CurrentGame != null)
+        {
+            bool? result = await Ioc.Default.GetRequiredService<IDialogService>().OpenConfirmationDialog("Save Game", "Do you want to save the existing Game file first?");
+            if(result.HasValue && result.Value)
+            {
+                await Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentGame);
+            }
+        }
+
+        string path = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".json");
+        if(!string.IsNullOrWhiteSpace(path))
+        {
+            DoOpen(path);
+        }
+    }
+
+    private void DoOpen(string path)
+    {
+        Game openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame(path)).GetAwaiter().GetResult();
         if (openedGame != null)
         {
             /// TODO: Check for new attached joysticks and add their buttons
-            foreach(GameInstance instance in openedGame.Instances)
+            foreach (GameInstance instance in openedGame.Instances)
             {
                 LoadBindingDataForInstance(instance);
             }
@@ -174,7 +192,10 @@ public partial class GameViewModel : ObservableRecipient
 
     public void CurrentAircraftChanged()
     {
-        CurrentInstance.CurrentAircraftName = CurrentAircraft != null ? CurrentAircraft.Name : null;
+        if(CurrentInstance != null)
+        {
+            CurrentInstance.CurrentAircraftName = CurrentAircraft != null ? CurrentAircraft.Name : null;
+        }
     }
 
     partial void OnJoystickModeChanged(DetailsDisplayMode? oldValue, DetailsDisplayMode? newValue)

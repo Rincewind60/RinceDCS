@@ -28,7 +28,7 @@ public class DialogService : IDialogService
 
     public async Task<bool?> OpenConfirmationDialog(string title, string message)
     {
-        ContentDialogResult result = await OpenDialog(Parent, title, message, "Yes", null, "No", "Cancel");
+        ContentDialogResult result = await OpenDialog(Parent, title, message, "Yes", null, "", "No");
 
         if (result == ContentDialogResult.None)
         {
