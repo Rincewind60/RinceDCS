@@ -3,7 +3,8 @@
 public enum RinceDCSSettings
 {
     LastSavePath,
-    SavedGamesPath
+    SavedGamesPath,
+    JoysticScaleIndex
 }
 
 /// <summary>

@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using RinceDCS.ServiceModels;
 using RinceDCS.Services;
+using RinceDCS.ViewModels.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,7 +59,9 @@ namespace RinceDCS
                     .AddSingleton<ISettingsService>(new SettingsService())
                     .AddSingleton<IFileService>(new FileService())
                     .AddSingleton<IDCSService>(new DCSService())
+                    .AddSingleton<ScaleVMHelper>(new ScaleVMHelper())
                     .BuildServiceProvider());
+            Ioc.Default.GetRequiredService<ScaleVMHelper>().Initialize();
 
             m_window.StartApp();
         }

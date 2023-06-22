@@ -65,8 +65,8 @@
             </Button>
             <ComboBox
                 Name="ScaleCombo"
-                ItemsSource="{x:Bind ViewModel.Scales}" 
-                SelectedIndex="{x:Bind ViewModel.CurrentScale, Mode=TwoWay}"
+                ItemsSource="{x:Bind ViewModel.ScaleHelper.Scales}" 
+                SelectedIndex="{x:Bind ViewModel.ScaleHelper.CurrentScale, Mode=TwoWay}"
                 SelectionChanged="ScaleCombo_SelectionChanged"
                 VerticalAlignment="Center"
                 Margin="2,0,2,0"/>
@@ -100,7 +100,8 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Name="ButtonsItemsControl"
-                    ItemsSource="{x:Bind ViewModel.AssignedButtons}">
+                    ItemsSource="{x:Bind ViewModel.AssignedButtons}"
+                    LayoutUpdated="ButtonsItemsControl_LayoutUpdated">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas/>

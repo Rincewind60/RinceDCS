@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
+using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Helper;
 using System;
 using System.Collections.Generic;
@@ -24,10 +26,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     public DCSData BindingsData { get; set; }
     public DCSAircraftKey CurrentAircraftKey { get; set; }
 
-    [ObservableProperty]
-    private int currentScale;
-
-    public string[] Scales = { "400%", "200%", "100%", "75%", "50%", "25%" };
+    public ScaleVMHelper ScaleHelper { get; }
 
     public string SavedGamesFolder { get; set; }
 
@@ -39,7 +38,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
         AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
-        CurrentScale = 2;
+        ScaleHelper = Ioc.Default.GetRequiredService<ScaleVMHelper>();
         InstanceName = instanceName;
         SavedGamesFolder = savedGamesFolder;
 

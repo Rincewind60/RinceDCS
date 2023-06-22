@@ -87,17 +87,17 @@ namespace RinceDCS.Views
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = Math.Max(ViewModel.CurrentScale - 1, 0);
+            ViewModel.ScaleHelper.CurrentScale = Math.Max(ViewModel.ScaleHelper.CurrentScale - 1, 0);
         }
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.CurrentScale]);
+            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.CurrentScale = Math.Min(ViewModel.CurrentScale + 1, ViewModel.Scales.Count - 1);
+            ViewModel.ScaleHelper.CurrentScale = Math.Min(ViewModel.ScaleHelper.CurrentScale + 1, ViewModel.ScaleHelper.Scales.Count - 1);
         }
 
         private PointerPoint GetImageMousePoint(object sender, PointerRoutedEventArgs e)
@@ -234,6 +234,14 @@ namespace RinceDCS.Views
                     break;
             }
 
+        }
+
+        private void ButtonsItemsControl_LayoutUpdated(object sender, object e)
+        {
+            if (JoystickScrollViewer.ZoomFactor != ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
+            {
+                JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+            }
         }
     }
 

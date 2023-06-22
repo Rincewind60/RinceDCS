@@ -17,6 +17,8 @@ public class SettingsService : ISettingsService
                 return GetKnownFolderPath(key);
             case RinceDCSSettings.LastSavePath:
                 return Settings.Default.LastSavePath;
+            case RinceDCSSettings.JoysticScaleIndex:
+                return Settings.Default.JoysticScaleIndex;
         }
         return null;
     }
@@ -29,6 +31,10 @@ public class SettingsService : ISettingsService
                 break;
             case RinceDCSSettings.LastSavePath:
                 Settings.Default.LastSavePath = value;
+                Settings.Default.Save();
+                break;
+            case RinceDCSSettings.JoysticScaleIndex:
+                Settings.Default.JoysticScaleIndex = value;
                 Settings.Default.Save();
                 break;
         }

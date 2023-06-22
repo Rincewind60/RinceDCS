@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using RinceDCS.ViewModels.Helper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,10 +28,7 @@ public partial class EditJoystickViewModel : ObservableObject
     public ObservableCollection<string> FontNames { get; set; } = new();
     public ObservableCollection<int> FontSizes { get; set; } = new() { 20, 22, 24, 26, 28, 32, 36, 40 };
 
-    public ObservableCollection<string> Scales { get; set; } = new() { "400%", "200%", "100%", "75%", "50%", "25%" };
-
-    [ObservableProperty]
-    private int currentScale;
+    public ScaleVMHelper ScaleHelper { get; }
 
     public EditJoystickViewModel(GameJoystick joystick, List<string> fonts)
     {
@@ -40,7 +38,7 @@ public partial class EditJoystickViewModel : ObservableObject
         {
             FontNames.Add(font);
         }
-        CurrentScale = 2;
+        ScaleHelper = Ioc.Default.GetRequiredService<ScaleVMHelper>();
     }
 
     [RelayCommand]
