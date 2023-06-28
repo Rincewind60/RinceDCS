@@ -21,8 +21,10 @@
     <None Remove="Assets\DefaultCleanProfile.lua" />
     <None Remove="Help\Bindings.md" />
     <None Remove="Help\Bindings.png" />
+    <None Remove="Help\BindingsMenu.png" />
     <None Remove="Help\EditJoystick.png" />
     <None Remove="Help\EditJoystickButtonSelected.png" />
+    <None Remove="Help\EditJoystickMenu.png" />
     <None Remove="Help\EditJoysticks.md" />
     <None Remove="Help\EditJoystickSettings.png" />
     <None Remove="Help\GameFiles.md" />
@@ -35,6 +37,7 @@
     <None Remove="Help\TOC.md" />
     <None Remove="Help\ViewJoysticks.md" />
     <None Remove="Help\ViewJoysticks.png" />
+    <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\BindingsTablePage.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
@@ -61,10 +64,16 @@
     <Content Include="Help\Bindings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Help\BindingsMenu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Help\EditJoystick.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\EditJoystickButtonSelected.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\EditJoystickMenu.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\EditJoysticks.md">
@@ -104,6 +113,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\ViewJoysticks.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\ViewJoysticksMenu.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="README.md" />
