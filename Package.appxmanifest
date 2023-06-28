@@ -9,7 +9,7 @@
   <Identity
     Name="b0dbd435-29fc-47c4-aaed-aa6491565cd5"
     Publisher="CN=Paul"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <Properties>
     <DisplayName>Rince DCS</DisplayName>

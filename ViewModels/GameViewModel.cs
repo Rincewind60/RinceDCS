@@ -115,12 +115,38 @@ public partial class GameViewModel : ObservableRecipient
         Game openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame(path)).GetAwaiter().GetResult();
         if (openedGame != null)
         {
-            /// TODO: Check for new attached joysticks and add their buttons
+            CheckForNewJoysticks(openedGame);
+
             foreach (GameInstance instance in openedGame.Instances)
             {
                 LoadBindingDataForInstance(instance);
             }
             SetCurrentGame(openedGame);
+        }
+    }
+
+    private void CheckForNewJoysticks(Game openedGame)
+    {
+        foreach (AttachedJoystick stick in AttachedJoysticks)
+        {
+            bool existingStick = false;
+            foreach (GameJoystick gameStick in openedGame.Joysticks)
+            {
+                if (stick == gameStick.AttachedJoystick)
+                {
+                    existingStick = true;
+                    break;
+                }
+            }
+            if (existingStick == false)
+            {
+                GameJoystick newJoystick = new() { AttachedJoystick = stick };
+
+                AddJoystickButtons(newJoystick);
+
+                openedGame.Joysticks.Add(newJoystick);
+
+            }
         }
     }
 
