@@ -1,27 +1,23 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
-<!-- Licensed under the MIT License. -->
-
-<Page
-    x:Class="RinceDCS.Views.ViewJoystickLayoutTab"
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="RinceDCS.Views.ViewJoystickLayoutControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:RinceDCS.Views"
+    xmlns:utils="using:RinceDCS.Views.Utilities"
     xmlns:models="using:RinceDCS.Models"
-    xmlns:vm="using:RinceDCS.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
-    <Page.Resources>
-        <local:IsValidBackgroundConverter x:Key="IsValidBackgroundConverter"/>
+    <UserControl.Resources>
+        <utils:IsValidBackgroundConverter x:Key="IsValidBackgroundConverter"/>
 
         <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
 
         <Style x:Key="ButtonFont" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource ButtonTextBrush}"/>
         </Style>
-    </Page.Resources>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -132,4 +128,4 @@
         </ScrollViewer>
     </Grid>
 
-</Page>
+</UserControl>

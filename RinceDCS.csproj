@@ -40,8 +40,8 @@
     <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\BindingsTablePage.xaml" />
+    <None Remove="Views\EditJoystickLayoutControl.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
-    <None Remove="Views\EditJoystickLayoutTab.xaml" />
     <None Remove="Views\GameInstancesPage.xaml" />
     <None Remove="Views\GamePage.xaml" />
     <None Remove="Views\HelpPage.xaml" />
@@ -49,8 +49,8 @@
     <None Remove="Views\ManageJoystickLayoutPage.xaml" />
     <None Remove="Views\ManageJoystickLayoutTab.xaml" />
     <None Remove="Views\PrintPage.xaml" />
+    <None Remove="Views\ViewJoystickLayoutControl.xaml" />
     <None Remove="Views\ViewJoystickLayoutPage.xaml" />
-    <None Remove="Views\ViewJoystickLayoutTab.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -157,6 +157,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\EditJoystickLayoutControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ViewJoystickLayoutControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\JoystickSettingsPage.xaml">
@@ -195,9 +201,6 @@
     <Page Update="Views\BindingsTablePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\EditJoystickLayoutTab.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Views\GameInstancesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -205,9 +208,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\ManageJoystickLayoutTab.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\ViewJoystickLayoutTab.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

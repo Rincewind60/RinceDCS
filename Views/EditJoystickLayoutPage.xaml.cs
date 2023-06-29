@@ -45,10 +45,9 @@ namespace RinceDCS.Views
                 newItem.Header = joystick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                Frame frame = new Frame();
-                frame.Navigate(typeof(EditJoystickLayoutTab), joystick);
+                EditJoystickLayoutControl ctrl = new(joystick);
 
-                newItem.Content = frame;
+                newItem.Content = ctrl;
                 EditJoystickLayouts.TabItems.Add(newItem);
             }
         }

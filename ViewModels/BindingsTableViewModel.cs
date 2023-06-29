@@ -90,8 +90,6 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
 
         ReBuildBindings();
-
-        IsActive = true;
     }
 
     public void Receive(PropertyChangedMessage<GameAircraft> message)

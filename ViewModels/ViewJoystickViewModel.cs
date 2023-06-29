@@ -43,8 +43,6 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
         SavedGamesFolder = savedGamesFolder;
 
         ReBuildViewButtons();
-
-        IsActive = true;
     }
 
     public void Receive(PropertyChangedMessage<GameAircraft> message)

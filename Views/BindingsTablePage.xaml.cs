@@ -40,8 +40,18 @@ namespace RinceDCS.Views
 
             Tuple<DCSData,GameAircraft> data = e.Parameter as Tuple<DCSData, GameAircraft>;
 
-            this.DataContext = new BindingsTableViewModel(data.Item1, data.Item2);
+            BindingsTableViewModel vm = new(data.Item1, data.Item2);
+            this.DataContext = vm;
+            vm.IsActive = true;
         }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            ViewModel.IsActive = false;
+        }
+
         public BindingsTableViewModel ViewModel => (BindingsTableViewModel)DataContext;
 
         public static Visibility IsJoystickColumnVisible(string heading)

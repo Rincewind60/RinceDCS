@@ -39,17 +39,38 @@ namespace RinceDCS.Views
 
             Tuple<string, string, Game, DCSData, GameAircraft> data = e.Parameter as Tuple<string, string, Game, DCSData, GameAircraft>;
 
-            foreach (GameJoystick stick in data.Item3.Joysticks)
+            string instanceName = data.Item1;
+            string savedGamesFolder = data.Item2;
+            Game game = data.Item3;
+            DCSData dcsData = data.Item4;
+            GameAircraft currentAircraft = data.Item5;
+
+
+            foreach (GameJoystick stick in game.Joysticks)
             {
                 TabViewItem newItem = new TabViewItem();
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                Frame frame = new Frame();
-                frame.Navigate(typeof(ViewJoystickLayoutTab), Tuple.Create(data.Item1, data.Item2, stick, data.Item4, data.Item5));
+                ViewJoystickLayoutControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
+                ctrl.ViewModel.IsActive = true;
 
-                newItem.Content = frame;
+                newItem.Content = ctrl;
                 ViewJoystickLayouts.TabItems.Add(newItem);
+            }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            foreach(TabViewItem item in ViewJoystickLayouts.TabItems)
+            {
+                ViewJoystickLayoutControl ctrl = item.Content as ViewJoystickLayoutControl;
+                if (ctrl != null)
+                {
+                    ctrl.ViewModel.IsActive = false;
+                }
             }
         }
     }

@@ -1,12 +1,10 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.WinUI.Helpers;
-using Microsoft.UI;
 using Microsoft.UI.Input;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -17,14 +15,13 @@ using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
-using System.Numerics;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Core;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -32,24 +29,14 @@ using Windows.UI.Core;
 
 namespace RinceDCS.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class EditJoystickLayoutTab : Page
+    public sealed partial class EditJoystickLayoutControl : UserControl
     {
-        private float[] ZoomFactors = { 4F, 2F, 1F, 0.75F, 0.5F, 0.25F };
+        private readonly float[] ZoomFactors = { 4F, 2F, 1F, 0.75F, 0.5F, 0.25F };
         private bool isDrawing = false;
 
-        public EditJoystickLayoutTab()
+        public EditJoystickLayoutControl(GameJoystick joystick)
         {
             this.InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            GameJoystick joystick = (GameJoystick)e.Parameter;
 
             InstalledFontCollection fonts = new InstalledFontCollection();
             List<string> fontNames = new();
@@ -139,8 +126,8 @@ namespace RinceDCS.Views
         {
             JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
             string stickName = ViewModel.Stick.AttachedJoystick.Name;
-            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog(stickName + " edit Settings", page,"Save",null,null,"Cancel");
-            if(result == ContentDialogResult.Primary)
+            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
+            if (result == ContentDialogResult.Primary)
             {
                 ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);
             }
@@ -241,94 +228,6 @@ namespace RinceDCS.Views
             if (JoystickScrollViewer.ZoomFactor != ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
             {
                 JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
-            }
-        }
-    }
-
-    public class ButtonOnLayoutConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ButtonOnLayoutColorConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return (bool)value == true ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Gray);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class SelectedButtonBackgroundConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if(value == null || (bool)value == false)
-            {
-                return null;
-            }
-            else
-            {
-                return new SolidColorBrush(Colors.AliceBlue);
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class SelectedButtonBorderConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value == null || (bool)value == false)
-            {
-                return new SolidColorBrush(Colors.Black);
-            }
-            else
-            {
-                return new SolidColorBrush(Colors.Blue);
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class AlignmentConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return value.ToString() == parameter.ToString();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            bool isChecked = (bool)value;
-
-            if (isChecked)
-            {
-                return parameter.ToString();
-            }
-            else
-            {
-                return null;
             }
         }
     }

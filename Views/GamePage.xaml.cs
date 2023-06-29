@@ -43,7 +43,9 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            this.DataContext = new GameViewModel();
+            GameViewModel vm = new();
+            this.DataContext = vm;
+            vm.IsActive = true;
 
             WeakReferenceMessenger.Default.Register<ExportAssignedButtonsImageMessage>(this, (r, m) =>
             {
