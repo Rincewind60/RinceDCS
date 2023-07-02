@@ -193,6 +193,19 @@ namespace RinceDCS.Views
             ViewModel.CurrentButton = button;
         }
 
+        private void JoystickButtons_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (ViewModel.CurrentButton == null) return;
+
+            switch (e.Key)
+            {
+                case Windows.System.VirtualKey.Delete:
+                    ViewModel.CurrentButton.OnLayout = false;
+                    e.Handled = true;
+                    break;
+            }
+        }
+
         private void ButtonsItemsControl_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (ViewModel.CurrentButton == null) return;
@@ -220,7 +233,6 @@ namespace RinceDCS.Views
                     e.Handled = true;
                     break;
             }
-
         }
 
         private void ButtonsItemsControl_LayoutUpdated(object sender, object e)

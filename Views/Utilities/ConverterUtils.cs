@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
+using RinceDCS.ViewModels;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -202,5 +203,55 @@ public class AlignmentConverter : IValueConverter
         {
             return null;
         }
+    }
+}
+
+public class ModeConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return value.ToString() == parameter.ToString();
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        bool isChecked = (bool)value;
+
+        if (isChecked)
+        {
+            DetailsDisplayMode mode;
+            Enum.TryParse(parameter.ToString(), true, out mode);
+            return mode;
+        }
+        else
+        {
+            return null;
+        }
+    }
+}
+
+public class ModeVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return value.ToString() == parameter.ToString() ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class AircraftVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return value.ToString() == DetailsDisplayMode.Edit.ToString() ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }

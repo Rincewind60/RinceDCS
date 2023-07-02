@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <local:ModeConverter x:Key="ModeConverter"/>
+        <utils:ModeConverter x:Key="ModeConverter"/>
         <utils:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
         <utils:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
         <utils:SelectedButtonBackgroundConverter x:Key="SelectedButtonBackgroundConverter"/>
@@ -48,7 +48,8 @@
             Grid.Row="1"
             Name="JoystickButtons"
             ItemsSource="{x:Bind ViewModel.Stick.Buttons}"
-            SelectedItem="{x:Bind ViewModel.CurrentButton, Mode=TwoWay}">
+            SelectedItem="{x:Bind ViewModel.CurrentButton, Mode=TwoWay}"
+            PreviewKeyDown="JoystickButtons_PreviewKeyDown">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:GameJoystickButton">
                     <ListViewItem>

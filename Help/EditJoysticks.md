@@ -37,25 +37,25 @@ The layouts are used across all Game Instances on the View Joystick page.
 	- **Joystick** - The joysticks name.
 - **Scrolling** - The image and button list can be scrolled as needed. 
 
-### Step 1: Settings
+### Default Settings
 
 Before starting to place buttons on your joystick layout you may like to set the default button size. You can change the size of individual buttons, as you place it on the layout, or afterwards.
 
 Select the "Settings" button to open the Settings dialog: ![Settings Dialog](EditJoystickSettings.png)
 
-### Step 2: Selecting an Image
+### Selecting an Image
 
 Use the "Select Image" button to locate the image to be used for this joystick.
 
-The image should be a PNG file. 
+The image should be a PNG file.
 
-### Step 3: Set Button Text Properties
+### Setting Button Text Properties
 
 You can set the Font, Font Size and Color at any time.
 
 These settings are individual to each joystick and are used on all views, exports and printing.
 
-### Step 4: Adding Button to Layout
+### Adding a Button to the Layout
 
 #### Placing a button using the default settings size.
 
@@ -67,17 +67,28 @@ These settings are individual to each joystick and are used on all views, export
 1. Select the button from the button list.
 2. Click on the layout image and hold the mouse button down, move the mouse to resize your button. Release the mouse when it is the right size. 
 
-### Step 5: Button Selection
+### Button Selection
 
+You can select a button by either selecting it on the button list, or clicking on it on the layout.
 
-The new button will now be highlighted on the layout and the Justification menu buttons will be enabled.
+The currently selected button will be highlighted.
 
-The position and size of your button will be displayed.
+You can now set tis individual text alignment.
 
-
-### Step 6: Adjusting Buttons Position/Size
-
-![Instances Dialog](EditJoystick.png)
+The position and size of your button will be displayed at the top right of the toolbar..
 
 ![Instances Dialog](EditJoystickButtonSelected.png)
 
+### Adjusting a Buttons Position
+
+First select your button then use the cursor keys to move the button on the layout.
+
+### Adjusting a Buttons Size
+
+First select your button then click on the layout (not any button) and holding the mouse button down resize your button, let the mouse button go once it is the right size.
+
+You can then adjust your buttons location if required.
+
+### Removing button from layout
+
+First select your button, then use the **Delete** key to remove the button from the layout.

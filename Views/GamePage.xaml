@@ -5,7 +5,6 @@
     x:Class="RinceDCS.Views.GamePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:RinceDCS.Views"
     xmlns:models="using:RinceDCS.Models"
     xmlns:utils="using:RinceDCS.Views.Utilities"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,10 +13,10 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <local:ModeConverter x:Key="ModeConverter"/>
-        <local:ModeVisibilityConverter x:Key="ModeVisibilityConverter"/>
+        <utils:ModeConverter x:Key="ModeConverter"/>
+        <utils:ModeVisibilityConverter x:Key="ModeVisibilityConverter"/>
         <utils:NullToFalseConverter x:Key="NullToFalseConverter"/>
-        <local:AircraftVisibilityConverter x:Key="AircraftVisibilityConverter"/>
+        <utils:AircraftVisibilityConverter x:Key="AircraftVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>

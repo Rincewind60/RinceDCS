@@ -1,17 +1,18 @@
 ## Rince DCS
 
-### Purpose
+### Overview
 
 ### Dependencies
 
+### Acknowledge
 
-#### Contents
+### Contents
 
-- [Introduction](Introduction.md)
-- [Getting Started](GettingStarted.md)
-- [Main Page](MainPage.md)
-- [Game Files](GameFiles.md)
-- [View Joysticks](ViewJoysticks.md)
-- [Manage Joysticks](ManageJoysticks.md)
-- [View Bindings](ViewBindings.md)
-- [Edit Joysticks](EditJoysticks.md)
+- [Introduction](Help/Introduction.md)
+- [Getting Started](Help/GettingStarted.md)
+- [Save File](Help/SaveFiles.md)
+- [Main Page](Help/MainPage.md)
+- [Manage Game Instances](Help/InstancesDialog.md)
+- [View Joysticks](Help/ViewJoysticks.md)
+- [View Bindings](Help/Bindings.md)
+- [Edit Joysticks](Help/EditJoysticks.md)

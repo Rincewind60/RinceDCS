@@ -22,18 +22,17 @@
     <None Remove="Help\Bindings.md" />
     <None Remove="Help\Bindings.png" />
     <None Remove="Help\BindingsMenu.png" />
-    <None Remove="Help\EditJoystick.png" />
     <None Remove="Help\EditJoystickButtonSelected.png" />
     <None Remove="Help\EditJoystickMenu.png" />
     <None Remove="Help\EditJoysticks.md" />
     <None Remove="Help\EditJoystickSettings.png" />
-    <None Remove="Help\GameFiles.md" />
     <None Remove="Help\GettingStarted.md" />
     <None Remove="Help\InstancesDialog.md" />
     <None Remove="Help\InstancesDialog.png" />
     <None Remove="Help\Introduction.md" />
     <None Remove="Help\Main.png" />
     <None Remove="Help\MainPage.md" />
+    <None Remove="Help\SaveFile.md" />
     <None Remove="Help\TOC.md" />
     <None Remove="Help\ViewJoysticks.md" />
     <None Remove="Help\ViewJoysticks.png" />
@@ -67,9 +66,6 @@
     <Content Include="Help\BindingsMenu.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Help\EditJoystick.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Help\EditJoystickButtonSelected.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -82,7 +78,10 @@
     <Content Include="Help\EditJoystickSettings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Help\GameFiles.md">
+    <Content Include="Help\Main.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\SaveFile.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\GettingStarted.md">
@@ -95,9 +94,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\Introduction.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Help\Main.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\MainPage.md">
