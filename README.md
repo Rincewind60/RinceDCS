@@ -2,7 +2,7 @@
 
 ### Overview
 
-Rince DCS is a small tool designed to make it easy for the DCS user to generate Joystick layouts of their command to button bindings.
+Rince DCS is a small tool designed to make it easy for the **DCS World** flight simulation user, it enables you to generate Joystick layouts of your Aircraft control Joystick setups.
 
 These layouts can then be Printed, Saved as PNG files or exported directly to DCS for use as Kneeboard images.
 
