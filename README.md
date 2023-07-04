@@ -18,6 +18,12 @@ The tool scans for any attached joysticks on startup. Once a Joystick is found a
 1. DCS World, supports multiple versions being installed.
 1. Joysticks, attach to your computer the joysticks to be configured.
 
+### Installing Rince DCS
+
+Download the rlease ZIP file and unzip to a location of you choosing.
+
+In the resulting folder open the RinceDCS.exe application.
+
 ### Using Rince DCS
 
 To get started with Rince DCS view the [Getting Started](Help/GettingStarted.md) help page.
