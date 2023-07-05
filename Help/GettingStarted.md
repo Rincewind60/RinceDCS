@@ -12,6 +12,10 @@ Rince DCS remmebers the last file saved/opened and will open it automatically wh
 
 Viewing commands assigned to Joystick layouts requires you to choose a DCS Instance and the Aircraft you wish to view.
 
+### Limitations
+
+1. Will not work when DCS is running as it cannot access some of the files it needs as DCS has a lock on them.
+
 ### Suggested steps for editing Joystick Layouts
 
 1. Source images of your required Joysticks. These should be in PNG format.
