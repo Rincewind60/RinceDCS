@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RinceDCS.ViewModels.Helper;
+namespace RinceDCS.ViewModels.Helpers;
 
 /// <summary>
 /// Helper class to help caling of Joystick views.

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RinceDCS.ViewModels.Helper;
+namespace RinceDCS.ViewModels.Helpers;
 
 public class JoystickVMHelper
 {

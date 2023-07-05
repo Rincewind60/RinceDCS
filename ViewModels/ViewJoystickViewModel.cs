@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
-using RinceDCS.ViewModels.Helper;
+using RinceDCS.ViewModels.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

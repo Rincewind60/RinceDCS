@@ -62,7 +62,7 @@ public class DCSService : IDCSService
             newSavedGamesFolder += "." + variantName;
         }
 
-        if(Directory.Exists(newSavedGamesFolder))
+        if (Directory.Exists(newSavedGamesFolder))
         {
             return newSavedGamesFolder;
         }

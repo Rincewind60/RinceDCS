@@ -13,7 +13,8 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using RinceDCS.ServiceModels;
 using RinceDCS.Services;
-using RinceDCS.ViewModels.Helper;
+using RinceDCS.Utilities;
+using RinceDCS.ViewModels.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,6 +63,8 @@ namespace RinceDCS
                     .AddSingleton<ScaleVMHelper>(new ScaleVMHelper())
                     .BuildServiceProvider());
             Ioc.Default.GetRequiredService<ScaleVMHelper>().Initialize();
+
+            Application.Current.UnhandledException += new Microsoft.UI.Xaml.UnhandledExceptionEventHandler(GlobalExceptionHandler.UnhandledException);
 
             m_window.StartApp();
         }

@@ -14,7 +14,7 @@ Viewing commands assigned to Joystick layouts requires you to choose a DCS Insta
 
 ### Limitations
 
-1. Will not work when DCS is running as it cannot access some of the files it needs as DCS has a lock on them.
+1. Will not work while DCS is running as it cannot access some of the files it needs as DCS has a lock on them.
 
 ### Suggested steps for editing Joystick Layouts
 

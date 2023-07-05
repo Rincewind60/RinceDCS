@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
-using RinceDCS.ViewModels.Helper;
+using RinceDCS.ViewModels.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;

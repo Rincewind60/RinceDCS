@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 using RinceDCS.Views.Utilities;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging;
-using RinceDCS.ViewModels.Helper;
+using RinceDCS.ViewModels.Helpers;
 using RinceDCS.ViewModels.Messages;
 using Windows.ApplicationModel;
 
