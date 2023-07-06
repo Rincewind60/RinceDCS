@@ -10,7 +10,7 @@ The tool scans for any attached joysticks on startup. Once a Joystick is found a
 
 **Exmaple Layout**
 
-![Example Layout](Help/ExampleLayout.png)
+![Example](Help/Example.png)
 
 ### Dependencies
 

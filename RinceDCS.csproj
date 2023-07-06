@@ -26,6 +26,7 @@
     <None Remove="Help\EditJoystickMenu.png" />
     <None Remove="Help\EditJoysticks.md" />
     <None Remove="Help\EditJoystickSettings.png" />
+    <None Remove="Help\Example.png" />
     <None Remove="Help\ExampleLayout.png" />
     <None Remove="Help\GettingStarted.md" />
     <None Remove="Help\InstancesDialog.md" />
@@ -78,6 +79,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\EditJoystickSettings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\Example.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\ExampleLayout.png">
