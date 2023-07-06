@@ -22,6 +22,7 @@
     <None Remove="Help\Bindings.md" />
     <None Remove="Help\Bindings.png" />
     <None Remove="Help\BindingsMenu.png" />
+    <None Remove="Help\CommandInfoPopup.png" />
     <None Remove="Help\EditJoystickButtonSelected.png" />
     <None Remove="Help\EditJoystickMenu.png" />
     <None Remove="Help\EditJoysticks.md" />
@@ -67,6 +68,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\BindingsMenu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\CommandInfoPopup.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Help\EditJoystickButtonSelected.png">
