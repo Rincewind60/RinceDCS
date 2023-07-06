@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Text.Json.Serialization;
 using Windows.Gaming.Input;
 
@@ -154,7 +155,11 @@ public class GameAssignedButton
 
     public List<GameAssignedCommand> Commands { get; } = new();
 
-    public string Label { get
+    public string DetailsMarkDown { get; set; }
+
+    public string Label
+    {
+        get
         {
             string label = Commands[0].CommandName; 
             for(int i = 1; i < Commands.Count; i++)
@@ -162,7 +167,8 @@ public class GameAssignedButton
                 label += "|" + Commands[i].CommandName;
             }
             return label;
-        } }
+        } 
+    }
 
     public bool IsValid { get { return Commands.Count == 1; } }
 
