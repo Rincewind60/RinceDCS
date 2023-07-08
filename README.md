@@ -33,15 +33,10 @@ To get started with Rince DCS view the [Getting Started](Help/GettingStarted.md)
 This utility only exists because of the work of Holdi601 and his [Joystick Profiler](https://github.com/Holdi601/JoystickProfiler) project.
 
 On starting to fly in DCS I quickly saw the need for Joystick layouts that I could view/print.
-
 Started off finding and downloading some static images but these quickly became a pain as I was manually writing my contol mappings onto them!
-
 Searching I came across JoystickProfiler and started using this, not only could I generate images/kneeboards of my control mapping I could update them as well!
-
 As a retired programmer I started delving into the JoystickProfilers code base when I could not grasp how things where working.
-
 Then I realised I wanted to make some changes but quickly realised the old adage is true, reading code is way harder then writing it!
-
 All this had me itching to try my hand at some modern windows development, so Rince DCS was born. 
 
 So thanks again Holdi601, it has been an interesting expeience delving into your code, and enjoyable creating my own take on some of the functionality.
