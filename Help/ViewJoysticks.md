@@ -27,6 +27,4 @@ The bindings displayed are loaded from DCS each time you start the application.
 - Hovering your mouse over a command label will cause the Comand Info Popup to appear.
 
 ![Command Info Popup](CommandInfoPopup.png)
-
-- Note that two commands are listed and they are highlighted in red on the layout, in DCS two commands have been assigned to the one button.
  
