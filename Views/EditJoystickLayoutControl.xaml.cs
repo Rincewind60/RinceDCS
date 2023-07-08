@@ -31,7 +31,6 @@ namespace RinceDCS.Views
 {
     public sealed partial class EditJoystickLayoutControl : UserControl
     {
-        private readonly float[] ZoomFactors = { 4F, 2F, 1F, 0.75F, 0.5F, 0.25F };
         private bool isDrawing = false;
 
         public EditJoystickLayoutControl(GameJoystick joystick)
@@ -79,7 +78,7 @@ namespace RinceDCS.Views
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+            JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
@@ -237,9 +236,9 @@ namespace RinceDCS.Views
 
         private void ButtonsItemsControl_LayoutUpdated(object sender, object e)
         {
-            if (JoystickScrollViewer.ZoomFactor != ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
+            if (JoystickScrollViewer.ZoomFactor != ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
             {
-                JoystickScrollViewer.ChangeView(0, 0, ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+                JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
             }
         }
     }

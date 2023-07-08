@@ -22,7 +22,8 @@ namespace RinceDCS.ViewModels.Helpers;
 /// </summary>
 public partial class ScaleVMHelper : ObservableObject
 {
-    public List<string> Scales { get; set; } = new() { "400%", "200%", "100%", "75%", "50%", "25%" };
+    public List<string> Scales { get; set; } = new() { "400%", "200%", "150%", "100%", "80%", "60%", "50%", "40%", "30%" };
+    public float[] ZoomFactors = { 4F, 2F, 1.5F, 1F, 0.8F, 0.6F, 0.5F, 0.4F, 0.30F };
 
     [ObservableProperty]
     private int currentScale;
@@ -30,12 +31,11 @@ public partial class ScaleVMHelper : ObservableObject
     public void Initialize()
     {
         string scaleIndex = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.JoysticScaleIndex);
-        CurrentScale = string.IsNullOrWhiteSpace(scaleIndex) ? 2 : int.Parse(scaleIndex);
+        CurrentScale = string.IsNullOrWhiteSpace(scaleIndex) ? 3 : int.Parse(scaleIndex);
     }
 
     partial void OnCurrentScaleChanged(int value)
     {
         Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.JoysticScaleIndex, value.ToString());
     }
-
 }
