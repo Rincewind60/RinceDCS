@@ -12,11 +12,27 @@
 
     <UserControl.Resources>
         <utils:IsValidBackgroundConverter x:Key="IsValidBackgroundConverter"/>
+        <utils:TrueToVisibleConverter x:Key="TrueToVisibleConverter"/>
+        <utils:FalseToVisibleConverter x:Key="FalseToVisibleConverter"/>
 
         <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
 
         <Style x:Key="ButtonFont" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource ButtonTextBrush}"/>
+        </Style>
+
+        <Style x:Key="CurveBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="Width" Value="22"/>
+        </Style>
+        <Style x:Key="CurveText" TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="InfoHeading" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
         </Style>
     </UserControl.Resources>
 
@@ -108,7 +124,7 @@
                         <DataTemplate x:DataType="models:GameAssignedButton">
                             <Border Background="{x:Bind IsValid, Converter={StaticResource IsValidBackgroundConverter}}">
                                 <TextBlock
-                                Text="{x:Bind Label}"
+                                Text="{x:Bind Command}"
                                 Style="{StaticResource ButtonFont}"
                                 MinWidth="60"
                                 MinHeight="24"
@@ -118,10 +134,101 @@
                                 FontSize="{x:Bind JoystickButton.FontSize}"
                                 TextAlignment="{x:Bind JoystickButton.Alignment, Mode=OneWay}">
                                     <ToolTipService.ToolTip>
-                                        <controls:MarkdownTextBlock
-                                            Text="{x:Bind DetailsMarkDown}" 
-                                            Margin="6">
-                                        </controls:MarkdownTextBlock>
+                                        <StackPanel Orientation="Vertical">
+                                            <Grid Visibility="{x:Bind IsAxisButton, Converter={StaticResource TrueToVisibleConverter}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <TextBlock Grid.Column="0" Grid.Row="0" Text="Command:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind Command}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Category:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind Category}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="2" Text="ID:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="2" Text="{x:Bind ID}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Deadzone:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind Deadzone}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Saturation X:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="4" Text="{x:Bind SaturationX}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="5" Text="Saturation Y:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind SaturationY}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="6" Text="Curvature:" Style="{StaticResource InfoHeading}" Visibility="{x:Bind HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="6" Text="{x:Bind Curvature[0]}" Visibility="{x:Bind HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Content="Slider" FontWeight="Bold" IsChecked="{x:Bind Slider }"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Content="Invert" FontWeight="Bold" IsChecked="{x:Bind Invert }"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9" Content="User Curve" FontWeight="Bold" IsChecked="{x:Bind HasUserCurve }"/>
+                                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10" Orientation="Horizontal" Visibility="{x:Bind HasUserCurve, Converter={StaticResource TrueToVisibleConverter}}">
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[0]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[1]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[2]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[3]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[4]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[5]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[6]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[7]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[8]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[9]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                    <Border Style="{StaticResource CurveBorder}">
+                                                        <TextBlock Text="{x:Bind Curvature[10]}" Style="{StaticResource CurveText}"/>
+                                                    </Border>
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid Visibility="{x:Bind IsAxisButton, Converter={StaticResource FalseToVisibleConverter}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <TextBlock Grid.Column="0" Grid.Row="0" Text="Command:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind Command}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Category:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind Category}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="2" Text="ID:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="2" Text="{x:Bind ID}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Modifiers:" Style="{StaticResource InfoHeading}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind Modifier}"/>
+                                            </Grid>
+                                        </StackPanel>
                                     </ToolTipService.ToolTip>
                                 </TextBlock>
                                 <Border.RenderTransform>

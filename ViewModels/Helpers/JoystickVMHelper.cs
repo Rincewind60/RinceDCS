@@ -78,7 +78,6 @@ public class JoystickVMHelper
         {
             GameAssignedButton vwButton = new(buttonsOnLayout[key]);
             vwButton.Commands.Add(new("", commandName, ""));
-            vwButton.DetailsMarkDown = commandName;
             assignedButtons.Add(vwButton);
         }
     }
@@ -108,60 +107,36 @@ public class JoystickVMHelper
             {
                 GameAssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
                 vwButton.Commands.Add(new(bindingId, commandName, categoryName));
-                vwButton.DetailsMarkDown += GetButtonDetailsMarkDown(bindingId, commandName, categoryName, button);
+                AddButtonConfiguration(button, vwButton);
             }
         }
     }
 
-    private string GetButtonDetailsMarkDown(string bindingId, string commandName, string categoryName, DCSButton button)
+    private void AddButtonConfiguration(DCSButton button, GameAssignedButton vwButton)
     {
-        StringBuilder markDown = new();
-
-        markDown.AppendLine("**Command:** " + commandName);
-        markDown.AppendLine();
-        markDown.AppendLine("**Category:** " + categoryName);
-        markDown.AppendLine();
-        markDown.AppendLine("**ID:** " + bindingId);
-        markDown.AppendLine();
         if (button is DCSAxisButton)
         {
             DCSAxisButton axisButton = button as DCSAxisButton;
-            markDown.AppendLine("**Filter**");
-            markDown.AppendLine();
-            markDown.Append("- Curvature: ");
-            markDown.AppendJoin(',', axisButton.Filter.Curvature);
-            markDown.AppendLine();
-            markDown.AppendLine("- Deadzone: " + axisButton.Filter.Deadzone);
-            markDown.AppendLine();
-            markDown.Append("- Hardware Detent: ");
-            markDown.AppendJoin(',', axisButton.Filter.Curvature);
-            markDown.AppendLine();
-            markDown.Append("- Hardware Detent AB: ");
-            markDown.AppendJoin(',', axisButton.Filter.Curvature);
-            markDown.AppendLine();
-            markDown.Append("- Hardware Detent Max: ");
-            markDown.AppendJoin(',', axisButton.Filter.Curvature);
-            markDown.AppendLine();
-            markDown.AppendLine("- Invert: " + axisButton.Filter.Invert);
-            markDown.AppendLine();
-            markDown.AppendLine("- Saturation X: " + axisButton.Filter.SaturationX);
-            markDown.AppendLine();
-            markDown.AppendLine("- Saturation Y: " + axisButton.Filter.SaturationY);
-            markDown.AppendLine();
-            markDown.Append("- Slider: ");
-            markDown.AppendJoin(',', axisButton.Filter.Curvature);
-            markDown.AppendLine();
+            vwButton.IsAxisButton = true;
+            foreach(double curve in axisButton.Filter.Curvature)
+            {
+                vwButton.Curvature.Add((int)(curve * 100));
+            }
+            vwButton.Deadzone = (int)axisButton.Filter.Deadzone;
+            vwButton.HardwareDetent = axisButton.Filter.HardwareDetent;
+            vwButton.HardwareDetentAB = (int)axisButton.Filter.HardwareDetentAB;
+            vwButton.HardwareDetentMax = (int)axisButton.Filter.HardwareDetentMax;
+            vwButton.Invert = axisButton.Filter.Invert;
+            vwButton.SaturationX = (int)(axisButton.Filter.SaturationX * 100);
+            vwButton.SaturationY = (int)(axisButton.Filter.SaturationY * 100);
+            vwButton.Slider = axisButton.Filter.Slider;
         }
-        else
+        else 
         {
             DCSKeyButton keyButton = button as DCSKeyButton;
-            markDown.Append("**Modifiers:** ");
-            markDown.AppendJoin(',', keyButton.Modifiers);
-            markDown.AppendLine();
+            vwButton.IsAxisButton = false;
+            vwButton.Modifiers.AddRange(keyButton.Modifiers);
         }
-        markDown.AppendLine();
-
-        return markDown.ToString();
     }
 
     private GameAssignedButton GetAssignedButtons(List<GameAssignedButton> assignedButtons, GameJoystickButton gameJoystickButton)
