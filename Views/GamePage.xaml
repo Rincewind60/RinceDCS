@@ -50,26 +50,32 @@
                 IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="ViewButton_Click"/>
             <AppBarToggleButton 
-                Name="ManageButton"
-                Icon="Manage" 
-                Label="Manage" 
-                IsEnabled="False"
-                Visibility="Collapsed"
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"
-                Click="ManageButton_Click"/>
-            <AppBarToggleButton 
                 Name="BindingsButton"
                 Icon="List" 
                 Label="Bindings" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Bindings}"
                 IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="BindingsButton_Click"/>
+            <AppBarToggleButton 
+                Name="ManageButton"
+                Icon="List" 
+                Label="Manage" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"
+                IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
+                Click="ManageButton_Click_1"/>
             <AppBarSeparator/>
+            <AppBarToggleButton 
+                Name="GroupsButton"
+                Icon="Edit" 
+                Label="Groups" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditGroups}"
+                IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
+                Click="GroupsButton_Click"/>
             <AppBarToggleButton
                 Name="EditButton"
                 Icon="Edit" 
                 Label="Sticks" 
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Edit}"
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditSticks}"
                 Click="EditButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Label="Help" Click="Help_Click"/>

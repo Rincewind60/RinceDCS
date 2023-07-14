@@ -135,5 +135,15 @@ namespace RinceDCS.Views
             DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
                 Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
         }
+
+        private void ManageButton_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GroupsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

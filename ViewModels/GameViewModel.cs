@@ -21,7 +21,8 @@ public enum DetailsDisplayMode
     Bindings,
     View,
     Manage,
-    Edit
+    EditGroups,
+    EditSticks
 }
 
 public partial class GameViewModel : ObservableRecipient
@@ -37,6 +38,10 @@ public partial class GameViewModel : ObservableRecipient
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
     private DCSData currentInstanceBindingsData;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
+    private GameBindingGroups currentInstanceBindingGroups;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
@@ -113,11 +118,6 @@ public partial class GameViewModel : ObservableRecipient
         if (openedGame != null)
         {
             CheckForNewJoysticks(openedGame);
-
-            foreach (GameInstance instance in openedGame.Instances)
-            {
-                LoadBindingDataForInstance(instance);
-            }
             SetCurrentGame(openedGame);
         }
     }
@@ -208,7 +208,11 @@ public partial class GameViewModel : ObservableRecipient
         }
         else
         {
+            LoadBindingDataForInstance(CurrentInstance);
+            BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), CurrentInstance.BindingsData);
+            CurrentInstance.BindingGroups = bindHelper.GetUpdatedGroups(CurrentInstance.BindingGroups);
             CurrentInstanceBindingsData = CurrentInstance.BindingsData;
+            CurrentInstanceBindingGroups = CurrentInstance.BindingGroups;
             SetCurrentAircraftForCurrentInstance();
         }
     }
@@ -318,13 +322,7 @@ public partial class GameViewModel : ObservableRecipient
 
         CurrentGame = newGame;
 
-        foreach (GameInstance instance in CurrentGame.Instances)
-        {
-            LoadBindingDataForInstance(instance);
-        }
-
         SetCurrentInstanceForGame();
-
         SetCurrentAircraftForCurrentInstance();
 
         IsGameLoaded = true;
@@ -343,7 +341,6 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             CurrentInstance = instanceQuery.First();
-
         }
     }
 
@@ -374,7 +371,7 @@ public partial class GameViewModel : ObservableRecipient
         foreach (InstanceData instance in instances.Skip(1).ExceptBy(CurrentGame.Instances.Select(i => i.GameExePath), j => j.GameExePath))
         {
             GameInstance newInstance = new() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath };
-            LoadBindingDataForInstance(newInstance);
+//            LoadBindingDataForInstance(newInstance);
             CurrentGame.Instances.Add(newInstance);
         }
     }
@@ -400,6 +397,8 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.GameExePath = updated.gameExePath;
                 updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
                 LoadBindingDataForInstance(updated.instance);
+                BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), updated.instance.BindingsData);
+                updated.instance.BindingGroups = bindHelper.GetUpdatedGroups(updated.instance.BindingGroups);
             }
         }
     }
@@ -421,6 +420,8 @@ public partial class GameViewModel : ObservableRecipient
 
     private void LoadBindingDataForInstance(GameInstance instance)
     {
+        if(instance.BindingsData != null) { return; }
+
         DCSData data = Ioc.Default.GetRequiredService<IDCSService>().GetBindingData(
             instance.Name,
             instance.GameExePath,

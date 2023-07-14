@@ -15,6 +15,9 @@ public partial class GameInstance : ObservableObject
     [ObservableProperty]
     private string savedGameFolderPath;
 
+    [ObservableProperty]
+    private GameBindingGroups bindingGroups;
+
     public ObservableCollection<GameAircraft> Aircraft { get; set; } = new();
 
     public string CurrentAircraftName { get; set; }
