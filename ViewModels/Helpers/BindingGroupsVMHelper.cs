@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
+using SharpDX.DirectInput;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace RinceDCS.ViewModels.Helpers;
 
@@ -27,59 +29,31 @@ using AircraftName = System.String;
 
 public class BindingGroupsVMHelper
 {
-    class BindingGroup
-    {
-        public GroupName Name { get; set; }
-        public Dictionary<AttachedJoystick, JoystickButtons> Sticks { get; set; } = new();
-        public Dictionary<BindingID, Binding> Bindings { get; set; } = new();
-    }
-
-    class JoystickButtons
-    {
-        public AttachedJoystick Joystick { get; set; }
-        public List<GameAssignedButton> Buttons { get; set; } = new();
-    }
-
-    class Binding
-    {
-        public BindingID Id { get; set; }
-        public string CommandName { get; set; }
-        public Dictionary<AircraftName, BindingAircraft> BoundAircraft { get; set; } = new();
-    }
-
-    class BindingAircraft
-    {
-        public AircraftName Name { get; set; }
-        public bool IsActive { get; set; }
-        public string CommandName { get; set; }
-        public string CategoryName { get; set; }
-    }
-
-    private Dictionary<GroupName, BindingGroup> AllGroups = new();
-    private Dictionary<BindingID, Binding> AllBindings { get; set; } = new();
-
     private List<GameJoystick> Joysticks { get; }
     private DCSData Data { get; }
+    private GameBindingGroups Groups { get; }
 
-    public BindingGroupsVMHelper(List<GameJoystick> sticks, DCSData data)
+    public BindingGroupsVMHelper(List<GameJoystick> joysticks, DCSData data, GameBindingGroups groups)
     {
-        Joysticks = sticks;
+        Joysticks = joysticks;
         Data = data;
+        Groups = groups ?? new();
     }
 
-    public GameBindingGroups GetUpdatedGroups(GameBindingGroups groups)
+    public void UpdatedGroups()
     {
-        CacheExistingBindingGroups(groups);
+        AddNewBindingsToGroups();
+        AddNewJoysticksToGroups();
+        AddNewAircraftToGroups();
+        AddNewBoundAircraft();
 
-        List<DCSBinding> bindingsToAdd = GetNewBindingsToAdd(groups);
-        List<BindingGroup> updatedGroups = AddNewBindingsToGroups(bindingsToAdd);
-
-        UpdateBindingGroups();
-
-        return CreateUpdatedBindingGroups();
+        DeleteOldBindingsFromGroups();
+        DeleteOldJoysticksFromGroups();
+        DeleteOldAircraftFromGroups();
+        DeleteOldBoundAircraft();
     }
 
-    /// <summary>
+     /// <summary>
     /// As there are over 1000 bindings in DCS we only want to automaticlly add those bindings that the user
     /// might be interested in, otherwise the sheer volumne will be unmanageable.
     /// 
@@ -87,162 +61,109 @@ public class BindingGroupsVMHelper
     /// 2. That either have a button binding OR have the same command name as an existing group.
     /// 
     /// </summary>
-    /// <param name="groups"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    private List<DCSBinding> GetNewBindingsToAdd(GameBindingGroups groups)
+    private List<GameBindingGroup> AddNewBindingsToGroups()
     {
-        var query = from binding in Data.Bindings.Values
-                    from aj in binding.AircraftJoystickBindings.Values
-                    where !AllBindings.ContainsKey(binding.Key.Id) && (aj.AssignedButtons.Count > 0 || AllGroups.ContainsKey(binding.CommandName))
-                    select binding;
+        Dictionary<string, GameBindingGroup> updatedGroups = new();
 
-        return query.ToList();
-    }
+        var bindingsToAdd = from binding in Data.Bindings.Values
+                            from aj in binding.AircraftJoystickBindings.Values
+                            where !Groups.AllBindings.ContainsKey(binding.Key.Id) &&
+                                  (aj.AssignedButtons.Count > 0 || Groups.AllGroups.ContainsKey(binding.CommandName))
+                            select binding;
 
-    private List<BindingGroup> AddNewBindingsToGroups(List<DCSBinding> bindingsToAdd)
-    {
-        List<BindingGroup> updatedGroups = new();
-
-        foreach(DCSBinding dcsBinding in bindingsToAdd)
+        foreach (DCSBinding dcsBinding in bindingsToAdd)
         {
-            BindingGroup group;
-            Binding newBinding = new Binding() { Id = dcsBinding.Key.Id, CommandName = dcsBinding.CommandName };
+            //  We may have found multiple copies of the same binding to add, one for each new Aircraft using binding. So skip if already added.
+            if (Groups.AllBindings.ContainsKey(dcsBinding.Key.Id))
+                continue;
 
-            AllBindings[newBinding.Id] = newBinding;
+            GameBindingGroup group;
+            GameBinding newBinding = new() {  Id = dcsBinding.Key.Id, CommandName = dcsBinding.CommandName };
+            Groups.AllBindings[newBinding.Id] = newBinding;
 
-            if (AllGroups.ContainsKey(dcsBinding.Key.Id))
+            if (Groups.AllGroups.ContainsKey(dcsBinding.CommandName))
             {
-                group = AllGroups[dcsBinding.Key.Id];
+                group = Groups.AllGroups[dcsBinding.CommandName];
             }
             else
             {
-                group = new BindingGroup() { Name = dcsBinding.CommandName };
+                group = new GameBindingGroup() { Name = dcsBinding.CommandName };
+                Groups.AllGroups[dcsBinding.CommandName] = group;
+                Groups.Groups.Add(group);
             }
+            group.GameBindings.Add(newBinding);
 
-            group.Bindings[newBinding.Id] = newBinding;
-            updatedGroups.Add(group);
+            if(!updatedGroups.ContainsKey(group.Name))
+            {
+                updatedGroups[group.Name] = group;
+            }
         }
         
-        return updatedGroups;
+        return updatedGroups.Values.ToList();
     }
 
-    public void UpdateBindingGroups()
+    private void AddNewJoysticksToGroups()
     {
-    }
-
-    private void CacheExistingBindingGroups(GameBindingGroups groups)
-    {
-        if(groups == null) return;
-
-        foreach(GameBindingGroup gameGroup in groups.Groups)
+        foreach (GameJoystick stick in Joysticks)
         {
-            BindingGroup bindingGroup = new();
-
-            foreach(GameJoystick stick in Joysticks)
+            var query = from grp in Groups.Groups
+                        where stick != (from stk in grp.JoystickButtons where stk.Joystick == stick.AttachedJoystick select stk.Joystick)
+                        select grp;
+            foreach(GameBindingGroup group in query)
             {
-                bindingGroup.Sticks[stick.AttachedJoystick] = new JoystickButtons();
+                GameBindingJoystick bindingStick = new() { Joystick = stick.AttachedJoystick };
+                group.JoystickButtons.Add(bindingStick);
             }
-
-            foreach(GameBindingJoystick gameStick in gameGroup.JoystickButtons)
-            {
-                bindingGroup.Sticks[gameStick.Joystick].Buttons = gameStick.Buttons;
-            }
-
-            //  Find all Aircraft that have bindings for any binding in this group
-            Dictionary<AircraftName, AircraftName> aircraft = new();
-
-            foreach (GameBinding gameBinding in gameGroup.GameBindings)
-            {
-                DCSBindingKey bindKey = new(gameBinding.Id);
-                foreach (DCSAircraftKey aircraftKey in Data.Bindings[bindKey].AircraftWithBinding.Keys)
-                {
-                    if(!aircraft.ContainsKey(aircraftKey.Name))
-                    {
-                        aircraft[aircraftKey.Name] = aircraftKey.Name;
-                    }
-                }
-            }
-
-            foreach (GameBinding gameBinding in gameGroup.GameBindings)
-            {
-                Binding binding = new() { CommandName = gameBinding.CommandName };
-
-                //  Each binding has entries for all aircraft with any bindings in the group
-                foreach (AircraftName aircraftName in aircraft.Keys)
-                {
-                    binding.BoundAircraft[aircraftName] = new BindingAircraft() { IsActive = false };
-                }
-
-                foreach (GameBindingAircraft boundAircraft in gameBinding.BoundAircraft)
-                {
-                    BindingAircraft bindingAircraft = binding.BoundAircraft[boundAircraft.Aircraft.Name];
-                    bindingAircraft.CommandName = boundAircraft.CommandName;
-                    bindingAircraft.CategoryName = boundAircraft.CategoryName;
-                    bindingAircraft.IsActive = true;
-                }
-
-                bindingGroup.Bindings[gameBinding.Id] = binding;
-                AllBindings[gameBinding.Id] = binding;
-            }
-
-            AllGroups[gameGroup.Name] = bindingGroup;
         }
     }
 
-    private void AddNewBindings()
+    private void AddNewAircraftToGroups()
     {
-        var newBindingKeys = Data.Bindings.Keys.ExceptBy(AllBindings.Select(a => a.Key), b => b.Id);
-
-        foreach(var newBindingKey in newBindingKeys)
-        {
-            DCSBinding newBinding = Data.Bindings[newBindingKey];
-
-            BindingGroup group;
-            if (AllGroups.ContainsKey(newBinding.CommandName))
-            {
-                group = AllGroups[newBinding.CommandName];
-            }
-            else
-            {
-                group = new();
-                AllGroups[newBinding.CommandName] = group;
-            }
-            AddNewBindingToGroup(group, newBinding);
-        }
+        throw new NotImplementedException();
     }
 
-    private void AddNewBindingToGroup(BindingGroup group, DCSBinding newBinding)
+    private void AddNewBoundAircraft()
     {
-        Binding binding = new() { CommandName = newBinding.CommandName };
-        group.Bindings[newBinding.Key.Id] = binding;
-        AllBindings[newBinding.Key.Id] = binding;
+        throw new NotImplementedException();
     }
 
-
-
-    private Dictionary<AircraftName, AircraftName> FindAllAircraftForGroup(BindingGroup group)
+    private void DeleteOldBindingsFromGroups()
     {
-        //  Find all Aircraft that have bindings for any binding in this group
-        Dictionary<AircraftName, AircraftName> aircraft = new();
-
-        foreach(Binding binding in group.Bindings.Values)
-        {
-            DCSBindingKey bindKey = new(binding.Id);
-            foreach (DCSAircraftKey aircraftKey in Data.Bindings[bindKey].AircraftWithBinding.Keys)
-            {
-                if (!aircraft.ContainsKey(aircraftKey.Name))
-                {
-                    aircraft[aircraftKey.Name] = aircraftKey.Name;
-                }
-            }
-        }
-        return aircraft;
+        throw new NotImplementedException();
     }
 
-    private GameBindingGroups CreateUpdatedBindingGroups()
+    private void DeleteOldJoysticksFromGroups()
     {
-        return null;
+        throw new NotImplementedException();
     }
 
+    private void DeleteOldAircraftFromGroups()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DeleteOldBoundAircraft()
+    {
+        throw new NotImplementedException();
+    }
+
+    //private Dictionary<AircraftName, AircraftName> FindAllAircraftForGroup(BindingGroup group)
+    //{
+    //    //  Find all Aircraft that have bindings for any binding in this group
+    //    Dictionary<AircraftName, AircraftName> aircraft = new();
+
+    //    foreach(Binding binding in group.Bindings.Values)
+    //    {
+    //        DCSBindingKey bindKey = new(binding.Id);
+    //        foreach (DCSAircraftKey aircraftKey in Data.Bindings[bindKey].AircraftWithBinding.Keys)
+    //        {
+    //            if (!aircraft.ContainsKey(aircraftKey.Name))
+    //            {
+    //                aircraft[aircraftKey.Name] = aircraftKey.Name;
+    //            }
+    //        }
+    //    }
+    //    return aircraft;
+    //}
 }

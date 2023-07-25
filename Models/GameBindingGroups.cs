@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Networking.Vpn;
 
@@ -10,13 +12,27 @@ namespace RinceDCS.Models;
 public class GameBindingGroups
 {
     public List<GameBindingGroup> Groups { get; set; } = new();
+
+    [property: JsonIgnore]
+    public Dictionary<string, GameBindingGroup> AllGroups { get; set; } = new();
+
+    [property: JsonIgnore] 
+    public Dictionary<string, GameBinding> AllBindings { get; set; } = new();
 }
 
 public class GameBindingGroup
 {
     public string Name { get; set; }
-    public List<GameBindingJoystick> JoystickButtons { get; set; } = new();
-    public List<GameBinding> GameBindings { get; set; } = new();
+    public List<GameBinding> Bindings { get; set; } = new();
+    public List<GameBindingJoystick> Joysticks { get; set; } = new();
+    public List<GameAircraft> Aircraft { get; set; } = new();
+    public List<GameBoundAircraft> BoundAircraft { get; set; } = new();
+}
+
+public class GameBinding
+{
+    public string Id { get; set; }
+    public string CommandName { get; set; }
 }
 
 public class GameBindingJoystick
@@ -25,16 +41,10 @@ public class GameBindingJoystick
     public List<GameAssignedButton> Buttons { get; set; }= new();
 }
 
-public class GameBinding
+public class GameBoundAircraft
 {
-    public string Id { get; set; }
-    public string CommandName { get; set; }
-    public List<GameBindingAircraft> BoundAircraft { get; set; } = new();
-}
-
-public class GameBindingAircraft
-{
-    public GameAircraft Aircraft { get; set; }
+    public string BindingId { get; set; }
+    public string AircraftName { get; set; }
     public bool IsActive { get; set; }
     public string CommandName { get; set; }
     public string CategoryName { get; set; }
