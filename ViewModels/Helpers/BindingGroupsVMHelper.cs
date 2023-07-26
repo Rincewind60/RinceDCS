@@ -62,10 +62,8 @@ public class BindingGroupsVMHelper
     /// 
     /// </summary>
     /// <returns></returns>
-    private List<GameBindingGroup> AddNewBindingsToGroups()
+    private void AddNewBindingsToGroups()
     {
-        Dictionary<string, GameBindingGroup> updatedGroups = new();
-
         var bindingsToAdd = from binding in Data.Bindings.Values
                             from aj in binding.AircraftJoystickBindings.Values
                             where !Groups.AllBindings.ContainsKey(binding.Key.Id) &&
@@ -92,15 +90,8 @@ public class BindingGroupsVMHelper
                 Groups.AllGroups[dcsBinding.CommandName] = group;
                 Groups.Groups.Add(group);
             }
-            group.GameBindings.Add(newBinding);
-
-            if(!updatedGroups.ContainsKey(group.Name))
-            {
-                updatedGroups[group.Name] = group;
-            }
+            group.Bindings.Add(newBinding);
         }
-        
-        return updatedGroups.Values.ToList();
     }
 
     private void AddNewJoysticksToGroups()
@@ -108,44 +99,44 @@ public class BindingGroupsVMHelper
         foreach (GameJoystick stick in Joysticks)
         {
             var query = from grp in Groups.Groups
-                        where stick != (from stk in grp.JoystickButtons where stk.Joystick == stick.AttachedJoystick select stk.Joystick)
+                        where stick != (from stk in grp.Joysticks where stk.Joystick == stick.AttachedJoystick select stk.Joystick)
                         select grp;
             foreach(GameBindingGroup group in query)
             {
                 GameBindingJoystick bindingStick = new() { Joystick = stick.AttachedJoystick };
-                group.JoystickButtons.Add(bindingStick);
+                group.Joysticks.Add(bindingStick);
             }
         }
     }
 
     private void AddNewAircraftToGroups()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     private void AddNewBoundAircraft()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     private void DeleteOldBindingsFromGroups()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     private void DeleteOldJoysticksFromGroups()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     private void DeleteOldAircraftFromGroups()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     private void DeleteOldBoundAircraft()
     {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     //private Dictionary<AircraftName, AircraftName> FindAllAircraftForGroup(BindingGroup group)
