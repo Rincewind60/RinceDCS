@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.Utilities;
 
-public class Logger
+public class RinceLogger
 {
     public static NLog.Logger Log { get; private set; } = NLog.LogManager.GetCurrentClassLogger();
     public static void ShutDown()

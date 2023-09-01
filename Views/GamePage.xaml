@@ -62,7 +62,7 @@
                 Label="Manage" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=Manage}"
                 IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
-                Click="ManageButton_Click_1"/>
+                Click="ManageButton_Click"/>
             <AppBarSeparator/>
             <AppBarToggleButton 
                 Name="GroupsButton"

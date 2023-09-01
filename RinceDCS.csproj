@@ -43,6 +43,7 @@
     <None Remove="NLog.config" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\BindingsTablePage.xaml" />
+    <None Remove="Views\EditGroupsPage.xaml" />
     <None Remove="Views\EditJoystickLayoutControl.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
     <None Remove="Views\GameInstancesPage.xaml" />
@@ -170,6 +171,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\EditGroupsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\EditJoystickLayoutControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

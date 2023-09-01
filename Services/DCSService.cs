@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using HtmlAgilityPack;
 using MoonSharp.Interpreter;
+using NLog;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
+using RinceDCS.Utilities;
 using SharpDX.DirectInput;
 using System;
 using System.Collections;
@@ -337,6 +339,13 @@ public class DCSService : IDCSService
         for (int i = 0; i < keyDiffsTable.Keys.Count(); i++)
         {
             DCSBindingKey bindingKey = new(keyDiffsTable.Keys.ElementAt(i).String);
+
+            if(!data.Bindings.ContainsKey(bindingKey))
+            {
+                RinceLogger.Log.Warn("Error in LUA file: Aircraft-" + aircraft.Key.Name + " binding-" + bindingKey);
+                continue;
+            }
+
             DCSBinding binding = data.Bindings[bindingKey];
 
             DCSAircraftJoystickBinding bindingData = CreateBindingData(aircraft, stick, binding);
