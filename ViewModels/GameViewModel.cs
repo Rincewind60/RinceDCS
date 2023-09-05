@@ -433,7 +433,7 @@ public partial class GameViewModel : ObservableRecipient
         instance.Aircraft.Clear();
         foreach (var aircraft in data.Aircraft)
         {
-            instance.Aircraft.Add(new GameAircraft() { Name = aircraft.Key.Name });
+            instance.Aircraft.Add(new GameAircraft(aircraft.Key.Name));
         }
     }
 }

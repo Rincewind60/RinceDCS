@@ -37,7 +37,7 @@ public sealed partial class EditGroupsPage : Page
 
         Tuple<GameBindingGroups, DCSData> data = e.Parameter as Tuple<GameBindingGroups, DCSData>;
 
-        EditGroupsViewModel vm = new(data.Item1, data.Item2);
+        EditGroupsViewModel vm = new(data.Item1.Groups, data.Item2);
         this.DataContext = vm;
         //vm.IsActive = true;
     }
@@ -80,5 +80,4 @@ public sealed partial class EditGroupsPage : Page
         }
         */
     }
-
 }

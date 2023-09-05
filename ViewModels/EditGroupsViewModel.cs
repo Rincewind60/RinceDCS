@@ -9,41 +9,71 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
-public class EditBinding
+public class EditGroupsAircraft
 {
-
+    public string AircraftName { get; set; }
+    public GameBoundAircraft[] Bindings { get; set; }
 }
 
-public class EditAircraftBindings
+public class EditGroupsTableData
 {
-    public string Aircraft { get; set; }
-    public string[] Bindings { get; set; }
+    public List<string> BindingHeadings { get; set; } = new();
+    public List<EditGroupsAircraft> Aircraft { get; set; } = new();
 }
 
 public partial class EditGroupsViewModel : ObservableObject
 {
     [ObservableProperty]
-    public GameBindingGroups bindingGroups;
+    public List<GameBindingGroup> bindingGroups;
     [ObservableProperty]
     private GameBindingGroup currentBindingGroup;
-
-    public ObservableCollection<EditAircraftBindings> Bindings { get; set; } = new();
-
-    public ObservableCollection<string> Aircraft { get; set; }
-
     [ObservableProperty]
-    private string bindingHeading0;
+    private EditGroupsTableData groupData;
 
-    public EditGroupsViewModel(GameBindingGroups groups, DCSData data)
+    public EditGroupsViewModel(List<GameBindingGroup> groups, DCSData data)
     {
-        bindingGroups = groups;
-
-        Bindings.Add(new EditAircraftBindings() { Aircraft = "Craft 1", Bindings = new string[] { "121212", "212121", "32343" } });
-        Bindings.Add(new EditAircraftBindings() { Aircraft = "Craft 2", Bindings = new string[] { "121212", "", "32343" } });
-        Bindings.Add(new EditAircraftBindings() { Aircraft = "Craft 3", Bindings = new string[] { "121212", "212121", "" } });
+        bindingGroups = groups.ToList();
+        bindingGroups.Sort((x, y) => {
+            return x.Name.CompareTo(y.Name);
+        });
     }
 
     public void CurrentBindingGroupChanged()
     {
+        UpdateAircraftBindings();
+    }
+
+    private void UpdateAircraftBindings()
+    {
+        /*                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.BindingHeading0, Mode=OneWay}" Binding="{Binding Binding0}" Tag="Binding0" Visibility="{x:Bind local:EditGroupsPage.IsBindingColumnVisible(ViewModel.BindingHeading0), Mode=OneWay}"/>
+ */
+        GroupData = null;
+        EditGroupsTableData newGroupData = new();
+
+        Dictionary<string,int> bindingHeadingIndex = new();
+
+        CurrentBindingGroup.Bindings.Sort((x, y) => {
+            return x.Id.CompareTo(y.Id);
+        });
+
+        for (int i = 0; i < CurrentBindingGroup.Bindings.Count; i++)
+        {
+            bindingHeadingIndex[CurrentBindingGroup.Bindings[i].Id] = i;
+            newGroupData.BindingHeadings.Add(CurrentBindingGroup.Bindings[i].Id);
+        }
+
+        foreach(GameBoundAircraft boundAircraft in CurrentBindingGroup.BoundAircraft)
+        {
+            EditGroupsAircraft aircraft = new ();
+            aircraft = new EditGroupsAircraft()
+            {
+                AircraftName = boundAircraft.AircraftName,
+                Bindings = new GameBoundAircraft[CurrentBindingGroup.Bindings.Count]
+            };
+            aircraft.Bindings[bindingHeadingIndex[boundAircraft.BindingId]] = boundAircraft;
+            newGroupData.Aircraft.Add(aircraft);
+        }
+
+        GroupData = newGroupData;
     }
 }

@@ -1,9 +1,11 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using HtmlAgilityPack;
+using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
 using SharpDX.DirectInput;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -45,7 +47,6 @@ public class BindingGroupsVMHelper
         AddNewBindingsToGroups();
         AddNewJoysticksToGroups();
         AddNewAircraftToGroups();
-        AddNewBoundAircraft();
 
         DeleteOldBindingsFromGroups();
         DeleteOldJoysticksFromGroups();
@@ -113,12 +114,32 @@ public class BindingGroupsVMHelper
 
     private void AddNewAircraftToGroups()
     {
-//        throw new NotImplementedException();
-    }
+        var query = from grp in Groups.Groups
+                    from grpBinding in grp.Bindings
+                    from binding in Data.Bindings.Values
+                    from aircraft in binding.AircraftWithBinding.Values
+                    where binding.Key.Id == grpBinding.Id &&
+                          !grp.Aircraft.Contains(new GameAircraft(aircraft.Key.Name))
+                    select Tuple.Create(grp, grpBinding, aircraft);
 
-    private void AddNewBoundAircraft()
-    {
-//        throw new NotImplementedException();
+        foreach(var newGroupAircraft in query)
+        {
+            GameBindingGroup group = newGroupAircraft.Item1;
+            GameBinding grpBinding = newGroupAircraft.Item2;
+            DCSAircraftBinding dCSAircraftBinding = newGroupAircraft.Item3;
+            GameAircraft aircraft = new(dCSAircraftBinding.Key.Name);
+            GameBoundAircraft boundAircraft = new()
+            {
+                AircraftName = aircraft.Name,
+                BindingId = grpBinding.Id,
+                CategoryName = dCSAircraftBinding.CategoryName,
+                CommandName = dCSAircraftBinding.CommandName,
+                IsActive = true
+            };
+
+            group.Aircraft.Add(aircraft);
+            group.BoundAircraft.Add(boundAircraft);
+        }
     }
 
     private void DeleteOldBindingsFromGroups()

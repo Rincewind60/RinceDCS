@@ -30,7 +30,7 @@
                 VerticalAlignment="Center"/>
             <ComboBox
                 Name="BindingGroupsCombo" 
-                ItemsSource="{x:Bind ViewModel.BindingGroups.Groups}" 
+                ItemsSource="{x:Bind ViewModel.BindingGroups}" 
                 SelectedItem="{x:Bind ViewModel.CurrentBindingGroup, Mode=TwoWay}"
                 SelectionChanged="{x:Bind ViewModel.CurrentBindingGroupChanged}"
                 DisplayMemberPath="Name"
@@ -63,11 +63,10 @@
             IsReadOnly="True"
             SelectionMode="Single"
             RowGroupHeaderPropertyNameAlternative="Range"
-            ItemsSource="{x:Bind ViewModel.Aircraft, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.GroupData.Aircraft, Mode=OneWay}"
             Sorting="dataGrid_Sorting">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="Aircraft" Binding="{Binding AircraftName}" Tag="AircraftName" />
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.BindingHeading0, Mode=OneWay}" Binding="{Binding Binding0}" Tag="Binding0" Visibility="{x:Bind local:EditGroupsPage.IsBindingColumnVisible(ViewModel.BindingHeading0), Mode=OneWay}"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>
