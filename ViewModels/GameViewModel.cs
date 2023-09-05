@@ -210,7 +210,7 @@ public partial class GameViewModel : ObservableRecipient
         {
             LoadBindingDataForInstance(CurrentInstance);
             BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
-            bindHelper.UpdatedGroups();
+            CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
             CurrentInstanceBindingsData = CurrentInstance.BindingsData;
             CurrentInstanceBindingGroups = CurrentInstance.BindingGroups;
             SetCurrentAircraftForCurrentInstance();
@@ -398,7 +398,7 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
                 LoadBindingDataForInstance(updated.instance);
                 BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
-                bindHelper.UpdatedGroups();
+                CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
             }
         }
     }

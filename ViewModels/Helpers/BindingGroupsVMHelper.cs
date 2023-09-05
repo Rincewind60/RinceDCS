@@ -40,7 +40,7 @@ public class BindingGroupsVMHelper
         Groups = groups ?? new();
     }
 
-    public void UpdatedGroups()
+    public GameBindingGroups UpdatedGroups()
     {
         AddNewBindingsToGroups();
         AddNewJoysticksToGroups();
@@ -51,6 +51,8 @@ public class BindingGroupsVMHelper
         DeleteOldJoysticksFromGroups();
         DeleteOldAircraftFromGroups();
         DeleteOldBoundAircraft();
+
+        return Groups;
     }
 
      /// <summary>

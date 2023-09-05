@@ -273,7 +273,7 @@ public class AircraftVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return value.ToString() == DetailsDisplayMode.EditSticks.ToString() ? Visibility.Collapsed : Visibility.Visible;
+        return value.ToString() == DetailsDisplayMode.EditSticks.ToString() || value.ToString() == DetailsDisplayMode.EditGroups.ToString() ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

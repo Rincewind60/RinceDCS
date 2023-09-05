@@ -127,7 +127,7 @@ namespace RinceDCS.Views
         private void GroupsButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditGroupsPage),
-                Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentInstance.BindingGroups, ViewModel.CurrentInstanceBindingsData));
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
