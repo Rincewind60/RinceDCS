@@ -80,4 +80,28 @@ public sealed partial class EditGroupsPage : Page
         }
         */
     }
+
+    private void BindingGroupsCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.CurrentBindingGroupChanged();
+
+        dataGrid.Columns.Clear();
+
+        dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
+        {
+            Header = "Aircraft",
+            Binding = new Binding { Path = new PropertyPath("AircraftName"), Mode = BindingMode.OneWay }
+        });
+
+        int bindingIndex = 0;
+        foreach (GameBinding binding in ViewModel.CurrentBindingGroup.Bindings)
+        {
+            dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
+            {
+                Header = binding.Id,
+                Binding = new Binding { Path = new PropertyPath("Bindings[" + bindingIndex.ToString() + "].CommandName"), Mode = BindingMode.OneWay }
+            });
+            bindingIndex++;
+        }
+    }
 }

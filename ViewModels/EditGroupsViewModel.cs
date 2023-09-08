@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
-public class EditGroupsAircraft
+public partial class EditGroupsAircraft : ObservableObject
 {
-    public string AircraftName { get; set; }
-    public GameBoundAircraft[] Bindings { get; set; }
+    [ObservableProperty]
+    private string aircraftName;
+    public ObservableCollection<GameBoundAircraft> Bindings { get; set; } = new();
 }
 
 public class EditGroupsTableData
@@ -40,13 +41,6 @@ public partial class EditGroupsViewModel : ObservableObject
 
     public void CurrentBindingGroupChanged()
     {
-        UpdateAircraftBindings();
-    }
-
-    private void UpdateAircraftBindings()
-    {
-        /*                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.BindingHeading0, Mode=OneWay}" Binding="{Binding Binding0}" Tag="Binding0" Visibility="{x:Bind local:EditGroupsPage.IsBindingColumnVisible(ViewModel.BindingHeading0), Mode=OneWay}"/>
- */
         GroupData = null;
         EditGroupsTableData newGroupData = new();
 
@@ -68,8 +62,12 @@ public partial class EditGroupsViewModel : ObservableObject
             aircraft = new EditGroupsAircraft()
             {
                 AircraftName = boundAircraft.AircraftName,
-                Bindings = new GameBoundAircraft[CurrentBindingGroup.Bindings.Count]
+                Bindings = new()
             };
+            for(int j = 0; j < CurrentBindingGroup.Bindings.Count; j++)
+            {
+                aircraft.Bindings.Add(null);
+            }
             aircraft.Bindings[bindingHeadingIndex[boundAircraft.BindingId]] = boundAircraft;
             newGroupData.Aircraft.Add(aircraft);
         }

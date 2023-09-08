@@ -32,7 +32,7 @@
                 Name="BindingGroupsCombo" 
                 ItemsSource="{x:Bind ViewModel.BindingGroups}" 
                 SelectedItem="{x:Bind ViewModel.CurrentBindingGroup, Mode=TwoWay}"
-                SelectionChanged="{x:Bind ViewModel.CurrentBindingGroupChanged}"
+                SelectionChanged="BindingGroupsCombo_SelectionChanged"
                 DisplayMemberPath="Name"
                 Margin="6,0,0,0"
                 MinWidth="180"
@@ -65,9 +65,6 @@
             RowGroupHeaderPropertyNameAlternative="Range"
             ItemsSource="{x:Bind ViewModel.GroupData.Aircraft, Mode=OneWay}"
             Sorting="dataGrid_Sorting">
-            <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Aircraft" Binding="{Binding AircraftName}" Tag="AircraftName" />
-            </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>
 </Page>
