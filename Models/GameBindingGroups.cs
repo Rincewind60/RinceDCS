@@ -23,6 +23,8 @@ public class GameBindingGroups
 public class GameBindingGroup
 {
     public string Name { get; set; }
+    public bool IsAxisBinding { get; set; }
+    public bool IsKeyBinding { get { return !IsAxisBinding; } }
     public List<GameBinding> Bindings { get; set; } = new();
     public List<GameBindingJoystick> Joysticks { get; set; } = new();
     public List<GameAircraft> Aircraft { get; set; } = new();

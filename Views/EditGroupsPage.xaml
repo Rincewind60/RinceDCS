@@ -24,7 +24,7 @@
             Grid.Column="0"
             Orientation="Horizontal">
             <TextBlock
-                Text="Binding Groups:" 
+                Text="Binding Group:" 
                 Margin="12,0,0,0" 
                 Width="100"
                 VerticalAlignment="Center"/>

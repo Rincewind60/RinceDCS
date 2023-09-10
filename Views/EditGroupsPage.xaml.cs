@@ -4,10 +4,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ViewModels;
+using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,11 +98,21 @@ public sealed partial class EditGroupsPage : Page
         int bindingIndex = 0;
         foreach (GameBinding binding in ViewModel.CurrentBindingGroup.Bindings)
         {
-            dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
-            {
-                Header = binding.Id,
-                Binding = new Binding { Path = new PropertyPath("Bindings[" + bindingIndex.ToString() + "].CommandName"), Mode = BindingMode.OneWay }
-            });
+            DataGridTemplateColumn column = new() { Header = binding.Id };
+
+            string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
+                                "<StackPanel Orientation=\"Horizontal\">" +
+                                    "<CheckBox " +
+                                        "Margin=\"12,0,12,0\" " +
+                                        "Content=\"{Binding Bindings[" + bindingIndex.ToString() + "].CommandName}\" " +
+                                        "IsChecked=\"{Binding Bindings[" + bindingIndex.ToString() + "].IsActive, Mode=TwoWay}\">" +
+                                    "</CheckBox>" +
+                                "</StackPanel>" +
+                            "</DataTemplate>";
+
+            DataTemplate dataTemplate = XamlReader.Load(Xaml) as DataTemplate;
+            column.CellTemplate = dataTemplate;
+            dataGrid.Columns.Add(column);
             bindingIndex++;
         }
     }

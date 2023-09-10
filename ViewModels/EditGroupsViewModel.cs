@@ -14,6 +14,8 @@ public partial class EditGroupsAircraft : ObservableObject
     [ObservableProperty]
     private string aircraftName;
     public ObservableCollection<GameBoundAircraft> Bindings { get; set; } = new();
+
+    public GameBoundAircraft AircraftBinding { get; set; }
 }
 
 public class EditGroupsTableData
@@ -69,6 +71,7 @@ public partial class EditGroupsViewModel : ObservableObject
                 aircraft.Bindings.Add(null);
             }
             aircraft.Bindings[bindingHeadingIndex[boundAircraft.BindingId]] = boundAircraft;
+            aircraft.AircraftBinding = boundAircraft;
             newGroupData.Aircraft.Add(aircraft);
         }
 

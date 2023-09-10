@@ -83,13 +83,13 @@ public class BindingGroupsVMHelper
             GameBinding newBinding = new() {  Id = dcsBinding.Key.Id, CommandName = dcsBinding.CommandName };
             Groups.AllBindings[newBinding.Id] = newBinding;
 
-            if (Groups.AllGroups.ContainsKey(dcsBinding.CommandName))
+            if (Groups.AllGroups.ContainsKey(dcsBinding.CommandName) && Groups.AllGroups[dcsBinding.CommandName].IsAxisBinding == dcsBinding.IsAxisBinding)
             {
                 group = Groups.AllGroups[dcsBinding.CommandName];
             }
             else
             {
-                group = new GameBindingGroup() { Name = dcsBinding.CommandName };
+                group = new GameBindingGroup() { Name = dcsBinding.CommandName, IsAxisBinding = dcsBinding.IsAxisBinding };
                 Groups.AllGroups[dcsBinding.CommandName] = group;
                 Groups.Groups.Add(group);
             }
