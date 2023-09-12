@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -100,18 +102,22 @@ public sealed partial class EditGroupsPage : Page
         {
             DataGridTemplateColumn column = new() { Header = binding.Id };
 
-            string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
-                                "<StackPanel Orientation=\"Horizontal\">" +
-                                    "<CheckBox " +
-                                        "Margin=\"12,0,12,0\" " +
-                                        "Content=\"{Binding Bindings[" + bindingIndex.ToString() + "].CommandName}\" " +
-                                        "IsChecked=\"{Binding Bindings[" + bindingIndex.ToString() + "].IsActive, Mode=TwoWay}\">" +
-                                    "</CheckBox>" +
-                                "</StackPanel>" +
-                            "</DataTemplate>";
+            string bindingName = "Binding" + bindingIndex.ToString();
+            string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+                    "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
+                    "<StackPanel " +
+                        "Orientation=\"Horizontal\" " +
+                        "Visibility=\"{Binding " + bindingName + "Visible}\">" +
+                        "<CheckBox " +
+                            "Margin=\"12,0,12,0\" " +
+                            "Content=\"{Binding " + bindingName + ".CommandName}\" " +
+                            "IsChecked=\"{Binding " + bindingName + ".IsActive, Mode=TwoWay}\">" +
+                        "</CheckBox>" +
+                    "</StackPanel>" +
+                "</DataTemplate>";
 
-            DataTemplate dataTemplate = XamlReader.Load(Xaml) as DataTemplate;
-            column.CellTemplate = dataTemplate;
+            DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
+            column.CellTemplate = cellTemplate;
             dataGrid.Columns.Add(column);
             bindingIndex++;
         }

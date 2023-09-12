@@ -1,27 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
-public partial class EditGroupsAircraft : ObservableObject
-{
-    [ObservableProperty]
-    private string aircraftName;
-    public ObservableCollection<GameBoundAircraft> Bindings { get; set; } = new();
-
-    public GameBoundAircraft AircraftBinding { get; set; }
-}
-
 public class EditGroupsTableData
 {
     public List<string> BindingHeadings { get; set; } = new();
-    public List<EditGroupsAircraft> Aircraft { get; set; } = new();
+    public List<dynamic> Aircraft { get; set; } = new();
 }
 
 public partial class EditGroupsViewModel : ObservableObject
@@ -60,19 +53,24 @@ public partial class EditGroupsViewModel : ObservableObject
 
         foreach(GameBoundAircraft boundAircraft in CurrentBindingGroup.BoundAircraft)
         {
-            EditGroupsAircraft aircraft = new ();
-            aircraft = new EditGroupsAircraft()
+            dynamic dynAircraft = new ExpandoObject();
+            dynAircraft.AircraftName = boundAircraft.AircraftName;
+            IDictionary<String, Object> dynAircraftMembers = (IDictionary<String, Object>)dynAircraft;
+            for (int j = 0; j < CurrentBindingGroup.Bindings.Count; j++)
             {
-                AircraftName = boundAircraft.AircraftName,
-                Bindings = new()
-            };
-            for(int j = 0; j < CurrentBindingGroup.Bindings.Count; j++)
-            {
-                aircraft.Bindings.Add(null);
+                string bindingName = "Binding" + j.ToString();
+                if (bindingHeadingIndex[boundAircraft.BindingId] == j)
+                {
+                    dynAircraftMembers.TryAdd(bindingName, boundAircraft);
+                    dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
+                }
+                else
+                {
+                    dynAircraftMembers.TryAdd(bindingName, null);
+                    dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Collapsed);
+                }
             }
-            aircraft.Bindings[bindingHeadingIndex[boundAircraft.BindingId]] = boundAircraft;
-            aircraft.AircraftBinding = boundAircraft;
-            newGroupData.Aircraft.Add(aircraft);
+            newGroupData.Aircraft.Add(dynAircraft);
         }
 
         GroupData = newGroupData;
