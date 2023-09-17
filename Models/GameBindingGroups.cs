@@ -18,6 +18,9 @@ public class GameBindingGroups
 
     [property: JsonIgnore] 
     public Dictionary<string, GameBinding> AllBindings { get; set; } = new();
+
+    [property: JsonIgnore]
+    public Dictionary<string, GameAircraft> AllAircraft { get; set; } = new();
 }
 
 public class GameBindingGroup

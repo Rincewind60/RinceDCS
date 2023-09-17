@@ -11,9 +11,62 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Windows.Devices.Geolocation;
+using Windows.Media.AppBroadcasting;
 
 namespace RinceDCS.Services;
+
+public class DCSLuaFileBuilder
+{
+    private List<DCSAxisButton> axisBindings { get; } = new();
+    private List<DCSKeyButton> keyBindings { get; } = new();
+
+    public DCSLuaFileBuilder()
+    {
+    }
+
+    public void AddAxisBinding(Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft> binding)
+    {
+        DCSAxisButton button = new()
+        {
+            Key = new DCSButtonKey(""),
+            Filter = new()
+            {
+            }
+        };
+        axisBindings.Add(button);
+    }
+
+    public void AddKeyBinding(Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft> binding)
+    {
+        DCSKeyButton button = new()
+        {
+            Key = new DCSButtonKey(""),
+            Modifiers = new()
+        };
+        keyBindings.Add(button);
+    }
+
+    public void WriteFile(string luaFileName)
+    {
+        StringBuilder sb = new();
+
+        sb.AppendLine("local diff = {");
+        sb.AppendLine("\t[\"axisDiffs\"] = {");
+
+        sb.AppendLine("\t},");
+        
+        sb.AppendLine("\t[\"keyDiffs\"] = {");
+
+        sb.AppendLine("\t},");
+
+        sb.AppendLine("}");
+        sb.AppendLine("return diff");
+
+        File.WriteAllText(luaFileName, sb.ToString());
+    }
+}
 
 public class DCSService : IDCSService
 {
@@ -70,6 +123,53 @@ public class DCSService : IDCSService
         }
 
         return currentSavedGamesFolder;
+    }
+
+    public void UpdateGameBindingData(string savedGameFolderPath, GameBindingGroups bindingGroups, DCSData data)
+    {
+        //  For each Aircraft
+        foreach(GameAircraft aircraft in bindingGroups.AllAircraft.Values)
+        {
+            //  For each Joystick
+            foreach(var stick in data.Joysticks.Values)
+            {
+                var bindings = (from bindingGroup in bindingGroups.Groups
+                                from joystick in bindingGroup.Joysticks
+                                from boundAircraft in bindingGroup.BoundAircraft
+                                where joystick.Joystick == stick.Joystick &&
+                                        boundAircraft.AircraftName == aircraft.Name && boundAircraft.IsActive == true
+                                select Tuple.Create(bindingGroup, joystick, boundAircraft)).ToList();
+
+                BuildLuaFile(savedGameFolderPath, bindings);
+            }
+        }
+    }
+
+    private void BuildLuaFile(string savedGameFolderPath, List<Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft>> bindings)
+    {
+        string luaBackupFolder = "D:/RinceConfigBackup/Input/" + bindings[0].Item3.AircraftName + "/joystick/";
+        string luaFileName = luaBackupFolder + bindings[0].Item2.Joystick.DCSName + ".diff.lua";
+
+        if(!Directory.Exists(luaBackupFolder))
+        {
+            Directory.CreateDirectory(luaBackupFolder);
+        }
+
+        DCSLuaFileBuilder luaBuilder = new();
+
+        foreach (var binding in bindings)
+        {
+            if (binding.Item1.IsAxisBinding)
+            {
+                luaBuilder.AddAxisBinding(binding);
+            }
+            else
+            {
+                luaBuilder.AddKeyBinding(binding);
+            }
+        }
+
+        luaBuilder.WriteFile(luaFileName);
     }
 
     private static void BuildListOfJoysticks(DCSData data, List<AttachedJoystick> sticks)

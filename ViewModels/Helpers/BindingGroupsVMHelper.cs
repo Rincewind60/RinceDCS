@@ -139,6 +139,10 @@ public class BindingGroupsVMHelper
 
             group.Aircraft.Add(aircraft);
             group.BoundAircraft.Add(boundAircraft);
+            if(!Groups.AllAircraft.ContainsKey(aircraft.Name))
+            {
+                Groups.AllAircraft[aircraft.Name] = aircraft;
+            }
         }
     }
 

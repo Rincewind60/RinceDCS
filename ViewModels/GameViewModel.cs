@@ -199,6 +199,12 @@ public partial class GameViewModel : ObservableRecipient
         }
     }
 
+    [RelayCommand]
+    private void UpdateDCS()
+    {
+        Ioc.Default.GetRequiredService<IDCSService>().UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceBindingGroups, CurrentInstanceBindingsData);
+    }
+
     public void CurrentInstanceChanged()
     {
         if(CurrentInstance == null)

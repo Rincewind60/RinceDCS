@@ -22,14 +22,16 @@ public partial class EditGroupsViewModel : ObservableObject
     [ObservableProperty]
     public List<GameBindingGroup> bindingGroups;
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsGroupSelected))]
     private GameBindingGroup currentBindingGroup;
+    public bool IsGroupSelected { get {  return CurrentBindingGroup != null; } }
     [ObservableProperty]
     private EditGroupsTableData groupData;
 
     public EditGroupsViewModel(List<GameBindingGroup> groups, DCSData data)
     {
-        bindingGroups = groups.ToList();
-        bindingGroups.Sort((x, y) => {
+        BindingGroups = groups.ToList();
+        BindingGroups.Sort((x, y) => {
             return x.Name.CompareTo(y.Name);
         });
     }
@@ -37,6 +39,9 @@ public partial class EditGroupsViewModel : ObservableObject
     public void CurrentBindingGroupChanged()
     {
         GroupData = null;
+
+        if (!IsGroupSelected) return;
+
         EditGroupsTableData newGroupData = new();
 
         Dictionary<string,int> bindingHeadingIndex = new();

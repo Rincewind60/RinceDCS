@@ -91,6 +91,8 @@ public sealed partial class EditGroupsPage : Page
 
         dataGrid.Columns.Clear();
 
+        if (!ViewModel.IsGroupSelected) return;
+
         dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
         {
             Header = "Aircraft",
@@ -118,8 +120,29 @@ public sealed partial class EditGroupsPage : Page
 
             DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
             column.CellTemplate = cellTemplate;
+
             dataGrid.Columns.Add(column);
             bindingIndex++;
         }
+    }
+
+    private void UpdateGroup_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void AddGroup_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void DeleteGroup_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void MergeGroup_Click(object sender, RoutedEventArgs e)
+    {
+
     }
 }

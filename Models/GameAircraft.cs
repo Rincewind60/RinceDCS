@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace RinceDCS.Models;
 
-public partial class GameAircraft : ObservableObject, IComparable<GameAircraft>
+public partial class GameAircraft : ObservableObject, IComparable<GameAircraft>, IEquatable<GameAircraft>
 {
     [ObservableProperty]
     private string name;
@@ -17,5 +17,10 @@ public partial class GameAircraft : ObservableObject, IComparable<GameAircraft>
     public int CompareTo(GameAircraft other)
     {
         return Name.CompareTo(other.Name);
+    }
+
+    public bool Equals(GameAircraft other)
+    {
+        return name == other.Name;
     }
 }
