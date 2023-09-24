@@ -10,5 +10,5 @@ public interface IDCSService
 
     public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder);
 
-    public void UpdateGameBindingData(string savedGameFolderPath, GameBindingGroups bindingGroups, DCSData data);
+    public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data);
 }

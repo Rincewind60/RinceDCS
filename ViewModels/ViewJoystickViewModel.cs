@@ -13,13 +13,13 @@ using System.Linq;
 namespace RinceDCS.ViewModels;
 
 public partial class ViewJoystickViewModel : ObservableRecipient,
-                                             IRecipient<PropertyChangedMessage<GameAircraft>>
+                                             IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
 {
     [ObservableProperty]
-    public ObservableCollection<GameAssignedButton> assignedButtons;
+    public ObservableCollection<AssignedButton> assignedButtons;
 
     [ObservableProperty]
-    private GameJoystick stick;
+    private RinceDCSJoystick stick;
 
     [ObservableProperty]
     private AttachedJoystick attachedStick;
@@ -32,7 +32,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     public string InstanceName { get; set; }
 
-    public ViewJoystickViewModel(string instanceName, string savedGamesFolder, GameJoystick stick, DCSData data, GameAircraft currentAircraft)
+    public ViewJoystickViewModel(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData data, RinceDCSAircraft currentAircraft)
     {
         Stick = stick;
         AttachedStick = Stick.AttachedJoystick;
@@ -45,7 +45,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
         ReBuildViewButtons();
     }
 
-    public void Receive(PropertyChangedMessage<GameAircraft> message)
+    public void Receive(PropertyChangedMessage<RinceDCSAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
         ReBuildViewButtons();
@@ -54,7 +54,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     private void ReBuildViewButtons()
     {
         JoystickVMHelper helper = new(BindingsData);
-        Dictionary<GameAssignedButtonKey, GameJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
         AssignedButtons = new(helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftKey.Name));
     }
 }

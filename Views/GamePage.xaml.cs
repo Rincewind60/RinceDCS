@@ -62,7 +62,7 @@ namespace RinceDCS.Views
 
         private async void UpdateInstances_Click(object sender, RoutedEventArgs e)
         {
-            GameInstancesPage page = new(ViewModel.CurrentGame.Instances.ToList());
+            GameInstancesPage page = new(ViewModel.CurrentFile.Instances.ToList());
             Binding SaveButtonBinding = new Binding
             {
                 Source = page.ViewModel,
@@ -115,31 +115,31 @@ namespace RinceDCS.Views
         private void BindingsButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(BindingsTablePage), 
-                Tuple.Create(ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
         }
 
         private void ManageButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage),
-                Tuple.Create(ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentFile, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
         }
 
         private void GroupsButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditGroupsPage),
-                Tuple.Create(ViewModel.CurrentInstance.BindingGroups, ViewModel.CurrentInstanceBindingsData));
+                Tuple.Create(ViewModel.CurrentInstance.BindingGroups, ViewModel.CurrentInstanceDCSData));
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(EditJoystickLayoutPage), ViewModel.CurrentGame);
+            DetailsViewFrame.Navigate(typeof(EditJoystickLayoutPage), ViewModel.CurrentFile);
         }
 
         private void NavigateToViewPage()
         {
             string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
             DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
-                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentFile, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
         }
     }
 }

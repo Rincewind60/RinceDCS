@@ -42,7 +42,7 @@ public partial class CommandCategory : ObservableObject, IComparable<CommandCate
 }
 
 public partial class BindingsTableViewModel : ObservableRecipient,
-                                              IRecipient<PropertyChangedMessage<GameAircraft>>
+                                              IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
 {
     [ObservableProperty]
     public ObservableCollection<AircraftBinding> filteredBindings;
@@ -78,7 +78,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
     string SortColumn { get; set; }
     bool IsSortedAscending { get; set; }
 
-    public BindingsTableViewModel(DCSData data, GameAircraft currentAircraft)
+    public BindingsTableViewModel(DCSData data, RinceDCSAircraft currentAircraft)
     {
         FilteredBindings = new();
         Categories = new();
@@ -92,7 +92,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         ReBuildBindings();
     }
 
-    public void Receive(PropertyChangedMessage<GameAircraft> message)
+    public void Receive(PropertyChangedMessage<RinceDCSAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
         ReBuildBindings();
@@ -310,7 +310,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(IDCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
                 DCSKeyButton keyButton = button as DCSKeyButton;
                 if (keyButton != null)

@@ -9,11 +9,11 @@ namespace RinceDCS.ViewModels.Messages;
 
 public class ExportAssignedButtonsImageMessage
 {
-    public GameJoystick Stick {  get; set; }
-    public List<GameAssignedButton> AssignedButtons { get; set; }
+    public RinceDCSJoystick Stick {  get; set; }
+    public List<AssignedButton> AssignedButtons { get; set; }
     public string SaveFilePath { get; set; }
 
-    public ExportAssignedButtonsImageMessage(GameJoystick stick, List<GameAssignedButton> assignedButtons, string saveFilePath)
+    public ExportAssignedButtonsImageMessage(RinceDCSJoystick stick, List<AssignedButton> assignedButtons, string saveFilePath)
     {
         Stick = stick;
         AssignedButtons = assignedButtons;

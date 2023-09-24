@@ -51,7 +51,7 @@
             SelectedItem="{x:Bind ViewModel.CurrentButton, Mode=TwoWay}"
             PreviewKeyDown="JoystickButtons_PreviewKeyDown">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:GameJoystickButton">
+                <DataTemplate x:DataType="models:RinceDCSJoystickButton">
                     <ListViewItem>
                         <TextBlock Text="{x:Bind ButtonLabel}" Foreground="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutColorConverter}}"/>
                     </ListViewItem>
@@ -273,7 +273,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:GameJoystickButton">
+                        <DataTemplate x:DataType="models:RinceDCSJoystickButton">
                             <Border
                                 Name="JoysticButton"
                                 IsTabStop="True"

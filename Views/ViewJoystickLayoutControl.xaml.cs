@@ -26,7 +26,7 @@ namespace RinceDCS.Views
 {
     public sealed partial class ViewJoystickLayoutControl : UserControl
     {
-        public ViewJoystickLayoutControl(string instanceName, string savedGamesFolder, GameJoystick stick, DCSData dcsData, GameAircraft currentAircraft)
+        public ViewJoystickLayoutControl(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData dcsData, RinceDCSAircraft currentAircraft)
         {
             this.InitializeComponent();
 

@@ -15,7 +15,7 @@ namespace RinceDCS.Views.Utilities;
 
 public class JoystickUtil
 {
-    public static async Task<BitmapImage> GetImageSource(GameJoystick joystick)
+    public static async Task<BitmapImage> GetImageSource(RinceDCSJoystick joystick)
     {
         if (joystick == null || joystick.Image == null)
         {
@@ -33,7 +33,7 @@ public class JoystickUtil
         }
     }
 
-    public static async void ExportButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
+    public static async void ExportButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
     {
         string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("JoystickButtons.png", "PNG", ".png");
         if (string.IsNullOrWhiteSpace(savePath)) { return; }
@@ -42,7 +42,7 @@ public class JoystickUtil
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static async void PrintButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
+    public static async void PrintButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
     {
         using (PrintDocument printDoc = new())
         {
@@ -63,7 +63,7 @@ public class JoystickUtil
         }
     }
 
-    public static void ExportAssignedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize, string saveFilePath)
+    public static void ExportAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize, string saveFilePath)
     {
         if (string.IsNullOrWhiteSpace(saveFilePath)) { return; }
 
@@ -71,7 +71,7 @@ public class JoystickUtil
         image.Save(saveFilePath, ImageFormat.Png);
     }
 
-    public static void ExportKneeboard(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string aircraftName, string stickDCSName, string savedGamesFolder, string fontName, int fontSize)
+    public static void ExportKneeboard(byte[] imageBytes, List<AssignedButton> assignedButtons, string aircraftName, string stickDCSName, string savedGamesFolder, string fontName, int fontSize)
     {
         string savePath = savedGamesFolder + "\\Kneeboard\\" + aircraftName + "\\00_" + aircraftName + "__" + stickDCSName + ".png";
         if (string.IsNullOrWhiteSpace(savePath)) { return; }
@@ -80,7 +80,7 @@ public class JoystickUtil
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static async void PrintAssigedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize)
+    public static async void PrintAssigedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize)
     {
         using (PrintDocument printDoc = new())
         {
@@ -125,7 +125,7 @@ public class JoystickUtil
         return margins;
     }
 
-    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<GameJoystickButton> buttons, string fontName, int fontSiZe)
+    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
@@ -137,7 +137,7 @@ public class JoystickUtil
 
             using (Graphics gfx = Graphics.FromImage(image))
             {
-                foreach (GameJoystickButton button in buttons)
+                foreach (RinceDCSJoystickButton button in buttons)
                 {
                     if (button.OnLayout)
                     {
@@ -154,7 +154,7 @@ public class JoystickUtil
         }
     }
 
-    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<GameAssignedButton> assignedButtons, string fontName, int fontSize)
+    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
@@ -165,7 +165,7 @@ public class JoystickUtil
 
             using (Graphics gfx = Graphics.FromImage(image))
             {
-                foreach (GameAssignedButton button in assignedButtons)
+                foreach (AssignedButton button in assignedButtons)
                 {
                     StringFormat format = StringFormat.GenericDefault;
                     format.Trimming = StringTrimming.EllipsisCharacter;

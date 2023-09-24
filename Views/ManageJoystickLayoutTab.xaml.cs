@@ -37,11 +37,11 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<GameJoystick, DCSData, GameAircraft> data = e.Parameter as Tuple<GameJoystick, DCSData, GameAircraft>;
+            Tuple<RinceDCSJoystick, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<RinceDCSJoystick, DCSData, RinceDCSAircraft>;
 
-            GameJoystick stick = data.Item1;
+            RinceDCSJoystick stick = data.Item1;
             DCSData dcsData = data.Item2;
-            GameAircraft currentAircraft = data.Item3;
+            RinceDCSAircraft currentAircraft = data.Item3;
 
             this.DataContext = new ManageJoystickViewModel(stick, dcsData, currentAircraft);
         }

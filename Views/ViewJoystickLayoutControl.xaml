@@ -121,7 +121,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:GameAssignedButton">
+                        <DataTemplate x:DataType="models:AssignedButton">
                             <Border Background="{x:Bind IsValid, Converter={StaticResource IsValidBackgroundConverter}}">
                                 <TextBlock
                                 Text="{x:Bind Command}"

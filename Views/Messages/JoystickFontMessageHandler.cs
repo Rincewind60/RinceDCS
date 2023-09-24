@@ -13,9 +13,9 @@ namespace RinceDCS.Views.Messages;
 
 public class JoystickFontMessageHandler
 {
-    public static void Register(Page page, GameJoystick stick)
+    public static void Register(Page page, RinceDCSJoystick stick)
     {
-        WeakReferenceMessenger.Default.Register<PropertyChangedMessage<GameJoystick>>(page, (r, m) => {
+        WeakReferenceMessenger.Default.Register<PropertyChangedMessage<RinceDCSJoystick>>(page, (r, m) => {
             if ((r is EditJoystickLayoutPage) && stick != null)
             {
                 stick.Font = stick.Font == null ? FontFamily.XamlAutoFontFamily.Source : stick.Font;

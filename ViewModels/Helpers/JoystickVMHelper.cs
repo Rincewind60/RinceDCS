@@ -19,23 +19,23 @@ public class JoystickVMHelper
         Data = data;
     }
 
-    public Dictionary<GameAssignedButtonKey, GameJoystickButton> GetJoystickButtonsOnLayout(GameJoystick stick)
+    public Dictionary<AssignedButtonKey, RinceDCSJoystickButton> GetJoystickButtonsOnLayout(RinceDCSJoystick stick)
     {
-        Dictionary<GameAssignedButtonKey, GameJoystickButton> buttons = new();
-        foreach (GameJoystickButton button in stick.Buttons)
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttons = new();
+        foreach (RinceDCSJoystickButton button in stick.Buttons)
         {
             if (button.OnLayout)
             {
-                GameAssignedButtonKey key = new(button.ButtonName, button.IsModifier);
+                AssignedButtonKey key = new(button.ButtonName, button.IsModifier);
                 buttons[key] = button;
             }
         }
         return buttons;
     }
 
-    public List<GameAssignedButton> GetAssignedButtons(GameJoystick stick, Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout, string instanceName, string aircraftName)
+    public List<AssignedButton> GetAssignedButtons(RinceDCSJoystick stick, Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout, string instanceName, string aircraftName)
     {
-        List<GameAssignedButton> assignedButtons = new();
+        List<AssignedButton> assignedButtons = new();
 
         if (string.IsNullOrWhiteSpace(aircraftName)) return null;
 
@@ -66,34 +66,34 @@ public class JoystickVMHelper
     }
 
     private void BuildAppButtons(
-        GameJoystick stick,
-        List<GameAssignedButton> assignedButtons,
-        Dictionary< GameAssignedButtonKey, GameJoystickButton > buttonsOnLayout,
+        RinceDCSJoystick stick,
+        List<AssignedButton> assignedButtons,
+        Dictionary< AssignedButtonKey, RinceDCSJoystickButton > buttonsOnLayout,
         string buttonName, 
         string commandName
         )
     {
-        GameAssignedButtonKey key = new(buttonName, false);
+        AssignedButtonKey key = new(buttonName, false);
         if (buttonsOnLayout.ContainsKey(key))
         {
-            GameAssignedButton vwButton = new(buttonsOnLayout[key]);
+            AssignedButton vwButton = new(buttonsOnLayout[key]);
             vwButton.Commands.Add(new("", commandName, ""));
             assignedButtons.Add(vwButton);
         }
     }
 
     private void BuildAssignedButtons(
-        GameJoystick stick,
-        List<GameAssignedButton> assignedButtons,
-        Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout,
+        RinceDCSJoystick stick,
+        List<AssignedButton> assignedButtons,
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout,
         string bindingId,
         string commandName,
         string categoryName,
         DCSAircraftJoystickBinding bindingButtons)
     {
-        foreach (DCSButton button in bindingButtons.AssignedButtons.Values)
+        foreach (IDCSButton button in bindingButtons.AssignedButtons.Values)
         {
-            GameAssignedButtonKey key;
+            AssignedButtonKey key;
             if (button is DCSAxisButton)
             {
                 key = new(button.Key.Name, false);
@@ -105,31 +105,31 @@ public class JoystickVMHelper
             }
             if (buttonsOnLayout.ContainsKey(key))
             {
-                GameAssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
+                AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
                 vwButton.Commands.Add(new(bindingId, commandName, categoryName));
                 AddButtonConfiguration(button, vwButton);
             }
         }
     }
 
-    private void AddButtonConfiguration(DCSButton button, GameAssignedButton vwButton)
+    private void AddButtonConfiguration(IDCSButton button, AssignedButton vwButton)
     {
         if (button is DCSAxisButton)
         {
             DCSAxisButton axisButton = button as DCSAxisButton;
             vwButton.IsAxisButton = true;
-            foreach(double curve in axisButton.Filter.Curvature)
+            foreach(double curve in axisButton.Curvature)
             {
                 vwButton.Curvature.Add((int)(curve * 100));
             }
-            vwButton.Deadzone = (int)axisButton.Filter.Deadzone;
-            vwButton.HardwareDetent = axisButton.Filter.HardwareDetent;
-            vwButton.HardwareDetentAB = (int)axisButton.Filter.HardwareDetentAB;
-            vwButton.HardwareDetentMax = (int)axisButton.Filter.HardwareDetentMax;
-            vwButton.Invert = axisButton.Filter.Invert;
-            vwButton.SaturationX = (int)(axisButton.Filter.SaturationX * 100);
-            vwButton.SaturationY = (int)(axisButton.Filter.SaturationY * 100);
-            vwButton.Slider = axisButton.Filter.Slider;
+            vwButton.Deadzone = (int)axisButton.Deadzone;
+            vwButton.HardwareDetent = axisButton.HardwareDetent;
+            vwButton.HardwareDetentAB = (int)axisButton.HardwareDetentAB;
+            vwButton.HardwareDetentMax = (int)axisButton.HardwareDetentMax;
+            vwButton.Invert = axisButton.Invert;
+            vwButton.SaturationX = (int)(axisButton.SaturationX * 100);
+            vwButton.SaturationY = (int)(axisButton.SaturationY * 100);
+            vwButton.Slider = axisButton.Slider;
         }
         else 
         {
@@ -139,9 +139,9 @@ public class JoystickVMHelper
         }
     }
 
-    private GameAssignedButton GetAssignedButtons(List<GameAssignedButton> assignedButtons, GameJoystickButton gameJoystickButton)
+    private AssignedButton GetAssignedButtons(List<AssignedButton> assignedButtons, RinceDCSJoystickButton gameJoystickButton)
     {
-        foreach(GameAssignedButton button in assignedButtons)
+        foreach(AssignedButton button in assignedButtons)
         {
             if(button.JoystickButton.ButtonName == gameJoystickButton.ButtonName &&
                 button.JoystickButton.IsModifier == gameJoystickButton.IsModifier) {
@@ -149,7 +149,7 @@ public class JoystickVMHelper
             }
         }
 
-        GameAssignedButton assigned = new(gameJoystickButton);
+        AssignedButton assigned = new(gameJoystickButton);
         assignedButtons.Add(assigned); 
         return assigned;
     }

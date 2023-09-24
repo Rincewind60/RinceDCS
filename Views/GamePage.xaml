@@ -94,7 +94,7 @@
                 Margin="18,2,2,2"/>
             <ComboBox
                 Name="InstancesCombo" 
-                ItemsSource="{x:Bind ViewModel.CurrentGame.Instances, Mode=OneWay}" 
+                ItemsSource="{x:Bind ViewModel.CurrentFile.Instances, Mode=OneWay}" 
                 SelectedItem="{x:Bind ViewModel.CurrentInstance, Mode=TwoWay}" 
                 SelectionChanged="InstancesCombo_SelectionChanged"
                 DisplayMemberPath="Name"

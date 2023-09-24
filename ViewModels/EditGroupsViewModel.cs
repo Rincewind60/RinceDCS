@@ -20,18 +20,18 @@ public class EditGroupsTableData
 public partial class EditGroupsViewModel : ObservableObject
 {
     [ObservableProperty]
-    public List<GameBindingGroup> bindingGroups;
+    public List<RinceDCSGroup> groups;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsGroupSelected))]
-    private GameBindingGroup currentBindingGroup;
+    private RinceDCSGroup currentBindingGroup;
     public bool IsGroupSelected { get {  return CurrentBindingGroup != null; } }
     [ObservableProperty]
     private EditGroupsTableData groupData;
 
-    public EditGroupsViewModel(List<GameBindingGroup> groups, DCSData data)
+    public EditGroupsViewModel(List<RinceDCSGroup> groups, DCSData data)
     {
-        BindingGroups = groups.ToList();
-        BindingGroups.Sort((x, y) => {
+        Groups = groups.ToList();
+        Groups.Sort((x, y) => {
             return x.Name.CompareTo(y.Name);
         });
     }
@@ -56,7 +56,7 @@ public partial class EditGroupsViewModel : ObservableObject
             newGroupData.BindingHeadings.Add(CurrentBindingGroup.Bindings[i].Id);
         }
 
-        foreach(GameBoundAircraft boundAircraft in CurrentBindingGroup.BoundAircraft)
+        foreach(RinceDCSGroupAircraft boundAircraft in CurrentBindingGroup.AircraftBindings)
         {
             dynamic dynAircraft = new ExpandoObject();
             dynAircraft.AircraftName = boundAircraft.AircraftName;

@@ -17,57 +17,6 @@ using Windows.Media.AppBroadcasting;
 
 namespace RinceDCS.Services;
 
-public class DCSLuaFileBuilder
-{
-    private List<DCSAxisButton> axisBindings { get; } = new();
-    private List<DCSKeyButton> keyBindings { get; } = new();
-
-    public DCSLuaFileBuilder()
-    {
-    }
-
-    public void AddAxisBinding(Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft> binding)
-    {
-        DCSAxisButton button = new()
-        {
-            Key = new DCSButtonKey(""),
-            Filter = new()
-            {
-            }
-        };
-        axisBindings.Add(button);
-    }
-
-    public void AddKeyBinding(Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft> binding)
-    {
-        DCSKeyButton button = new()
-        {
-            Key = new DCSButtonKey(""),
-            Modifiers = new()
-        };
-        keyBindings.Add(button);
-    }
-
-    public void WriteFile(string luaFileName)
-    {
-        StringBuilder sb = new();
-
-        sb.AppendLine("local diff = {");
-        sb.AppendLine("\t[\"axisDiffs\"] = {");
-
-        sb.AppendLine("\t},");
-        
-        sb.AppendLine("\t[\"keyDiffs\"] = {");
-
-        sb.AppendLine("\t},");
-
-        sb.AppendLine("}");
-        sb.AppendLine("return diff");
-
-        File.WriteAllText(luaFileName, sb.ToString());
-    }
-}
-
 public class DCSService : IDCSService
 {
     /// <summary>
@@ -125,51 +74,96 @@ public class DCSService : IDCSService
         return currentSavedGamesFolder;
     }
 
-    public void UpdateGameBindingData(string savedGameFolderPath, GameBindingGroups bindingGroups, DCSData data)
+    public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data)
     {
         //  For each Aircraft
-        foreach(GameAircraft aircraft in bindingGroups.AllAircraft.Values)
+        foreach(string aircraftName in bindingGroups.AllAircraftNames.Values)
         {
             //  For each Joystick
             foreach(var stick in data.Joysticks.Values)
             {
-                var bindings = (from bindingGroup in bindingGroups.Groups
-                                from joystick in bindingGroup.Joysticks
-                                from boundAircraft in bindingGroup.BoundAircraft
-                                where joystick.Joystick == stick.Joystick &&
-                                        boundAircraft.AircraftName == aircraft.Name && boundAircraft.IsActive == true
-                                select Tuple.Create(bindingGroup, joystick, boundAircraft)).ToList();
+                List<BindingWithAdds> bindingsWithAdds = (from bindingGroup in bindingGroups.Groups
+                                                          from joystick in bindingGroup.JoystickBindings
+                                                          from boundAircraft in bindingGroup.AircraftBindings
+                                                          where joystick.Buttons.Count() > 0 &&
+                                                                joystick.Joystick == stick.Joystick &&
+                                                                boundAircraft.AircraftName == aircraftName && boundAircraft.IsActive == true
+                                                          select new BindingWithAdds()
+                                                          {
+                                                              AircraftName = aircraftName,
+                                                              Joystick = stick.Joystick,
+                                                              IsAxisBinding = bindingGroup.IsAxisBinding,
+                                                              BindingId = boundAircraft.BindingId,
+                                                              CommandName = boundAircraft.CommandName,
+                                                              Buttons = joystick.Buttons
+                                                          }).ToList();
 
-                BuildLuaFile(savedGameFolderPath, bindings);
+                //  Add bindings to be removed from Aircraft
+                //      - Include all exisintg Remove bindings in current DCS file that are not in the Bindings list to be added
+                //      - Include all existing Add bindings in current DCS file that are not in the Bindings list to be added
+                //              (need to test, can we ignore old adds, or do we need a remove in file to delete them?)
+                //  This is done at the button level, i.e. a Binding could have both Add and Remove actions depending on changes
+                //  to the bound buttons
+
+                List<BindingWithRemoves> bindingsWithRemoves = (from binding in data.Bindings.Values
+                                                                from ajb in binding.AircraftJoystickBindings.Values
+                                                                where ajb.AircraftKey.Name == aircraftName &&
+                                                                      ajb.JoystickKey == stick.Key &&
+                                                                      (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
+                                                                       ajb.SavedGamesButtonChanges.RemovedKeyButtons.Count() > 0)
+                                                                select new BindingWithRemoves()
+                                                                {
+                                                                    AircraftName = aircraftName,
+                                                                    Joystick = stick.Joystick,
+                                                                    IsAxisBinding = binding.IsAxisBinding,
+                                                                    BindingId = binding.Key.Id,
+                                                                    CommandName = binding.CommandName,
+                                                                    RemovedAxisButtons = ajb.SavedGamesButtonChanges.RemovedAxisButtons,
+                                                                    RemovedKeyButtons = ajb.SavedGamesButtonChanges.RemovedKeyButtons
+                                                                }).ToList();
+
+
+
+                BuildLuaFile(savedGameFolderPath, data, bindingsWithAdds);
             }
         }
     }
 
-    private void BuildLuaFile(string savedGameFolderPath, List<Tuple<GameBindingGroup, GameBindingJoystick, GameBoundAircraft>> bindings)
+    private void BuildLuaFile(string savedGameFolderPath, DCSData data, List<BindingWithAdds> bindingsWithAdds)
     {
-        string luaBackupFolder = "D:/RinceConfigBackup/Input/" + bindings[0].Item3.AircraftName + "/joystick/";
-        string luaFileName = luaBackupFolder + bindings[0].Item2.Joystick.DCSName + ".diff.lua";
+        string luaBackupFolder = "D:/RinceConfigBackup/Input/" + bindingsWithAdds[0].AircraftName + "/joystick/";
+        string luaFileName = luaBackupFolder + bindingsWithAdds[0].Joystick.DCSName + ".diff.lua";
 
-        if(!Directory.Exists(luaBackupFolder))
+        if (!Directory.Exists(luaBackupFolder))
         {
             Directory.CreateDirectory(luaBackupFolder);
         }
 
-        DCSLuaFileBuilder luaBuilder = new();
+        DCSLuaFileBuilder luaBuilder = new(luaFileName);
 
-        foreach (var binding in bindings)
+        //  Add bindings to be added to Aircraft
+        foreach (var binding in bindingsWithAdds)
         {
-            if (binding.Item1.IsAxisBinding)
+            if (binding.IsAxisBinding)
             {
-                luaBuilder.AddAxisBinding(binding);
+                luaBuilder.AddGroupAxisButtons(binding);
             }
             else
             {
-                luaBuilder.AddKeyBinding(binding);
+                luaBuilder.AddGroupKeyButtons(binding);
             }
         }
 
-        luaBuilder.WriteFile(luaFileName);
+        //  Add bindings to be removed from Aircraft
+        //      - Include all exisintg Remove bindings in current DCS file that are not in the Bindings list to be added
+        //      - Include all existing Add bindings in current DCS file that are not in the Bindings list to be added
+        //  This is done at the button level, i.e. a Binding could have both Add and Remove actions depending on changes
+        //  to the bound buttons
+
+        /// TODO: Implement remove in lua files
+
+
+        luaBuilder.WriteFile();
     }
 
     private static void BuildListOfJoysticks(DCSData data, List<AttachedJoystick> sticks)
@@ -380,40 +374,40 @@ public class DCSService : IDCSService
                 Table curvatureTable = filterTable.Values.ElementAt(j).Table;
                 for (int k = 0; k < curvatureTable.Keys.Count(); k++)
                 {
-                    axisButton.Filter.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
+                    axisButton.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
                 }
             }
             else if (sectionName == "deadzone")
             {
-                axisButton.Filter.Deadzone = filterTable.Values.ElementAt(j).Number;
+                axisButton.Deadzone = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetent")
             {
-                axisButton.Filter.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "hardwareDetentAB")
             {
-                axisButton.Filter.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
+                axisButton.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetentMax")
             {
-                axisButton.Filter.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
+                axisButton.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "invert")
             {
-                axisButton.Filter.Invert = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.Invert = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "saturationX")
             {
-                axisButton.Filter.SaturationX = filterTable.Values.ElementAt(j).Number;
+                axisButton.SaturationX = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "saturationY")
             {
-                axisButton.Filter.SaturationY = filterTable.Values.ElementAt(j).Number;
+                axisButton.SaturationY = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "slider")
             {
-                axisButton.Filter.Slider = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.Slider = filterTable.Values.ElementAt(j).Boolean;
             }
         }
     }
@@ -424,7 +418,7 @@ public class DCSService : IDCSService
         {
             Table table = removedTable.Values.ElementAt(i).Table;
             string button = table.Values.ElementAt(i).String;
-            DCSButton removedButton = new() { Key = new(button) };
+            DCSAxisButton removedButton = new() { Key = new(button) };
             changes.RemovedAxisButtons.Add(removedButton);
 
             if(bindingData.AssignedButtons.ContainsKey(removedButton.Key))
@@ -513,7 +507,7 @@ public class DCSService : IDCSService
             for(int j = 0; j < table.Values.Count(); j++)
             {
                 string button = table.Values.ElementAt(j).String;
-                DCSButton removedButton = new() { Key = new(button) };
+                DCSKeyButton removedButton = new() { Key = new(button) };
                 changes.RemovedKeyButtons.Add(removedButton);
 
                 if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
@@ -544,5 +538,109 @@ public class DCSService : IDCSService
         }
 
         return bindingData;
+    }
+}
+
+public class BindingWithAdds
+{
+    public string AircraftName;
+    public AttachedJoystick Joystick;
+    public bool IsAxisBinding;
+    public string BindingId;
+    public string CommandName;
+    public List<IRinceDCSGroupButton> Buttons;
+}
+
+public class BindingWithRemoves
+{
+    public string AircraftName;
+    public AttachedJoystick Joystick;
+    public bool IsAxisBinding;
+    public string BindingId;
+    public string CommandName;
+    public List<DCSAxisButton> RemovedAxisButtons;
+    public List<DCSKeyButton> RemovedKeyButtons;
+}
+
+public class DCSLuaFileBuilder
+{
+    private readonly StringBuilder sbAxis = new();
+    private readonly StringBuilder sbKeys = new();
+    private readonly string luaFileName;
+
+    public DCSLuaFileBuilder(string fileName)
+    {
+        luaFileName = fileName;
+    }
+
+    public void AddGroupAxisButtons(BindingWithAdds binding)
+    {
+        sbAxis.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
+        sbAxis.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
+        sbAxis.AppendLine("\t\t\t[\"added\"] = {");
+        for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
+        {
+            RinceDCSGroupAxisButton axisButton = (RinceDCSGroupAxisButton)binding.Buttons[buttonIndex];
+            sbAxis.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
+            sbAxis.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
+            sbAxis.AppendLine("\t\t\t\t\t[\"filter\"] = {");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"curvature\"] = {");
+            for (int curveIndex = 0; curveIndex < axisButton.Curvature.Count(); curveIndex++)
+            {
+                sbAxis.AppendLine("\t\t\t\t\t\t\t[" + (curveIndex + 1).ToString() + "] = " + axisButton.Curvature[curveIndex].ToString() + ",");
+            }
+            sbAxis.AppendLine("\t\t\t\t\t\t},");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"deadzone\"] = " + axisButton.Deadzone.ToString() + ",");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"invert\"] = " + axisButton.Invert.ToString().ToLower() + ",");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationX\"] = " + axisButton.SaturationX.ToString() + ",");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationY\"] = " + axisButton.SaturationY.ToString() + ",");
+            sbAxis.AppendLine("\t\t\t\t\t\t[\"slider\"] = " + axisButton.Slider.ToString().ToLower() + ",");
+            sbAxis.AppendLine("\t\t\t\t\t},");
+            sbAxis.AppendLine("\t\t\t\t},");
+        }
+        sbAxis.AppendLine("\t\t\t},");
+        sbAxis.AppendLine("\t\t},");
+    }
+
+    public void AddGroupKeyButtons(BindingWithAdds binding)
+    {
+        sbKeys.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
+        sbKeys.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
+        sbKeys.AppendLine("\t\t\t[\"added\"] = {");
+        for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
+        {
+            RinceDCSGroupKeyButton axisButton = (RinceDCSGroupKeyButton)binding.Buttons[buttonIndex];
+            sbKeys.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
+            sbKeys.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
+            if (axisButton.Modifiers.Count() > 0)
+            {
+                sbKeys.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
+                for (int reformerIndex = 0; reformerIndex < axisButton.Modifiers.Count(); reformerIndex++)
+                {
+                    sbKeys.AppendLine("\t\t\t\t\t\t[" + (reformerIndex + 1).ToString() + "] = \"" + axisButton.Modifiers[reformerIndex].ToString() + "\",");
+                }
+                sbKeys.AppendLine("\t\t\t\t\t},");
+            }
+            sbKeys.AppendLine("\t\t\t\t},");
+        }
+        sbKeys.AppendLine("\t\t\t},");
+        sbKeys.AppendLine("\t\t},");
+    }
+
+    public void WriteFile()
+    {
+        StringBuilder sb = new();
+
+        sb.AppendLine("local diff = {");
+        sb.AppendLine("\t[\"axisDiffs\"] = {");
+        sb.Append(sbAxis);
+        sb.AppendLine("\t},");
+        sb.AppendLine("\t[\"keyDiffs\"] = {");
+        sb.Append(sbKeys);
+        sb.AppendLine("\t},");
+        sb.AppendLine("}");
+        sb.AppendLine("return diff");
+
+        File.WriteAllText(luaFileName, sb.ToString());
     }
 }

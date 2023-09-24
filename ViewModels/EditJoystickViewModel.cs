@@ -20,17 +20,17 @@ namespace RinceDCS.ViewModels;
 public partial class EditJoystickViewModel : ObservableObject
 {
     [ObservableProperty]
-    private GameJoystick stick;
+    private RinceDCSJoystick stick;
 
     [ObservableProperty]
-    private GameJoystickButton currentButton;
+    private RinceDCSJoystickButton currentButton;
 
     public ObservableCollection<string> FontNames { get; set; } = new();
     public ObservableCollection<int> FontSizes { get; set; } = new() { 20, 22, 24, 26, 28, 32, 36, 40 };
 
     public ScaleVMHelper ScaleHelper { get; }
 
-    public EditJoystickViewModel(GameJoystick joystick, List<string> fonts)
+    public EditJoystickViewModel(RinceDCSJoystick joystick, List<string> fonts)
     {
         Stick = joystick;
         CurrentButton = null;
@@ -76,13 +76,13 @@ public partial class EditJoystickViewModel : ObservableObject
         Stick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(path);
     }
 
-    partial void OnCurrentButtonChanged(GameJoystickButton oldValue, GameJoystickButton newValue)
+    partial void OnCurrentButtonChanged(RinceDCSJoystickButton oldValue, RinceDCSJoystickButton newValue)
     {
         if(oldValue != null) oldValue.IsSelected = false;
         if(newValue != null) newValue.IsSelected = true;
     }
 
-    public void PlaceButtonOnJoystick(GameJoystickButton button, int x, int y)
+    public void PlaceButtonOnJoystick(RinceDCSJoystickButton button, int x, int y)
     {
         button.TopX = x;
         button.TopY = y;
@@ -91,7 +91,7 @@ public partial class EditJoystickViewModel : ObservableObject
         button.OnLayout = true;
     }
 
-    public void UpdateButtonDimensions(GameJoystickButton button, int newRight, int newBottom)
+    public void UpdateButtonDimensions(RinceDCSJoystickButton button, int newRight, int newBottom)
     {
         button.Width = Math.Max(0, (int)(newRight - button.TopX));
         button.Height = Math.Max(0, (int)(newBottom - button.TopY));

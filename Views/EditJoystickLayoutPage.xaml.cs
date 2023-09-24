@@ -37,9 +37,9 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Game game = (Game)e.Parameter;
+            RinceDCSFile rinceDCSFile = (RinceDCSFile)e.Parameter;
 
-            foreach (GameJoystick joystick in game.Joysticks)
+            foreach (RinceDCSJoystick joystick in rinceDCSFile.Joysticks)
             {
                 TabViewItem newItem = new TabViewItem();
                 newItem.Header = joystick.AttachedJoystick.Name;

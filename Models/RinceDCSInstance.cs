@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RinceDCS.Models;
 
-public partial class GameInstance : ObservableObject
+public partial class RinceDCSInstance : ObservableObject
 {
     [ObservableProperty]
     private string name;
@@ -16,9 +16,9 @@ public partial class GameInstance : ObservableObject
     private string savedGameFolderPath;
 
     [ObservableProperty]
-    private GameBindingGroups bindingGroups;
+    private RinceDCSGroups bindingGroups;
 
-    public ObservableCollection<GameAircraft> Aircraft { get; set; } = new();
+    public ObservableCollection<RinceDCSAircraft> Aircraft { get; set; } = new();
 
     public string CurrentAircraftName { get; set; }
 

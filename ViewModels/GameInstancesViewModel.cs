@@ -50,11 +50,11 @@ public partial class GameInstancesViewModel : ObservableObject
 
     private readonly int NumberOfHeadingInstances = 1;
 
-    public GameInstancesViewModel(List<GameInstance> instances)
+    public GameInstancesViewModel(List<RinceDCSInstance> instances)
     {
         Instances = new();
         Instances.Add(new InstanceData() { Name = "Name", GameExePath = "Game Executable Path", SavedGameFolderPath = "Saved Games Folder Path", IsHeading = true });
-        foreach(GameInstance instance in instances)
+        foreach(RinceDCSInstance instance in instances)
         {
             InstanceData instanceData = new InstanceData() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath, IsHeading = false };
             Instances.Add(instanceData);

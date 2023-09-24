@@ -54,37 +54,28 @@ public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
-    public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; } = new();
+    public Dictionary<DCSButtonKey, IDCSButton> AssignedButtons { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
 
 public class DCSButtonChanges
 {
-    public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
     public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
-    public List<DCSButton> RemovedAxisButtons { get; set; } = new();
+    public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
+    public List<DCSAxisButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
-    public List<DCSButton> RemovedKeyButtons { get; set; } = new();
+    public List<DCSKeyButton> RemovedKeyButtons { get; set; } = new();
 }
 
-public class DCSButton
+public interface IDCSButton
 {
-    public DCSButtonKey Key;
+    public DCSButtonKey Key { get; set; }
 }
 
-public class DCSAxisButton : DCSButton
+public class DCSAxisButton : IDCSButton
 {
-    public DCSAxisFilter Filter { get; set; }
-
-    public DCSAxisButton()
-    {
-        Filter = new();
-    }
-}
-
-public class DCSAxisFilter
-{
-    public List<double> Curvature { get; set; }
+    public DCSButtonKey Key { get; set; }
+    public List<double> Curvature { get; set; } = new();
     public double Deadzone { get; set; }
     public bool HardwareDetent { get; set; }
     public double HardwareDetentAB { get; set; }
@@ -93,14 +84,10 @@ public class DCSAxisFilter
     public double SaturationX { get; set; }
     public double SaturationY { get; set; }
     public bool Slider { get; set; }
-
-    public DCSAxisFilter()
-    {
-        Curvature = new();
-    }
 }
 
-public class DCSKeyButton : DCSButton
+public class DCSKeyButton : IDCSButton
 {
+    public DCSButtonKey Key { get; set; }
     public List<string> Modifiers { get; set; } = new();
 }

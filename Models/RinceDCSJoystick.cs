@@ -17,13 +17,13 @@ public record AttachedJoystick(Guid JoystickGuid, string Name)
     public string DCSName => Name + " {" + JoystickGuid + "}";
 }
 
-public partial class GameJoystick : ObservableObject
+public partial class RinceDCSJoystick : ObservableObject
 {
     [ObservableProperty]
     private AttachedJoystick attachedJoystick;
 
     [ObservableProperty]
-    private ObservableCollection<GameJoystickButton> buttons;
+    private ObservableCollection<RinceDCSJoystickButton> buttons;
 
     [ObservableProperty]
     private string font;
@@ -42,7 +42,7 @@ public partial class GameJoystick : ObservableObject
 
     public byte[] Image {  get; set; }
 
-    public GameJoystick()
+    public RinceDCSJoystick()
     {
         Font = "Arial";
         FontSize = 14;
@@ -55,7 +55,7 @@ public partial class GameJoystick : ObservableObject
     {
         if (Buttons == null) return;
 
-        foreach (GameJoystickButton button in Buttons)
+        foreach (RinceDCSJoystickButton button in Buttons)
         {
             button.Font = value;
         }
@@ -65,14 +65,14 @@ public partial class GameJoystick : ObservableObject
     {
         if (Buttons == null) return;
 
-        foreach (GameJoystickButton button in Buttons)
+        foreach (RinceDCSJoystickButton button in Buttons)
         {
             button.FontSize = value;
         }
     }
 }
 
-public partial class GameJoystickButton : ObservableObject
+public partial class RinceDCSJoystickButton : ObservableObject
 {
     public string ButtonName { get; set; }
 
@@ -116,7 +116,7 @@ public partial class GameJoystickButton : ObservableObject
     [property: JsonIgnore]
     private bool isSelected;
 
-    public GameJoystickButton()
+    public RinceDCSJoystickButton()
     {
         Alignment = "Left";
     }

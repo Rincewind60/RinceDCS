@@ -10,18 +10,18 @@ namespace RinceDCS.Services;
 
 public class FileService : IFileService
 {
-    public async Task<Game> OpenGame(string path)
+    public async Task<RinceDCSFile> OpenGame(string path)
     {
-        Game game = null;
+        RinceDCSFile rinceDCSFile = null;
 
         if(File.Exists(path))
         {
             FileStream stream = File.OpenRead(path);
-            game = await JsonSerializer.DeserializeAsync<Game>(stream);
+            rinceDCSFile = await JsonSerializer.DeserializeAsync<RinceDCSFile>(stream);
 
-            foreach(GameJoystick stick in game.Joysticks)
+            foreach(RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
-                foreach(GameJoystickButton button in stick.Buttons)
+                foreach(RinceDCSJoystickButton button in stick.Buttons)
                 {
                     button.Font = stick.Font;
                     button.FontSize = stick.FontSize;
@@ -33,23 +33,23 @@ public class FileService : IFileService
             Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, path);
         }
 
-        return game;
+        return rinceDCSFile;
     }
 
-    public async Task SaveGame(Game game)
+    public async Task SaveGame(RinceDCSFile rinceDCSFile)
     {
         string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
         if(savePath == null)
         {
-            await SaveAsGame(game);
+            await SaveAsGame(rinceDCSFile);
         }
         else
         {
-            await SaveGameToPath(game, savePath);
+            await SaveGameToPath(rinceDCSFile, savePath);
         }
     }
 
-    public async Task SaveAsGame(Game game)
+    public async Task SaveAsGame(RinceDCSFile rinceDCSFile)
     {
         string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("RinceDCS.json","DCS Tool",".json");
         if (savePath == null)
@@ -58,7 +58,7 @@ public class FileService : IFileService
         }
         else
         {
-            await SaveGameToPath(game, savePath);
+            await SaveGameToPath(rinceDCSFile, savePath);
         }
 
     }
@@ -89,7 +89,7 @@ public class FileService : IFileService
         return data;
     }
 
-    private async Task SaveGameToPath(Game game, string savePath)
+    private async Task SaveGameToPath(RinceDCSFile rinceDCSFile, string savePath)
     {
         //  Update Save Path setting so we remember where to save to/open from
         Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, savePath);
@@ -100,7 +100,7 @@ public class FileService : IFileService
             {
                 WriteIndented = true
             };
-            await JsonSerializer.SerializeAsync(stream, game, options);
+            await JsonSerializer.SerializeAsync(stream, rinceDCSFile, options);
         }
     }
 }

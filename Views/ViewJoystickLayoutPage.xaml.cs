@@ -37,16 +37,16 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<string, string, Game, DCSData, GameAircraft> data = e.Parameter as Tuple<string, string, Game, DCSData, GameAircraft>;
+            Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft>;
 
             string instanceName = data.Item1;
             string savedGamesFolder = data.Item2;
-            Game game = data.Item3;
+            RinceDCSFile rinceDCSFile = data.Item3;
             DCSData dcsData = data.Item4;
-            GameAircraft currentAircraft = data.Item5;
+            RinceDCSAircraft currentAircraft = data.Item5;
 
 
-            foreach (GameJoystick stick in game.Joysticks)
+            foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
                 TabViewItem newItem = new TabViewItem();
                 newItem.Header = stick.AttachedJoystick.Name;

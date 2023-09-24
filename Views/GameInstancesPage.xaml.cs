@@ -27,7 +27,7 @@ namespace RinceDCS.Views
     /// </summary>
     public sealed partial class GameInstancesPage : Page
     {
-        public GameInstancesPage(List<GameInstance> instances)
+        public GameInstancesPage(List<RinceDCSInstance> instances)
         {
             this.InitializeComponent();
 

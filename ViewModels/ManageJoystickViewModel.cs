@@ -6,9 +6,9 @@ namespace RinceDCS.ViewModels;
 public partial class ManageJoystickViewModel : ObservableObject
 {
     [ObservableProperty]
-    private GameJoystick joystick;
+    private RinceDCSJoystick joystick;
 
-    public ManageJoystickViewModel(GameJoystick stick, DCSData data, GameAircraft currentAircraft)
+    public ManageJoystickViewModel(RinceDCSJoystick stick, DCSData data, RinceDCSAircraft currentAircraft)
     {
         Joystick = stick;
     }

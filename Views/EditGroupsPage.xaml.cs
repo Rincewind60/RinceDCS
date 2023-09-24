@@ -39,7 +39,7 @@ public sealed partial class EditGroupsPage : Page
     {
         base.OnNavigatedTo(e);
 
-        Tuple<GameBindingGroups, DCSData> data = e.Parameter as Tuple<GameBindingGroups, DCSData>;
+        Tuple<RinceDCSGroups, DCSData> data = e.Parameter as Tuple<RinceDCSGroups, DCSData>;
 
         EditGroupsViewModel vm = new(data.Item1.Groups, data.Item2);
         this.DataContext = vm;
@@ -96,11 +96,11 @@ public sealed partial class EditGroupsPage : Page
         dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
         {
             Header = "Aircraft",
-            Binding = new Binding { Path = new PropertyPath("AircraftName"), Mode = BindingMode.OneWay }
+            Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("AircraftName"), Mode = BindingMode.OneWay }
         });
 
         int bindingIndex = 0;
-        foreach (GameBinding binding in ViewModel.CurrentBindingGroup.Bindings)
+        foreach (RinceDCSGroupBinding binding in ViewModel.CurrentBindingGroup.Bindings)
         {
             DataGridTemplateColumn column = new() { Header = binding.Id };
 

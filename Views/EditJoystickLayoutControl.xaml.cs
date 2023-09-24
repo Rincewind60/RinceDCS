@@ -33,7 +33,7 @@ namespace RinceDCS.Views
     {
         private bool isDrawing = false;
 
-        public EditJoystickLayoutControl(GameJoystick joystick)
+        public EditJoystickLayoutControl(RinceDCSJoystick joystick)
         {
             this.InitializeComponent();
 
@@ -175,7 +175,7 @@ namespace RinceDCS.Views
         {
             Border border = (Border)sender;
 
-            if (ViewModel.CurrentButton == (GameJoystickButton)border.DataContext &&
+            if (ViewModel.CurrentButton == (RinceDCSJoystickButton)border.DataContext &&
                 InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.LeftControl) == CoreVirtualKeyStates.Down)
             {
                 ViewModel.CurrentButton = null;
@@ -188,7 +188,7 @@ namespace RinceDCS.Views
 
         private void JoysticButton_GotFocus(object sender, RoutedEventArgs e)
         {
-            GameJoystickButton button = ((Border)sender).DataContext as GameJoystickButton;
+            RinceDCSJoystickButton button = ((Border)sender).DataContext as RinceDCSJoystickButton;
             ViewModel.CurrentButton = button;
         }
 

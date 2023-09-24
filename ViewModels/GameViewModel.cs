@@ -29,23 +29,23 @@ public partial class GameViewModel : ObservableRecipient
 {
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private Game currentGame;
+    private RinceDCSFile currentFile;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private GameInstance currentInstance;
+    private RinceDCSInstance currentInstance;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private DCSData currentInstanceBindingsData;
+    private DCSData currentInstanceDCSData;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private GameBindingGroups currentInstanceBindingGroups;
+    private RinceDCSGroups currentInstanceGroups;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private GameAircraft currentAircraft;
+    private RinceDCSAircraft currentAircraft;
 
     [ObservableProperty]
     private List<AttachedJoystick> attachedJoysticks;
@@ -76,7 +76,7 @@ public partial class GameViewModel : ObservableRecipient
         {
             DoOpen(savedPath);
         }
-        if (CurrentGame == null)
+        if (CurrentFile == null)
         {
             New();
         }
@@ -87,7 +87,7 @@ public partial class GameViewModel : ObservableRecipient
     {
         Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, null);
 
-        Game newGame = new();
+        RinceDCSFile newGame = new();
         LoadJoysticks(newGame);
 
         SetCurrentGame(newGame);
@@ -96,12 +96,12 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private async void Open()
     {
-        if(CurrentGame != null)
+        if(CurrentFile != null)
         {
-            bool? result = await Ioc.Default.GetRequiredService<IDialogService>().OpenConfirmationDialog("Save Game", "Do you want to save the existing Game file first?");
+            bool? result = await Ioc.Default.GetRequiredService<IDialogService>().OpenConfirmationDialog("Save RinceDCS File", "Do you want to save the existing file first?");
             if(result.HasValue && result.Value)
             {
-                await Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentGame);
+                await Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentFile);
             }
         }
 
@@ -114,7 +114,7 @@ public partial class GameViewModel : ObservableRecipient
 
     private void DoOpen(string path)
     {
-        Game openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame(path)).GetAwaiter().GetResult();
+        RinceDCSFile openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame(path)).GetAwaiter().GetResult();
         if (openedGame != null)
         {
             CheckForNewJoysticks(openedGame);
@@ -122,12 +122,12 @@ public partial class GameViewModel : ObservableRecipient
         }
     }
 
-    private void CheckForNewJoysticks(Game openedGame)
+    private void CheckForNewJoysticks(RinceDCSFile openedGame)
     {
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
             bool existingStick = false;
-            foreach (GameJoystick gameStick in openedGame.Joysticks)
+            foreach (RinceDCSJoystick gameStick in openedGame.Joysticks)
             {
                 if (stick == gameStick.AttachedJoystick)
                 {
@@ -137,7 +137,7 @@ public partial class GameViewModel : ObservableRecipient
             }
             if (existingStick == false)
             {
-                GameJoystick newJoystick = new() { AttachedJoystick = stick };
+                RinceDCSJoystick newJoystick = new() { AttachedJoystick = stick };
 
                 AddJoystickButtons(newJoystick);
 
@@ -151,14 +151,14 @@ public partial class GameViewModel : ObservableRecipient
     private void Save()
     {
         ApplyChangesToModels();
-        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentGame)).Wait();
+        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentFile)).Wait();
     }
 
      [RelayCommand]
     private void SaveAs()
     {
         ApplyChangesToModels();
-        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveAsGame(CurrentGame)).Wait();
+        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveAsGame(CurrentFile)).Wait();
     }
 
     [RelayCommand]
@@ -171,13 +171,13 @@ public partial class GameViewModel : ObservableRecipient
     private async void ExportImages()
     {
         string exportFolder = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFolder();
-        JoystickVMHelper helper = new(CurrentInstanceBindingsData);
-        foreach(GameJoystick stick in CurrentGame.Joysticks)
+        JoystickVMHelper helper = new(CurrentInstanceDCSData);
+        foreach(RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
-            Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
-            foreach(GameAircraft aircraft in CurrentInstance.Aircraft)
+            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
+            foreach(RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
             {
-                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
+                List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
                 string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
                 WeakReferenceMessenger.Default.Send(new ExportAssignedButtonsImageMessage(stick, assignedButtons, saveFilePath));
             }
@@ -187,13 +187,13 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private void ExportKneeboards()
     {
-        JoystickVMHelper helper = new(CurrentInstanceBindingsData);
-        foreach (GameJoystick stick in CurrentGame.Joysticks)
+        JoystickVMHelper helper = new(CurrentInstanceDCSData);
+        foreach (RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
-            Dictionary<GameAssignedButtonKey, GameJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
-            foreach (GameAircraft aircraft in CurrentInstance.Aircraft)
+            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
+            foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
             {
-                List<GameAssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
+                List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
                 WeakReferenceMessenger.Default.Send(new ExportKneeboardMessage(stick, assignedButtons, aircraft.Name));
             }
         }
@@ -202,23 +202,23 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private void UpdateDCS()
     {
-        Ioc.Default.GetRequiredService<IDCSService>().UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceBindingGroups, CurrentInstanceBindingsData);
+        Ioc.Default.GetRequiredService<IDCSService>().UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData);
     }
 
     public void CurrentInstanceChanged()
     {
         if(CurrentInstance == null)
         {
-            CurrentInstanceBindingsData = null;
+            CurrentInstanceDCSData = null;
             CurrentAircraft = null;
         }
         else
         {
             LoadBindingDataForInstance(CurrentInstance);
-            BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
+            GroupsVMHelper bindHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
             CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
-            CurrentInstanceBindingsData = CurrentInstance.BindingsData;
-            CurrentInstanceBindingGroups = CurrentInstance.BindingGroups;
+            CurrentInstanceDCSData = CurrentInstance.BindingsData;
+            CurrentInstanceGroups = CurrentInstance.BindingGroups;
             SetCurrentAircraftForCurrentInstance();
         }
     }
@@ -241,15 +241,15 @@ public partial class GameViewModel : ObservableRecipient
         }
     }
 
-    private void LoadJoysticks(Game game)
+    private void LoadJoysticks(RinceDCSFile rinceDCSFile)
     {
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
-            GameJoystick newJoystick = new() { AttachedJoystick = stick };
+            RinceDCSJoystick newJoystick = new() { AttachedJoystick = stick };
 
             AddJoystickButtons(newJoystick);
 
-            game.Joysticks.Add(newJoystick);
+            rinceDCSFile.Joysticks.Add(newJoystick);
         }
     }
 
@@ -257,11 +257,11 @@ public partial class GameViewModel : ObservableRecipient
     /// Remove any existing Joystick info and update with latest
     /// </summary>
     /// <param name="joystick"></param>
-    private void AddJoystickButtons(GameJoystick joystick)
+    private void AddJoystickButtons(RinceDCSJoystick joystick)
     {
         JoystickInfo info = Ioc.Default.GetRequiredService<IJoystickService>().GetJoystickInfo(joystick.AttachedJoystick);
 
-        joystick.Buttons = new ObservableCollection<GameJoystickButton>();
+        joystick.Buttons = new ObservableCollection<RinceDCSJoystickButton>();
 
         joystick.Buttons.Add(NewJoystickButton("Game", joystick));
         joystick.Buttons.Add(NewJoystickButton("Plane", joystick));
@@ -275,9 +275,9 @@ public partial class GameViewModel : ObservableRecipient
         foreach (string item in info.Buttons) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
     }
 
-    private GameJoystickButton NewJoystickButton(string name, GameJoystick stick, bool isKey = true, bool isModifier = false)
+    private RinceDCSJoystickButton NewJoystickButton(string name, RinceDCSJoystick stick, bool isKey = true, bool isModifier = false)
     {
-        return new GameJoystickButton()
+        return new RinceDCSJoystickButton()
         {
             ButtonName = name,
             Font = stick.Font,
@@ -296,14 +296,14 @@ public partial class GameViewModel : ObservableRecipient
     {
         if (CurrentInstance == null)
         {
-            CurrentGame.CurrentInstanceName = null;
+            CurrentFile.CurrentInstanceName = null;
         }
         else
         {
-            CurrentGame.CurrentInstanceName = CurrentInstance.Name;
+            CurrentFile.CurrentInstanceName = CurrentInstance.Name;
         }
 
-        foreach (GameInstance instance in CurrentGame.Instances)
+        foreach (RinceDCSInstance instance in CurrentFile.Instances)
         {
             if (instance == CurrentInstance)
             {
@@ -317,16 +317,16 @@ public partial class GameViewModel : ObservableRecipient
     }
 
     /// <summary>
-    /// When a new game is created the old game must be replaced.
+    /// When a new RinceDCSFile is created the old EinceDCSFile must be replaced.
     /// 
-    /// This means updating any ViewModel properties relating to the old Game object.
+    /// This means updating any ViewModel properties relating to the old RinceDCSFile object.
     /// </summary>
     /// <param name="newGame"></param>
-    private void SetCurrentGame(Game newGame)
+    private void SetCurrentGame(RinceDCSFile newGame)
     {
         IsGameLoaded = false;
 
-        CurrentGame = newGame;
+        CurrentFile = newGame;
 
         SetCurrentInstanceForGame();
         SetCurrentAircraftForCurrentInstance();
@@ -336,8 +336,8 @@ public partial class GameViewModel : ObservableRecipient
 
     private void SetCurrentInstanceForGame()
     {
-        var instanceQuery = from instance in CurrentGame.Instances
-                            where instance.Name == CurrentGame.CurrentInstanceName
+        var instanceQuery = from instance in CurrentFile.Instances
+                            where instance.Name == CurrentFile.CurrentInstanceName
                             select instance;
 
         if (instanceQuery.Count() == 0)
@@ -374,17 +374,17 @@ public partial class GameViewModel : ObservableRecipient
 
     private void AddNewInstances(List<InstanceData> instances)
     {
-        foreach (InstanceData instance in instances.Skip(1).ExceptBy(CurrentGame.Instances.Select(i => i.GameExePath), j => j.GameExePath))
+        foreach (InstanceData instance in instances.Skip(1).ExceptBy(CurrentFile.Instances.Select(i => i.GameExePath), j => j.GameExePath))
         {
-            GameInstance newInstance = new() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath };
-//            LoadBindingDataForInstance(newInstance);
-            CurrentGame.Instances.Add(newInstance);
+            RinceDCSInstance newInstance = new() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath };
+            //            LoadBindingDataForInstance(newInstance);
+            CurrentFile.Instances.Add(newInstance);
         }
     }
      
     private void UpdateExistingInstances(List<InstanceData> instances)
     {
-        var query = from gameInstance in CurrentGame.Instances
+        var query = from gameInstance in CurrentFile.Instances
                     join instanceData in instances
                     on gameInstance.GameExePath equals instanceData.GameExePath
                     select new
@@ -403,7 +403,7 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.GameExePath = updated.gameExePath;
                 updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
                 LoadBindingDataForInstance(updated.instance);
-                BindingGroupsVMHelper bindHelper = new(CurrentGame.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
+                GroupsVMHelper bindHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
                 CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
             }
         }
@@ -411,20 +411,20 @@ public partial class GameViewModel : ObservableRecipient
 
     private void DeleteInstancesNoLongerRequired(List<InstanceData> instances)
     {
-        var toDelete = CurrentGame.Instances.ExceptBy(instances.Select(i => i.GameExePath), j => j.GameExePath);
-        foreach (GameInstance instance in toDelete)
+        var toDelete = CurrentFile.Instances.ExceptBy(instances.Select(i => i.GameExePath), j => j.GameExePath);
+        foreach (RinceDCSInstance instance in toDelete)
         {
             if (instance == CurrentInstance)
             {
                 CurrentInstance = null;
-                CurrentInstanceBindingsData = null;
+                CurrentInstanceDCSData = null;
                 CurrentAircraft = null;
             }
-            CurrentGame.Instances.Remove(instance);
+            CurrentFile.Instances.Remove(instance);
         }
     }
 
-    private void LoadBindingDataForInstance(GameInstance instance)
+    private void LoadBindingDataForInstance(RinceDCSInstance instance)
     {
         if(instance.BindingsData != null) { return; }
 
@@ -439,7 +439,7 @@ public partial class GameViewModel : ObservableRecipient
         instance.Aircraft.Clear();
         foreach (var aircraft in data.Aircraft)
         {
-            instance.Aircraft.Add(new GameAircraft(aircraft.Key.Name));
+            instance.Aircraft.Add(new RinceDCSAircraft(aircraft.Key.Name));
         }
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.Models;
 
-public record GameAssignedButtonKey(string ButtonName, bool IsModifier);
+public record AssignedButtonKey(string ButtonName, bool IsModifier);
 
-public class GameAssignedButton
+public class AssignedButton
 {
-    public GameJoystickButton JoystickButton { get; }
+    public RinceDCSJoystickButton JoystickButton { get; }
 
-    public List<GameAssignedCommand> Commands { get; } = new();
+    public List<AssignedCommand> Commands { get; } = new();
 
     // DCS Button Details
     public bool IsAxisButton { get; set; }
@@ -82,19 +82,19 @@ public class GameAssignedButton
 
     public bool IsValid { get { return Commands.Count == 1; } }
 
-    public GameAssignedButton(GameJoystickButton joyButton)
+    public AssignedButton(RinceDCSJoystickButton joyButton)
     {
         JoystickButton = joyButton;
     }
 }
 
-public class GameAssignedCommand
+public class AssignedCommand
 {
     public string BindID { get; }
     public string CommandName { get; }
     public string CategoryName { get; }
 
-    public GameAssignedCommand(string bindID, string commandName, string categoryName)
+    public AssignedCommand(string bindID, string commandName, string categoryName)
     {
         BindID = bindID;
         CommandName = commandName;
