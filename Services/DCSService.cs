@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using HtmlAgilityPack;
+using Microsoft.UI.Xaml.Controls;
 using MoonSharp.Interpreter;
 using NLog;
 using RinceDCS.Models;
@@ -82,20 +83,21 @@ public class DCSService : IDCSService
             //  For each Joystick
             foreach(var stick in data.Joysticks.Values)
             {
-                List<BindingWithAdds> bindingsWithAdds = (from bindingGroup in bindingGroups.Groups
+                List<BindingAddsRemoves> bindingsWithAdds = (from bindingGroup in bindingGroups.Groups
                                                           from joystick in bindingGroup.JoystickBindings
                                                           from boundAircraft in bindingGroup.AircraftBindings
+                                                          from button in joystick.Buttons
                                                           where joystick.Buttons.Count() > 0 &&
                                                                 joystick.Joystick == stick.Joystick &&
                                                                 boundAircraft.AircraftName == aircraftName && boundAircraft.IsActive == true
-                                                          select new BindingWithAdds()
+                                                          select new BindingAddsRemoves()
                                                           {
                                                               AircraftName = aircraftName,
                                                               Joystick = stick.Joystick,
                                                               IsAxisBinding = bindingGroup.IsAxisBinding,
                                                               BindingId = boundAircraft.BindingId,
                                                               CommandName = boundAircraft.CommandName,
-                                                              Buttons = joystick.Buttons
+                                                              AddButton = button
                                                           }).ToList();
 
                 //  Add bindings to be removed from Aircraft
@@ -105,21 +107,21 @@ public class DCSService : IDCSService
                 //  This is done at the button level, i.e. a Binding could have both Add and Remove actions depending on changes
                 //  to the bound buttons
 
-                List<BindingWithRemoves> bindingsWithRemoves = (from binding in data.Bindings.Values
+                List<BindingAddsRemoves> bindingsWithRemoves = (from binding in data.Bindings.Values
                                                                 from ajb in binding.AircraftJoystickBindings.Values
+                                                                from button in (new List<IDCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
                                                                 where ajb.AircraftKey.Name == aircraftName &&
                                                                       ajb.JoystickKey == stick.Key &&
                                                                       (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
                                                                        ajb.SavedGamesButtonChanges.RemovedKeyButtons.Count() > 0)
-                                                                select new BindingWithRemoves()
+                                                                select new BindingAddsRemoves()
                                                                 {
                                                                     AircraftName = aircraftName,
                                                                     Joystick = stick.Joystick,
                                                                     IsAxisBinding = binding.IsAxisBinding,
                                                                     BindingId = binding.Key.Id,
                                                                     CommandName = binding.CommandName,
-                                                                    RemovedAxisButtons = ajb.SavedGamesButtonChanges.RemovedAxisButtons,
-                                                                    RemovedKeyButtons = ajb.SavedGamesButtonChanges.RemovedKeyButtons
+                                                                    RemoveButton = button
                                                                 }).ToList();
 
 
@@ -129,7 +131,7 @@ public class DCSService : IDCSService
         }
     }
 
-    private void BuildLuaFile(string savedGameFolderPath, DCSData data, List<BindingWithAdds> bindingsWithAdds)
+    private void BuildLuaFile(string savedGameFolderPath, DCSData data, List<BindingAddsRemoves> bindingsWithAdds)
     {
         string luaBackupFolder = "D:/RinceConfigBackup/Input/" + bindingsWithAdds[0].AircraftName + "/joystick/";
         string luaFileName = luaBackupFolder + bindingsWithAdds[0].Joystick.DCSName + ".diff.lua";
@@ -541,25 +543,15 @@ public class DCSService : IDCSService
     }
 }
 
-public class BindingWithAdds
+public class BindingAddsRemoves
 {
     public string AircraftName;
     public AttachedJoystick Joystick;
     public bool IsAxisBinding;
     public string BindingId;
     public string CommandName;
-    public List<IRinceDCSGroupButton> Buttons;
-}
-
-public class BindingWithRemoves
-{
-    public string AircraftName;
-    public AttachedJoystick Joystick;
-    public bool IsAxisBinding;
-    public string BindingId;
-    public string CommandName;
-    public List<DCSAxisButton> RemovedAxisButtons;
-    public List<DCSKeyButton> RemovedKeyButtons;
+    public IRinceDCSGroupButton AddButton;
+    public IDCSButton RemoveButton;
 }
 
 public class DCSLuaFileBuilder
@@ -573,58 +565,58 @@ public class DCSLuaFileBuilder
         luaFileName = fileName;
     }
 
-    public void AddGroupAxisButtons(BindingWithAdds binding)
+    public void AddGroupAxisButtons(BindingAddsRemoves binding)
     {
-        sbAxis.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
-        sbAxis.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
-        sbAxis.AppendLine("\t\t\t[\"added\"] = {");
-        for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
-        {
-            RinceDCSGroupAxisButton axisButton = (RinceDCSGroupAxisButton)binding.Buttons[buttonIndex];
-            sbAxis.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-            sbAxis.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
-            sbAxis.AppendLine("\t\t\t\t\t[\"filter\"] = {");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"curvature\"] = {");
-            for (int curveIndex = 0; curveIndex < axisButton.Curvature.Count(); curveIndex++)
-            {
-                sbAxis.AppendLine("\t\t\t\t\t\t\t[" + (curveIndex + 1).ToString() + "] = " + axisButton.Curvature[curveIndex].ToString() + ",");
-            }
-            sbAxis.AppendLine("\t\t\t\t\t\t},");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"deadzone\"] = " + axisButton.Deadzone.ToString() + ",");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"invert\"] = " + axisButton.Invert.ToString().ToLower() + ",");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationX\"] = " + axisButton.SaturationX.ToString() + ",");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationY\"] = " + axisButton.SaturationY.ToString() + ",");
-            sbAxis.AppendLine("\t\t\t\t\t\t[\"slider\"] = " + axisButton.Slider.ToString().ToLower() + ",");
-            sbAxis.AppendLine("\t\t\t\t\t},");
-            sbAxis.AppendLine("\t\t\t\t},");
-        }
-        sbAxis.AppendLine("\t\t\t},");
-        sbAxis.AppendLine("\t\t},");
+        //sbAxis.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
+        //sbAxis.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
+        //sbAxis.AppendLine("\t\t\t[\"added\"] = {");
+        //for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
+        //{
+        //    RinceDCSGroupAxisButton axisButton = (RinceDCSGroupAxisButton)binding.Buttons[buttonIndex];
+        //    sbAxis.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
+        //    sbAxis.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
+        //    sbAxis.AppendLine("\t\t\t\t\t[\"filter\"] = {");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"curvature\"] = {");
+        //    for (int curveIndex = 0; curveIndex < axisButton.Curvature.Count(); curveIndex++)
+        //    {
+        //        sbAxis.AppendLine("\t\t\t\t\t\t\t[" + (curveIndex + 1).ToString() + "] = " + axisButton.Curvature[curveIndex].ToString() + ",");
+        //    }
+        //    sbAxis.AppendLine("\t\t\t\t\t\t},");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"deadzone\"] = " + axisButton.Deadzone.ToString() + ",");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"invert\"] = " + axisButton.Invert.ToString().ToLower() + ",");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationX\"] = " + axisButton.SaturationX.ToString() + ",");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"saturationY\"] = " + axisButton.SaturationY.ToString() + ",");
+        //    sbAxis.AppendLine("\t\t\t\t\t\t[\"slider\"] = " + axisButton.Slider.ToString().ToLower() + ",");
+        //    sbAxis.AppendLine("\t\t\t\t\t},");
+        //    sbAxis.AppendLine("\t\t\t\t},");
+        //}
+        //sbAxis.AppendLine("\t\t\t},");
+        //sbAxis.AppendLine("\t\t},");
     }
 
-    public void AddGroupKeyButtons(BindingWithAdds binding)
+    public void AddGroupKeyButtons(BindingAddsRemoves binding)
     {
-        sbKeys.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
-        sbKeys.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
-        sbKeys.AppendLine("\t\t\t[\"added\"] = {");
-        for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
-        {
-            RinceDCSGroupKeyButton axisButton = (RinceDCSGroupKeyButton)binding.Buttons[buttonIndex];
-            sbKeys.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-            sbKeys.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
-            if (axisButton.Modifiers.Count() > 0)
-            {
-                sbKeys.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
-                for (int reformerIndex = 0; reformerIndex < axisButton.Modifiers.Count(); reformerIndex++)
-                {
-                    sbKeys.AppendLine("\t\t\t\t\t\t[" + (reformerIndex + 1).ToString() + "] = \"" + axisButton.Modifiers[reformerIndex].ToString() + "\",");
-                }
-                sbKeys.AppendLine("\t\t\t\t\t},");
-            }
-            sbKeys.AppendLine("\t\t\t\t},");
-        }
-        sbKeys.AppendLine("\t\t\t},");
-        sbKeys.AppendLine("\t\t},");
+        //sbKeys.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
+        //sbKeys.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
+        //sbKeys.AppendLine("\t\t\t[\"added\"] = {");
+        //for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
+        //{
+        //    RinceDCSGroupKeyButton axisButton = (RinceDCSGroupKeyButton)binding.Buttons[buttonIndex];
+        //    sbKeys.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
+        //    sbKeys.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
+        //    if (axisButton.Modifiers.Count() > 0)
+        //    {
+        //        sbKeys.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
+        //        for (int reformerIndex = 0; reformerIndex < axisButton.Modifiers.Count(); reformerIndex++)
+        //        {
+        //            sbKeys.AppendLine("\t\t\t\t\t\t[" + (reformerIndex + 1).ToString() + "] = \"" + axisButton.Modifiers[reformerIndex].ToString() + "\",");
+        //        }
+        //        sbKeys.AppendLine("\t\t\t\t\t},");
+        //    }
+        //    sbKeys.AppendLine("\t\t\t\t},");
+        //}
+        //sbKeys.AppendLine("\t\t\t},");
+        //sbKeys.AppendLine("\t\t},");
     }
 
     public void WriteFile()
