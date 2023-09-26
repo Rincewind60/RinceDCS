@@ -45,8 +45,8 @@ public class GroupsVMHelper
     public RinceDCSGroups UpdatedGroups()
     {
         AddNewBindingsToGroups();
-        AddNewJoysticksToGroups();
         AddNewAircraftToGroups();
+        AddNewJoysticksToGroups();
 
         DeleteOldBindingsFromGroups();
         DeleteOldJoysticksFromGroups();
@@ -107,59 +107,103 @@ public class GroupsVMHelper
             foreach(RinceDCSGroup group in query)
             {
                 RinceDCSGroupJoystick bindingStick = new() { Joystick = stick.AttachedJoystick };
-                AddButtonsToJoystick(group.Bindings, bindingStick);
                 group.JoystickBindings.Add(bindingStick);
+                AddButtonsToNewJoystick(group.Bindings, bindingStick);
             }
         }
     }
 
-    private void AddButtonsToJoystick(List<RinceDCSGroupBinding> bindings, RinceDCSGroupJoystick bindingStick)
+    private void AddButtonsToNewJoystick(List<RinceDCSGroupBinding> bindings, RinceDCSGroupJoystick bindingStick)
     {
-        //  Find the first DCSDataBinding that has buttons for one of the groups bindings that is also for this joystick
-        Tuple<RinceDCSGroupBinding, DCSAircraftJoystickBinding> newBinding =
-            (from binding in bindings
-             from dcsBinding in Data.Bindings.Values
-             from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
-             where binding.Id == dcsBinding.Key.Id &&
-                   dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid &&
-                   dcsAircraftJoystickBinding.AssignedButtons.Count > 0
-             select Tuple.Create(binding, dcsAircraftJoystickBinding)).FirstOrDefault();
+        //var newButtons = from binding in bindings
+        //                 from dcsBinding in Data.Bindings.Values
+        //                 from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
+        //                 from button in dcsAircraftJoystickBinding.AssignedButtons.Values
+        //                 where binding.Id == dcsBinding.Key.Id &&
+        //                       dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid
+        //                 select new
+        //                 {
+        //                     AircraftName = dcsAircraftJoystickBinding.AircraftKey.Name,
+        //                     ButtonName = button.Key.Name,
+        //                 };
 
-        if(newBinding != null)
+        //  Find all buttons for each aircraft for current group bindings and joystick
+        var newAircraftButtons = from binding in bindings
+                                 from dcsBinding in Data.Bindings.Values
+                                 from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
+                                 from button in dcsAircraftJoystickBinding.AssignedButtons.Values
+                                 where binding.Id == dcsBinding.Key.Id &&
+                                       dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid
+                                 select new { dcsAircraftJoystickBinding, button };
+
+        foreach(var aircraftButton in newAircraftButtons)
         {
-            foreach(IDCSButton button in newBinding.Item2.AssignedButtons.Values)
+            //  Find all groups this aircraft belongs to
+            var aircraftGroups = from aircraftGroup in Groups.AllGroups.Values
+                                 where aircraftGroup.AircraftNames.Contains(aircraftButton.dcsAircraftJoystickBinding.AircraftKey.Name)
+                                 select aircraftGroup;
+
+            if (aircraftGroups.Count() > 0)
             {
-                if (button is DCSAxisButton)
+                //  Check to see if this button is already defined in one of these groups
+                var buttonGroups = from aGroup in aircraftGroups
+                                   from joystickBinding in aGroup.JoystickBindings
+                                   from button in joystickBinding.Buttons
+                                   where joystickBinding.Joystick.JoystickGuid == bindingStick.Joystick.JoystickGuid &&
+                                         button.ButtonName == aircraftButton.button.Key.Name
+                                   select new { aGroup, joystickBinding, button };
+
+                if(buttonGroups.Count() == 0)
                 {
-                    DCSAxisButton dcsAxisButton = (DCSAxisButton)button;
-                    RinceDCSGroupAxisButton newAxisButton = new()
+                    //  Find the first DCSDataBinding that has buttons for one of the groups bindings that is also for this joystick
+                    Tuple<RinceDCSGroupBinding, DCSAircraftJoystickBinding> newBinding =
+                        (from binding in bindings
+                         from dcsBinding in Data.Bindings.Values
+                         from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
+                         where binding.Id == dcsBinding.Key.Id &&
+                               dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid &&
+                               dcsAircraftJoystickBinding.AssignedButtons.Count > 0
+                         select Tuple.Create(binding, dcsAircraftJoystickBinding)).FirstOrDefault();
+
+                    if (newBinding != null)
                     {
-                        ButtonName = dcsAxisButton.Key.Name,
-                        Curvature = dcsAxisButton.Curvature.ToList(),
-                        Deadzone = dcsAxisButton.Deadzone,
-                        HardwareDetent = dcsAxisButton.HardwareDetent,
-                        HardwareDetentAB = dcsAxisButton.HardwareDetentAB,
-                        HardwareDetentMax = dcsAxisButton.HardwareDetentMax,
-                        Invert = dcsAxisButton.Invert,
-                        SaturationX = dcsAxisButton.SaturationX,
-                        SaturationY = dcsAxisButton.SaturationY,
-                        Slider = dcsAxisButton.Slider
-                    };
-                    bindingStick.Buttons.Add(newAxisButton);
-                }
-                else
-                {
-                    DCSKeyButton dcsKeyButton = (DCSKeyButton)button;
-                    RinceDCSGroupKeyButton newKeyButton = new()
-                    {
-                        ButtonName = dcsKeyButton.Key.Name,
-                        Modifiers = dcsKeyButton.Modifiers.ToList()
-                    };
-                    bindingStick.Buttons.Add(newKeyButton);
+                        foreach (IDCSButton button in newBinding.Item2.AssignedButtons.Values)
+                        {
+                            if (button is DCSAxisButton)
+                            {
+                                DCSAxisButton dcsAxisButton = (DCSAxisButton)button;
+                                RinceDCSGroupAxisButton newAxisButton = new()
+                                {
+                                    ButtonName = dcsAxisButton.Key.Name,
+                                    Curvature = dcsAxisButton.Curvature.ToList(),
+                                    Deadzone = dcsAxisButton.Deadzone,
+                                    HardwareDetent = dcsAxisButton.HardwareDetent,
+                                    HardwareDetentAB = dcsAxisButton.HardwareDetentAB,
+                                    HardwareDetentMax = dcsAxisButton.HardwareDetentMax,
+                                    Invert = dcsAxisButton.Invert,
+                                    SaturationX = dcsAxisButton.SaturationX,
+                                    SaturationY = dcsAxisButton.SaturationY,
+                                    Slider = dcsAxisButton.Slider
+                                };
+                                bindingStick.Buttons.Add(newAxisButton);
+                            }
+                            else
+                            {
+                                DCSKeyButton dcsKeyButton = (DCSKeyButton)button;
+                                RinceDCSGroupKeyButton newKeyButton = new()
+                                {
+                                    ButtonName = dcsKeyButton.Key.Name,
+                                    Modifiers = dcsKeyButton.Modifiers.ToList()
+                                };
+                                bindingStick.Buttons.Add(newKeyButton);
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
+
+     }
 
     private void AddNewAircraftToGroups()
     {
