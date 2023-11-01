@@ -32,6 +32,5 @@ namespace RinceDCS.Views
         }
 
         public PrinterViewModel ViewModel => (PrinterViewModel)DataContext;
-
     }
 }

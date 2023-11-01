@@ -43,6 +43,8 @@
     <None Remove="NLog.config" />
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\BindingsTablePage.xaml" />
+    <None Remove="Views\EditGroupAircraftControl.xaml" />
+    <None Remove="Views\EditGroupControl.xaml" />
     <None Remove="Views\EditGroupsPage.xaml" />
     <None Remove="Views\EditJoystickLayoutControl.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
@@ -171,6 +173,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\EditGroupAircraftControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\EditGroupControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\EditGroupsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
