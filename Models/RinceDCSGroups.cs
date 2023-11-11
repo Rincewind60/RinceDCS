@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,11 +73,13 @@ public class RinceDCSGroupKeyButton : IRinceDCSGroupButton
     public List<string> Modifiers { get; set; } = new();
 }
 
-public class RinceDCSGroupAircraft : IEquatable<RinceDCSGroupAircraft>
+public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceDCSGroupAircraft>
 {
     public string BindingId { get; set; }
     public string AircraftName { get; set; }
-    public bool IsActive { get; set; }
+
+    [ObservableProperty]
+    private bool isActive;
     public string CommandName { get; set; }
     public string CategoryName { get; set; }
 

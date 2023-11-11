@@ -76,7 +76,7 @@ namespace RinceDCS.Views
                 Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("Group.Name"), Mode = BindingMode.OneWay }
             });
 
-            DataGridTemplateColumn column = new() { Header = "Status" };
+            DataGridTemplateColumn column = new() { Header = "Active Status" };
             string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
                     "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
                     "<StackPanel Orientation=\"Horizontal\">" +

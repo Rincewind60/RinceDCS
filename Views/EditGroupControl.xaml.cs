@@ -69,11 +69,11 @@ public sealed partial class EditGroupControl : UserControl
     {
         ViewModel.CurrentBindingGroupChanged();
 
-        dataGrid.Columns.Clear();
+        aircraftDataGrid.Columns.Clear();
 
         if (!ViewModel.IsGroupSelected) return;
 
-        dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
+        aircraftDataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
         {
             Header = "Aircraft",
             Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("AircraftName"), Mode = BindingMode.OneWay }
@@ -101,7 +101,7 @@ public sealed partial class EditGroupControl : UserControl
             DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
             column.CellTemplate = cellTemplate;
 
-            dataGrid.Columns.Add(column);
+            aircraftDataGrid.Columns.Add(column);
             bindingIndex++;
         }
     }

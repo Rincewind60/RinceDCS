@@ -80,5 +80,9 @@ public partial class EditGroupViewModel : ObservableObject
         }
 
         GroupData = newGroupData;
+
+        var query = from stickBinding in currentBindingGroup.JoystickBindings
+                    from button in stickBinding.Buttons
+                    select Tuple.Create(stickBinding.Joystick, button);
     }
 }
