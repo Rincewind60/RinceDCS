@@ -386,11 +386,11 @@ public class DCSService : IDCSService
                 }
                 else if (key == "key")
                 {
-                    axisButton.Key = new(table.Values.ElementAt(j).String);
+                    axisButton.Name = table.Values.ElementAt(j).String;
                 }
             }
 
-            bindingData.AssignedButtons[axisButton.Key] = axisButton;
+            bindingData.AssignedButtons[axisButton.Name] = axisButton;
         }
     }
 
@@ -412,11 +412,11 @@ public class DCSService : IDCSService
                 }
                 else if (key == "key")
                 {
-                    axisButton.Key = new(table.Values.ElementAt(j).String);
+                    axisButton.Name = table.Values.ElementAt(j).String;
                 }
             }
 
-            bindingData.AssignedButtons[axisButton.Key] = axisButton;
+            bindingData.AssignedButtons[axisButton.Name] = axisButton;
         }
     }
 
@@ -474,13 +474,12 @@ public class DCSService : IDCSService
         for (int i = 0; i < removedTable.Values.Count(); i++)
         {
             Table table = removedTable.Values.ElementAt(i).Table;
-            string button = table.Values.ElementAt(i).String;
-            DCSAxisButton removedButton = new() { Key = new(button) };
+            DCSAxisButton removedButton = new() { Name = table.Values.ElementAt(i).String };
             changes.RemovedAxisButtons.Add(removedButton);
 
-            if(bindingData.AssignedButtons.ContainsKey(removedButton.Key))
+            if(bindingData.AssignedButtons.ContainsKey(removedButton.Name))
             {
-                bindingData.AssignedButtons.Remove(removedButton.Key);
+                bindingData.AssignedButtons.Remove(removedButton.Name);
             }
         }
     }
@@ -534,8 +533,7 @@ public class DCSService : IDCSService
                 string sectionName = table.Keys.ElementAt(j).String;
                 if(sectionName == "key")
                 {
-                    string button = table.Values.ElementAt(j).String;
-                    newButton.Key = new(button);
+                    newButton.Name = table.Values.ElementAt(j).String;
                 }
                 else if(sectionName == "reformers")
                 {
@@ -544,7 +542,7 @@ public class DCSService : IDCSService
             }
             changes.AddedKeyButtons.Add(newButton);
 
-            bindingData.AssignedButtons[newButton.Key] = newButton;
+            bindingData.AssignedButtons[newButton.Name] = newButton;
         }
     }
 
@@ -563,13 +561,12 @@ public class DCSService : IDCSService
             Table table = removedTable.Values.ElementAt(i).Table;
             for(int j = 0; j < table.Values.Count(); j++)
             {
-                string button = table.Values.ElementAt(j).String;
-                DCSKeyButton removedButton = new() { Key = new(button) };
+                DCSKeyButton removedButton = new() { Name = table.Values.ElementAt(j).String };
                 changes.RemovedKeyButtons.Add(removedButton);
 
-                if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
+                if (bindingData.AssignedButtons.ContainsKey(removedButton.Name))
                 {
-                    bindingData.AssignedButtons.Remove(removedButton.Key);
+                    bindingData.AssignedButtons.Remove(removedButton.Name);
                 }
             }
         }

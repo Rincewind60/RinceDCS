@@ -96,12 +96,12 @@ public class JoystickVMHelper
             AssignedButtonKey key;
             if (button is DCSAxisButton)
             {
-                key = new(button.Key.Name, false);
+                key = new(button.Name, false);
             }
             else
             {
                 bool isModifer = ((DCSKeyButton)button).Modifiers.Count > 0;
-                key = new(button.Key.Name, isModifer);
+                key = new(button.Name, isModifer);
             }
             if (buttonsOnLayout.ContainsKey(key))
             {

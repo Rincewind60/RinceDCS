@@ -150,7 +150,7 @@ public class GroupsVMHelper
                                    from joystickBinding in aGroup.JoystickBindings
                                    from button in joystickBinding.Buttons
                                    where joystickBinding.Joystick.JoystickGuid == bindingStick.Joystick.JoystickGuid &&
-                                         button.ButtonName == aircraftButton.button.Key.Name
+                                         button.ButtonName == aircraftButton.button.Name
                                    select new { aGroup, joystickBinding, button };
 
                 if(buttonGroups.Count() == 0)
@@ -174,7 +174,7 @@ public class GroupsVMHelper
                                 DCSAxisButton dcsAxisButton = (DCSAxisButton)button;
                                 RinceDCSGroupAxisButton newAxisButton = new()
                                 {
-                                    ButtonName = dcsAxisButton.Key.Name,
+                                    ButtonName = dcsAxisButton.Name,
                                     Curvature = dcsAxisButton.Curvature.ToList(),
                                     Deadzone = dcsAxisButton.Deadzone,
                                     HardwareDetent = dcsAxisButton.HardwareDetent,
@@ -192,7 +192,7 @@ public class GroupsVMHelper
                                 DCSKeyButton dcsKeyButton = (DCSKeyButton)button;
                                 RinceDCSGroupKeyButton newKeyButton = new()
                                 {
-                                    ButtonName = dcsKeyButton.Key.Name,
+                                    ButtonName = dcsKeyButton.Name,
                                     Modifiers = dcsKeyButton.Modifiers.ToList()
                                 };
                                 bindingStick.Buttons.Add(newKeyButton);

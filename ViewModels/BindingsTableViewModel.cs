@@ -321,7 +321,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
                     }
                 }
 
-                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Key.Name;
+                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Name;
             }
         }
 

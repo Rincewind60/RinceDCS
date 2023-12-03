@@ -9,7 +9,6 @@ namespace RinceDCS.Models;
 public record DCSAircraftKey(string Name);
 public record DCSJoystickKey(Guid Id);
 public record DCSBindingKey(string Id);
-public record DCSButtonKey(string Name);
 public record DCSAircraftJoystickKey(string AircraftName, Guid JoystickID);
 
 public class DCSData
@@ -54,7 +53,7 @@ public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
-    public Dictionary<DCSButtonKey, IDCSButton> AssignedButtons { get; set; } = new();
+    public Dictionary<string, IDCSButton> AssignedButtons { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
 
@@ -69,12 +68,20 @@ public class DCSButtonChanges
 
 public interface IDCSButton
 {
-    public DCSButtonKey Key { get; set; }
+    public string Name { get; set; }
+    public List<string> Modifiers { get; set; }
+}
+
+public class DCSKeyButton : IDCSButton
+{
+    public string Name { get; set; }
+    public List<string> Modifiers { get; set; } = new();
 }
 
 public class DCSAxisButton : IDCSButton
 {
-    public DCSButtonKey Key { get; set; }
+    public string Name { get; set; }
+    public List<string> Modifiers { get; set; } = new();
     public List<double> Curvature { get; set; } = new();
     public double Deadzone { get; set; }
     public bool HardwareDetent { get; set; }
@@ -84,10 +91,4 @@ public class DCSAxisButton : IDCSButton
     public double SaturationX { get; set; }
     public double SaturationY { get; set; }
     public bool Slider { get; set; }
-}
-
-public class DCSKeyButton : IDCSButton
-{
-    public DCSButtonKey Key { get; set; }
-    public List<string> Modifiers { get; set; } = new();
 }
