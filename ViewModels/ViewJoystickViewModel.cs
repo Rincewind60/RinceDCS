@@ -54,8 +54,8 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     private void ReBuildViewButtons()
     {
         JoystickVMHelper helper = new(BindingsData);
-        Dictionary<GameAssignedButtonKey, GameJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
-        List<GameAssignedButton> buttons = helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftName);
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
+        List<AssignedButton> buttons = helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftName);
         AssignedButtons = buttons == null ? new() : new(buttons);
     }
 }
