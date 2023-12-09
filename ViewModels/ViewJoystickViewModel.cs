@@ -24,7 +24,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     [ObservableProperty]
     private AttachedJoystick attachedStick;
     public DCSData BindingsData { get; set; }
-    public DCSAircraftKey CurrentAircraftKey { get; set; }
+    public string CurrentAircraftName { get; set; }
 
     public ScaleVMHelper ScaleHelper { get; }
 
@@ -37,7 +37,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
         Stick = stick;
         AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
-        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
+        CurrentAircraftName = currentAircraft == null ? string.Empty : currentAircraft.Name;
         ScaleHelper = Ioc.Default.GetRequiredService<ScaleVMHelper>();
         InstanceName = instanceName;
         SavedGamesFolder = savedGamesFolder;
@@ -47,7 +47,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     public void Receive(PropertyChangedMessage<GameAircraft> message)
     {
-        CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
+        CurrentAircraftName = message.NewValue == null ? string.Empty : new(message.NewValue.Name);
         ReBuildViewButtons();
     }
 
@@ -55,6 +55,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
     {
         JoystickVMHelper helper = new(BindingsData);
         Dictionary<GameAssignedButtonKey, GameJoystickButton>  buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
-        AssignedButtons = new(helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftKey.Name));
+        List<GameAssignedButton> buttons = helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, CurrentAircraftName);
+        AssignedButtons = buttons == null ? new() : new(buttons);
     }
 }
