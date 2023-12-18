@@ -22,7 +22,7 @@
     </Page.Resources>
 
     <StackPanel Orientation="Vertical">
-        <CommandBar Background="White" IsOpen="False" DefaultLabelPosition="Right">
+        <CommandBar IsOpen="False" DefaultLabelPosition="Right">
             <AppBarButton Icon="Add" Label="Add" Click="{x:Bind ViewModel.AddInstance}"/>
         </CommandBar>
         <ListView ItemsSource="{x:Bind ViewModel.Instances}">
