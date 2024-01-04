@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <utils:ModeConverter x:Key="ModeConverter"/>
         <utils:ButtonOnLayoutConverter x:Key="ButtonOnLayoutConverter"/>
-        <utils:ButtonOnLayoutColorConverter x:Key="ButtonOnLayoutColorConverter"/>
+        <utils:ButtonOnLayoutFontWeightConverter x:Key="ButtonOnLayoutFontWeightConverter"/>
         <utils:SelectedButtonBackgroundConverter x:Key="SelectedButtonBackgroundConverter"/>
         <utils:SelectedButtonBorderConverter x:Key="SelectedButtonBorderConverter"/>
         <utils:AlignmentConverter x:Key="AlignmentConverter"/>
@@ -53,7 +53,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:GameJoystickButton">
                     <ListViewItem>
-                        <TextBlock Text="{x:Bind ButtonLabel}" Foreground="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutColorConverter}}"/>
+                        <TextBlock Text="{x:Bind ButtonLabel}" FontWeight="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutFontWeightConverter}}"/>
                     </ListViewItem>
                 </DataTemplate>
             </ListView.ItemTemplate>

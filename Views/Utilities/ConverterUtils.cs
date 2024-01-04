@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
@@ -7,6 +8,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using Windows.UI.Text;
 
 namespace RinceDCS.Views.Utilities;
 
@@ -157,11 +159,11 @@ public class ButtonOnLayoutConverter : IValueConverter
     }
 }
 
-public class ButtonOnLayoutColorConverter : IValueConverter
+public class ButtonOnLayoutFontWeightConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return (bool)value == true ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Gray);
+        return (bool)value == true ? FontWeights.ExtraBold : FontWeights.Normal;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
