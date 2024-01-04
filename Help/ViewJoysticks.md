@@ -1,5 +1,7 @@
 ﻿## View Joysticks Page
 
+- [Back](Introduction.md)
+
 ### Overview
 
 The View Joysticks page displays the current bindings for each of your Joysticks.

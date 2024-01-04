@@ -1,5 +1,7 @@
 ﻿## Bindings Page
 
+- [Back](Introduction.md)
+
 ### Overview
 
 The Bindings page displays the current bindings for each of your Joysticks in table format.

@@ -1,6 +1,14 @@
 ﻿## Rince DCS
 
-### Overview
+- [Getting Started](GettingStarted.md)
+- [Save File](SaveFile.md)
+- [Main Screen](MainScreen.md)
+- [Manage Game Instances](InstancesDialog.md)
+- [View Joysticks Page](ViewJoysticks.md)
+- [View Bindings Page](Bindings.md)
+- [Edit Joysticks Page](EditJoysticks.md)
+
+### Introduction
 
 Rince DCS is a small tool designed to make it easy for the DCS user to generate Joystick layouts of their command to button bindings.
 
@@ -21,3 +29,4 @@ The tool scans for any attached joysticks on startup. Once a Joystick is found a
 ### Using Rince DCS
 
 To get started with Rince DCS view the [Getting Started](GettingStarted.md) help page.
+ 

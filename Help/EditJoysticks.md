@@ -1,5 +1,7 @@
 ﻿## Edit Joysticks Page
 
+- [Back](Introduction.md)
+
 ### Overview
 
 The Edit Joysticks page allows you to edit the layout for each of your joysticks.
