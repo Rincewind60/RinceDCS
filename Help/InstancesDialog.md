@@ -1,5 +1,7 @@
 ﻿## Manage Game Instances Dialog
 
+- [Back](Introduction.md)
+
 ### Overview
 
 Rince DCS does not look for game instances by default, so you must use this dialog to locate the Game Insatnces you wish to work with.

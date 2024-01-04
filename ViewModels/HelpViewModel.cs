@@ -20,8 +20,7 @@ public partial class HelpViewModel : ObservableRecipient
     public void LinkToPage(string fileName)
     {
         string path = GetAbsolutePath(fileName);
-        string tocPath = GetAbsolutePath("TOC.md");
-        MarkDownText = File.ReadAllText(path) + File.ReadAllText(tocPath);
+        MarkDownText = File.ReadAllText(path);
     }
 
     public string GetAbsolutePath(string fileName)
