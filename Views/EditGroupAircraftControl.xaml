@@ -48,7 +48,6 @@
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
             HorizontalScrollBarVisibility="Visible"
             VerticalScrollBarVisibility="Visible"
-            AlternatingRowBackground="Snow"
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
