@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ServiceModels;
@@ -38,6 +39,7 @@ namespace RinceDCS.Views
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
             JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
+            ButtonsItemsControl.Width = (JoystickImage.Source as BitmapSource).PixelWidth;
         }
 
         private void Expand_Click(object sender, RoutedEventArgs e)

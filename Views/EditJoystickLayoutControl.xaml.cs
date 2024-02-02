@@ -23,6 +23,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI.Core;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -69,6 +70,7 @@ namespace RinceDCS.Views
         private async void SetJoystickImageSource()
         {
             JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
+            ButtonsItemsControl.Width = (JoystickImage.Source as BitmapSource).PixelWidth;
         }
 
         private void Expand_Click(object sender, RoutedEventArgs e)
