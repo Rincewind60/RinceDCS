@@ -35,7 +35,7 @@ public partial class CommandCategory : ObservableObject, IComparable<CommandCate
 }
 
 public partial class BindingsTableViewModel : ObservableRecipient,
-                                              IRecipient<PropertyChangedMessage<GameAircraft>>
+                                              IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
 {
     public ObservableCollection<CommandCategory> Categories { get; set; }
     [ObservableProperty]
@@ -60,14 +60,14 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         SortColumn = null;
     }
 
-    public void Initialize(DCSData data, GameAircraft currentAircraft)
+    public void Initialize(DCSData data, RinceDCSAircraft currentAircraft)
     {
         BindingsData = data;
         CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
         ReBuildCommands();
     }
 
-    public void Receive(PropertyChangedMessage<GameAircraft> message)
+    public void Receive(PropertyChangedMessage<RinceDCSAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
         ReBuildCommands();
@@ -229,7 +229,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(IDCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
                 DCSKeyButton keyButton = button as DCSKeyButton;
                 if (keyButton != null)
@@ -240,7 +240,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
                     }
                 }
 
-                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Key.Name;
+                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Name;
             }
         }
 
