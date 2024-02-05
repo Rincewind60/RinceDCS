@@ -6,6 +6,7 @@ using RinceDCS.Models;
 using RinceDCS.ServiceModels;
 using RinceDCS.ViewModels.Helpers;
 using RinceDCS.ViewModels.Messages;
+using RinceDCS.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -145,6 +146,8 @@ public partial class GameViewModel : ObservableRecipient
 
             }
         }
+
+        openedGame.Joysticks.Sort();
     }
 
     [RelayCommand]

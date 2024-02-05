@@ -34,6 +34,8 @@ public class JoystickService : IJoystickService
             }
         }
 
+        sticks.Sort((x, y) => String.Compare(x.Name, y.Name) );
+
         return sticks;
     }
 

@@ -17,7 +17,7 @@ public record AttachedJoystick(Guid JoystickGuid, string Name)
     public string DCSName => Name + " {" + JoystickGuid + "}";
 }
 
-public partial class GameJoystick : ObservableObject
+public partial class GameJoystick : ObservableObject, IComparable
 {
     [ObservableProperty]
     private AttachedJoystick attachedJoystick;
@@ -69,6 +69,11 @@ public partial class GameJoystick : ObservableObject
         {
             button.FontSize = value;
         }
+    }
+
+    public int CompareTo(object obj)
+    {
+        return AttachedJoystick.Name.CompareTo(((GameJoystick)obj).AttachedJoystick.Name);
     }
 }
 
