@@ -3,31 +3,24 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.WinUI.UI;
+using CommunityToolkit.WinUI.UI.Controls;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Markup;
 using RinceDCS.Models;
+using RinceDCS.ViewModels.Messages;
+using SharpDX.DirectInput;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 
 namespace RinceDCS.ViewModels;
-
-public class AircraftBinding : IComparable<AircraftBinding>
+public class CommandButtonsTableData
 {
-    public string CategoryName { get; set; }
-    public string CommandName { get; set; }
-    public string JoystickButton0 { get; set; }
-    public string JoystickButton1 { get; set; }
-    public string JoystickButton2 { get; set; }
-    public string JoystickButton3 { get; set; }
-    public string JoystickButton4 { get; set; }
-    public string JoystickButton5 { get; set; }
-    public string JoystickButton6 { get; set; }
-    public string JoystickButton7 { get; set; }
-
-    public int CompareTo(AircraftBinding other)
-    {
-        return CommandName.CompareTo(other.CommandName);
-    }
+    public List<string> JoystickHeadings { get; set; } = new();
+    public List<dynamic> Commands { get; set; } = new();
 }
 
 public partial class CommandCategory : ObservableObject, IComparable<CommandCategory>
@@ -42,264 +35,190 @@ public partial class CommandCategory : ObservableObject, IComparable<CommandCate
 }
 
 public partial class BindingsTableViewModel : ObservableRecipient,
-                                              IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
+                                              IRecipient<PropertyChangedMessage<GameAircraft>>
 {
-    [ObservableProperty]
-    public ObservableCollection<AircraftBinding> filteredBindings;
     public ObservableCollection<CommandCategory> Categories { get; set; }
-
     [ObservableProperty]
     private CommandCategory currentCategory;
-    private DCSData BindingsData { get; set; }
-    private DCSAircraftKey CurrentAircraftKey { get; set; }
-
-    [ObservableProperty]
-    private string joystickHeading0;
-    [ObservableProperty]
-    private string joystickHeading1;
-    [ObservableProperty]
-    private string joystickHeading2;
-    [ObservableProperty]
-    private string joystickHeading3;
-    [ObservableProperty]
-    private string joystickHeading4;
-    [ObservableProperty]
-    private string joystickHeading5;
-    [ObservableProperty]
-    private string joystickHeading6;
-    [ObservableProperty]
-    private string joystickHeading7;
-
     [ObservableProperty]
     private bool showCommandsWithButtons;
+    [ObservableProperty]
+    private CommandButtonsTableData filteredCommandData;
+    [ObservableProperty]
+    private CommandButtonsTableData commandData;
 
-    private List<AircraftBinding> BindingsList { get; set; }
+    private DCSAircraftKey CurrentAircraftKey { get; set; }
+    private DCSData BindingsData { get; set; }
 
     string SortColumn { get; set; }
     bool IsSortedAscending { get; set; }
 
-    public BindingsTableViewModel(DCSData data, RinceDCSAircraft currentAircraft)
+    public BindingsTableViewModel()
     {
-        FilteredBindings = new();
         Categories = new();
-        BindingsList = new();
         ShowCommandsWithButtons = false;
         SortColumn = null;
-
-        BindingsData = data;
-        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
-
-        ReBuildBindings();
     }
 
-    public void Receive(PropertyChangedMessage<RinceDCSAircraft> message)
+    public void Initialize(DCSData data, GameAircraft currentAircraft)
+    {
+        BindingsData = data;
+        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
+        ReBuildCommands();
+    }
+
+    public void Receive(PropertyChangedMessage<GameAircraft> message)
     {
         CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
-        ReBuildBindings();
+        ReBuildCommands();
     }
 
     public void CurrentCategoryChanged()
     {
-        FilterSortBindings();
+        FilterSortCommands();
     }
 
     [RelayCommand]
     private void CommandsWithButtonsChanged()
     {
-        FilterSortBindings();
+        FilterSortCommands();
     }
 
     public void UpdateSortColumn(string column, bool isAscending)
     {
         SortColumn = column;
         IsSortedAscending = isAscending;
-        FilterSortBindings();
+        FilterSortCommands();
     }
 
-    private void FilterSortBindings()
+    private void FilterSortCommands()
     {
-        if (CurrentCategory == null)
-        {
-            return;
-        }
+        if (CurrentCategory == null) return;
 
-        List<AircraftBinding> newBindings = new();
-        foreach (AircraftBinding binding in BindingsList)
+        FilteredCommandData = new();
+
+        FilteredCommandData.JoystickHeadings.AddRange(CommandData.JoystickHeadings);
+
+        foreach(dynamic dynCommand in CommandData.Commands)
         {
-            if (CurrentCategory.CategoryName == "All" || binding.CategoryName == CurrentCategory.CategoryName)
+            if (CurrentCategory.CategoryName == "All" || dynCommand.CategoryName == CurrentCategory.CategoryName)
             {
                 if (ShowCommandsWithButtons)
                 {
-                    if(!string.IsNullOrWhiteSpace(binding.JoystickButton0) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton1) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton2) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton3) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton4) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton5) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton6) ||
-                       !string.IsNullOrWhiteSpace(binding.JoystickButton7))
+                    IDictionary<String, Object> dynCommandMembers = (IDictionary<String, Object>)dynCommand;
+                    for (int j = 0; j < CommandData.JoystickHeadings.Count; j++)
                     {
-                        newBindings.Add(binding);
+                        string bindingName = "Joystick" + j.ToString() + "Buttons";
+                        if (dynCommandMembers[bindingName] != null)
+                        {
+                            FilteredCommandData.Commands.Add(dynCommand);
+                            break;
+                        }
                     }
                 }
                 else
                 {
-                    newBindings.Add(binding);
+                    FilteredCommandData.Commands.Add(dynCommand);
                 }
             }
         }
 
-        if(string.IsNullOrWhiteSpace(SortColumn))
-        {
-            FilteredBindings = new(newBindings);
-        }
-        else
+        if(!string.IsNullOrWhiteSpace(SortColumn))
         {
             if(IsSortedAscending)
             {
-                FilteredBindings = new(newBindings.OrderBy(bind => typeof(AircraftBinding).GetProperty(SortColumn).GetValue(bind)));
+                FilteredCommandData.Commands.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)x)[SortColumn], (string)((IDictionary<string, object>)y)[SortColumn]));
             }
             else
             {
-                FilteredBindings = new(newBindings.OrderByDescending(bind => typeof(AircraftBinding).GetProperty(SortColumn).GetValue(bind)));
+                FilteredCommandData.Commands.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)y)[SortColumn], (string)((IDictionary<string, object>)x)[SortColumn]));
             }
         }
-
     }
 
-    private void ReBuildBindings()
+    private void ReBuildCommands()
     {
-        FilteredBindings.Clear();
+        CommandData = null;
+        FilteredCommandData = null;
         Categories.Clear();
         CurrentCategory = null;
-        BindingsList.Clear();
 
-        if (CurrentAircraftKey != null)
+        if (CurrentAircraftKey == null) return;
+
+        CommandButtonsTableData newCommandData = new();
+
+        Dictionary<string, int> joystickHeadingIndex = new();
+
+        DCSJoystick[] sticks = new DCSJoystick[BindingsData.Joysticks.Count]; ;
+        BindingsData.Joysticks.Values.CopyTo(sticks,0);
+        sticks = sticks.OrderBy(x => x.Joystick.Name).ToArray();
+
+        for (int i = 0; i < sticks.Count(); i++)
         {
-            SetJoystickColumnHeadings();
-
-            List<CommandCategory> newCategories = new();
-
-            foreach(DCSBinding binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings.Values)
-            {
-                BuildAircraftBindings(newCategories, binding);
-            }
-
-            BindingsList.Sort();
-
-            newCategories.Sort();
-            Categories.Add(new CommandCategory() { CategoryName = "All" });
-            foreach (CommandCategory category in newCategories)
-            {
-                Categories.Add(category);
-            }
-            CurrentCategory = Categories[0];
-
-            FilterSortBindings();
-        }
-    }
-
-    private void SetJoystickColumnHeadings()
-    {
-        if(BindingsData == null) return;
-
-        int joystickCount = BindingsData.Joysticks.Count;
-        for (int i = 0; i < 8; i++)
-        {
-            switch (i)
-            {
-                case 0:
-                    JoystickHeading0 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 1:
-                    JoystickHeading1 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 2:
-                    JoystickHeading2 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 3:
-                    JoystickHeading3 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 4:
-                    JoystickHeading4 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 5:
-                    JoystickHeading5 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 6:
-                    JoystickHeading6 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-                case 7:
-                    JoystickHeading7 = i < joystickCount ? BindingsData.Joysticks.ElementAt(i).Value.Joystick.Name : "";
-                    break;
-            }
-        }
-    }
-
-    private void BuildAircraftBindings(List<CommandCategory> newCategories, DCSBinding binding)
-    {
-        DCSAircraftBinding dcsAircraftBinding = binding.AircraftWithBinding[CurrentAircraftKey];
-        CommandCategory category = new() { CategoryName = dcsAircraftBinding.CategoryName };
-
-        if (string.IsNullOrWhiteSpace(category.CategoryName))
-        {
-            category.CategoryName = "Uknown";
+            joystickHeadingIndex[sticks[i].Joystick.Name] = i;
+            newCommandData.JoystickHeadings.Add(sticks[i].Joystick.Name);
         }
 
-        if(!newCategories.Any(cat => cat.CategoryName == category.CategoryName))
-        {
-            newCategories.Add(category); 
-        }
+        List<CommandCategory> newCategories = new();
 
-        AircraftBinding aircraftBinding = new()
+        foreach(DCSBinding binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings.Values)
         {
-            CategoryName = category.CategoryName,
-            CommandName = dcsAircraftBinding.CommandName
-        };
-        BuildJoystickButtons(binding, aircraftBinding);
+            DCSAircraftBinding dcsAircraftBinding = binding.AircraftWithBinding[CurrentAircraftKey];
+            CommandCategory category = AddCategory(newCategories, dcsAircraftBinding);
 
-        BindingsList.Add(aircraftBinding);
-    }
+            dynamic dynCommand = new ExpandoObject();
+            dynCommand.CategoryName = category.CategoryName;
+            dynCommand.CommandName = dcsAircraftBinding.CommandName;
 
-    private void BuildJoystickButtons(DCSBinding binding, AircraftBinding aircraftBinding)
-    {
-        int joystickCount = 0;
-        foreach (DCSJoystick stick in binding.JoysticksWithBinding.Values)
-        {
-            string button = BuildJoystickButtonLabel(binding, stick.Key);
-            if (!string.IsNullOrWhiteSpace(button))
+            IDictionary<String, Object> dynCommandMembers = (IDictionary<String, Object>)dynCommand;
+            for (int j = 0; j < joystickHeadingIndex.Count; j++)
             {
-                switch (joystickCount)
+                string bindingName = "Joystick" + j.ToString();
+                string buttonLabel = BuildJoystickButtonLabel(binding, sticks[j].Key);
+
+                if (!String.IsNullOrWhiteSpace(buttonLabel))
                 {
-                    case 0:
-                        aircraftBinding.JoystickButton0 = button;
-                        break;
-                    case 1:
-                        aircraftBinding.JoystickButton1 = button;
-                        break;
-                    case 2:
-                        aircraftBinding.JoystickButton2 = button;
-                        break;
-                    case 3:
-                        aircraftBinding.JoystickButton3 = button;
-                        break;
-                    case 4:
-                        aircraftBinding.JoystickButton4 = button;
-                        break;
-                    case 5:
-                        aircraftBinding.JoystickButton5 = button;
-                        break;
-                    case 6:
-                        aircraftBinding.JoystickButton6 = button;
-                        break;
-                    case 7:
-                        aircraftBinding.JoystickButton7 = button;
-                        break;
+                    dynCommandMembers.TryAdd(bindingName + "Buttons", buttonLabel);
+                    dynCommandMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
+                }
+                else
+                {
+                    dynCommandMembers.TryAdd(bindingName + "Buttons", null);
+                    dynCommandMembers.TryAdd(bindingName + "Visible", Visibility.Collapsed);
                 }
             }
 
-            joystickCount += 1;
+            newCommandData.Commands.Add(dynCommand);
         }
+
+        newCategories.Sort();
+        Categories.Add(new CommandCategory() { CategoryName = "All" });
+        foreach (CommandCategory category in newCategories)
+        {
+            Categories.Add(category);
+        }
+        CurrentCategory = Categories[0];
+        CommandData = newCommandData;
+
+        WeakReferenceMessenger.Default.Send(new BindingsDataUpdatedMessage());
+
+        FilterSortCommands();
+    }
+
+    private CommandCategory AddCategory(List<CommandCategory> newCategories, DCSAircraftBinding dcsAircraftBinding)
+    {
+        CommandCategory category;
+
+        string categoryName = string.IsNullOrWhiteSpace(dcsAircraftBinding.CategoryName) ? "Uknown" : dcsAircraftBinding.CategoryName;
+
+        category = newCategories.Find(cat => cat.CategoryName == categoryName);
+        if(category == null)
+        {
+            category = new() { CategoryName = categoryName };
+            newCategories.Add(category);
+        }
+
+        return category;
     }
 
     private string BuildJoystickButtonLabel(DCSBinding binding, DCSJoystickKey joystickKey)
@@ -310,7 +229,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(IDCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
                 DCSKeyButton keyButton = button as DCSKeyButton;
                 if (keyButton != null)
@@ -321,7 +240,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
                     }
                 }
 
-                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Name;
+                buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Key.Name;
             }
         }
 
