@@ -18,6 +18,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using CommunityToolkit.WinUI.UI.Controls;
+using Microsoft.UI.Xaml.Markup;
+using CommunityToolkit.Mvvm.Messaging;
+using RinceDCS.ViewModels.Messages;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,7 +36,16 @@ namespace RinceDCS.Views
         public BindingsTablePage()
         {
             this.InitializeComponent();
+            BindingsTableViewModel vm = new();
+            this.DataContext = vm;
+
+            WeakReferenceMessenger.Default.Register<BindingsDataUpdatedMessage>(this, (r, m) =>
+            {
+                BindingsDataUpdated();
+            });
         }
+
+        public BindingsTableViewModel ViewModel => (BindingsTableViewModel)DataContext;
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -40,9 +53,8 @@ namespace RinceDCS.Views
 
             Tuple<DCSData,GameAircraft> data = e.Parameter as Tuple<DCSData, GameAircraft>;
 
-            BindingsTableViewModel vm = new(data.Item1, data.Item2);
-            this.DataContext = vm;
-            vm.IsActive = true;
+            ViewModel.Initialize(data.Item1, data.Item2);
+            ViewModel.IsActive = true;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -50,18 +62,6 @@ namespace RinceDCS.Views
             base.OnNavigatedFrom(e);
 
             ViewModel.IsActive = false;
-        }
-
-        public BindingsTableViewModel ViewModel => (BindingsTableViewModel)DataContext;
-
-        public static Visibility IsJoystickColumnVisible(string heading)
-        {
-            return string.IsNullOrEmpty(heading) ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        private void CategoriesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private void dataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
@@ -84,6 +84,46 @@ namespace RinceDCS.Views
                 {
                     col.SortDirection = null;
                 }
+            }
+        }
+
+        private void BindingsDataUpdated()
+        {
+            dataGrid.Columns.Clear();
+
+            if (ViewModel.CurrentCategory == null) return;
+
+            dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
+            {
+                Header = "Command",
+                Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("CommandName"), Mode = BindingMode.OneWay },
+                Tag = "CommandName"
+            });
+
+            int joystickIndex = 0;
+            foreach (string joystickName in ViewModel.CommandData.JoystickHeadings)
+            {
+                string bindingName = "Joystick" + joystickIndex.ToString();
+
+                DataGridTemplateColumn column = new() { Header = joystickName, Tag = bindingName  + "Buttons" };
+
+                string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+                        "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
+                        "<StackPanel " +
+                            "Orientation=\"Horizontal\" " +
+                            "Visibility=\"{Binding " + bindingName + "Visible}\">" +
+                            "<TextBlock " +
+                                "Margin=\"12,0,12,0\" " +
+                                "Text=\"{Binding " + bindingName + "Buttons}\">" +
+                            "</TextBlock>" +
+                        "</StackPanel>" +
+                    "</DataTemplate>";
+
+                DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
+                column.CellTemplate = cellTemplate;
+
+                dataGrid.Columns.Add(column);
+                joystickIndex++;
             }
         }
     }
