@@ -18,6 +18,9 @@
 	<FileVersion>1.1.3.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\DCSData UML Diagram.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Assets\DefaultCleanProfile.lua" />
     <None Remove="Help\Bindings.md" />
     <None Remove="Help\Bindings.png" />

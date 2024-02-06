@@ -29,4 +29,7 @@ The tool scans for any attached joysticks on startup. Once a Joystick is found a
 ### Using Rince DCS
 
 To get started with Rince DCS view the [Getting Started](GettingStarted.md) help page.
- 
+
+### Application Design Notes
+
+- [Class Diagrams](ClassDiagrams.md)
