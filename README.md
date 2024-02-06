@@ -24,10 +24,6 @@ Download the rlease ZIP file and unzip to a location of you choosing.
 
 In the resulting folder open the RinceDCS.exe application.
 
-### Using Rince DCS
-
-To get started with Rince DCS view the [Getting Started](Help/GettingStarted.md) help page.
-
 ### Acknowledgement
 
 This utility only exists because of the work of Holdi601 and his [Joystick Profiler](https://github.com/Holdi601/JoystickProfiler) project.
@@ -41,13 +37,6 @@ All this had me itching to try my hand at some modern windows development, so Ri
 
 So thanks again Holdi601, it has been an interesting expeience delving into your code, and enjoyable creating my own take on some of the functionality.
 
-### Contents
+### Get Started
 
 - [Introduction](Help/Introduction.md)
-- [Getting Started](Help/GettingStarted.md)
-- [Save File](Help/SaveFile.md)
-- [Main Screen](Help/MainScreen.md)
-- [Manage Game Instances](Help/InstancesDialog.md)
-- [View Joysticks Page](Help/ViewJoysticks.md)
-- [View Bindings Page](Help/Bindings.md)
-- [Edit Joysticks Page](Help/EditJoysticks.md)
