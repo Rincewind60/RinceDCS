@@ -51,11 +51,13 @@ public class RinceDCSGroupJoystick
 public interface IRinceDCSGroupButton
 {
     public string ButtonName { get; set; }
+    public List<string> Modifiers { get; set; }
 }
 
 public class RinceDCSGroupAxisButton : IRinceDCSGroupButton
 {
     public string ButtonName { get; set; }
+    public List<string> Modifiers { get; set; } = new();
     public List<double> Curvature { get; set; } = new();
     public double Deadzone { get; set; }
     public bool HardwareDetent { get; set; }
