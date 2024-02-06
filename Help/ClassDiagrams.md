@@ -2,8 +2,8 @@
 
 ### DCSData
 
-![DCSData UML Diagram](DCSData UML Diagram.png)
+![DCSData UML Diagram](DCSDataUMLDiagram.png)
 
 ### RinceDCSGroups
 
-![RinceDCSGroups UML Diagram](RinceDCSGroups UML Diagram.png)
+![RinceDCSGroups UML Diagram](RinceDCSGroupsUMLDiagram.png)
