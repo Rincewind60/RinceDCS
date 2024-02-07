@@ -10,23 +10,11 @@ public record AssignedButtonKey(string ButtonName, bool IsModifier);
 
 public class AssignedButton
 {
-    public RinceDCSJoystickButton JoystickButton { get; }
-
-    public List<AssignedCommand> Commands { get; } = new();
-
-    // DCS Button Details
     public bool IsAxisButton { get; set; }
-    public List<int> Curvature { get; } = new();
-    public bool HasUserCurve { get { return Curvature.Count > 1; } }
-    public int Deadzone { get; set; }
-    public bool HardwareDetent { get; set; }
-    public int HardwareDetentAB { get; set; }
-    public int HardwareDetentMax { get; set; }
-    public bool Invert { get; set; }
-    public int SaturationX { get; set; }
-    public int SaturationY { get; set; }
-    public bool Slider { get; set; }
+    public RinceDCSJoystickButton JoystickButton { get; }
     public List<string> Modifiers { get; } = new();
+    public List<AssignedCommand> Commands { get; } = new();
+    public AxisFilter Filter { get; set; }
 
     public string Command
     {

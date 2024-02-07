@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
 using SharpDX.DirectInput;
@@ -174,26 +175,25 @@ public class GroupsVMHelper
                                 DCSAxisButton dcsAxisButton = (DCSAxisButton)button;
                                 RinceDCSGroupAxisButton newAxisButton = new()
                                 {
-                                    ButtonName = dcsAxisButton.Name,
-                                    Curvature = dcsAxisButton.Curvature.ToList(),
-                                    Deadzone = dcsAxisButton.Deadzone,
-                                    HardwareDetent = dcsAxisButton.HardwareDetent,
-                                    HardwareDetentAB = dcsAxisButton.HardwareDetentAB,
-                                    HardwareDetentMax = dcsAxisButton.HardwareDetentMax,
-                                    Invert = dcsAxisButton.Invert,
-                                    SaturationX = dcsAxisButton.SaturationX,
-                                    SaturationY = dcsAxisButton.SaturationY,
-                                    Slider = dcsAxisButton.Slider
+                                    ButtonName = button.Name,
+                                    Modifiers = button.Modifiers.ToList()
                                 };
+                                if(dcsAxisButton.Filter != null)
+                                {
+                                    newAxisButton.Filter = new(dcsAxisButton.Filter);
+                                }
+                                else
+                                {
+                                    newAxisButton.Filter = new();
+                                }
                                 bindingStick.Buttons.Add(newAxisButton);
                             }
                             else
                             {
-                                DCSKeyButton dcsKeyButton = (DCSKeyButton)button;
                                 RinceDCSGroupKeyButton newKeyButton = new()
                                 {
-                                    ButtonName = dcsKeyButton.Name,
-                                    Modifiers = dcsKeyButton.Modifiers.ToList()
+                                    ButtonName = button.Name,
+                                    Modifiers = button.Modifiers.ToList()
                                 };
                                 bindingStick.Buttons.Add(newKeyButton);
                             }

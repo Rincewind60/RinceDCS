@@ -95,15 +95,14 @@ public class JoystickVMHelper
         foreach (IDCSButton button in bindingButtons.AssignedButtons.Values)
         {
             AssignedButtonKey key;
-            GameAssignedButtonKey key;
             bool isModifer = button.Modifiers.Count > 0;
             if (button is DCSAxisButton)
             {
-                key = new(button.Key.Name, isModifer);
+                key = new(button.Name, isModifer);
             }
             else
             {
-                key = new(button.Key.Name, isModifer);
+                key = new(button.Name, isModifer);
             }
             if (buttonsOnLayout.ContainsKey(key))
             {
@@ -114,7 +113,7 @@ public class JoystickVMHelper
         }
     }
 
-    private void AddButtonConfiguration(DCSButton button, GameAssignedButton vwButton)
+    private void AddButtonConfiguration(IDCSButton button, AssignedButton vwButton)
     {
         vwButton.Modifiers.AddRange(button.Modifiers);
         if (button is DCSAxisButton)
@@ -123,31 +122,11 @@ public class JoystickVMHelper
             DCSAxisButton axisButton = button as DCSAxisButton;
             if (axisButton.Filter != null)
             {
-                foreach (double curve in axisButton.Filter.Curvature)
-                {
-                    vwButton.Filter.Curvature.Add((int)(curve * 100));
-                }
-                vwButton.Filter.Deadzone = (int)axisButton.Filter.Deadzone;
-                vwButton.Filter.HardwareDetent = axisButton.Filter.HardwareDetent;
-                vwButton.Filter.HardwareDetentAB = (int)axisButton.Filter.HardwareDetentAB;
-                vwButton.Filter.HardwareDetentMax = (int)axisButton.Filter.HardwareDetentMax;
-                vwButton.Filter.Invert = axisButton.Filter.Invert;
-                vwButton.Filter.SaturationX = (int)(axisButton.Filter.SaturationX * 100);
-                vwButton.Filter.SaturationY = (int)(axisButton.Filter.SaturationY * 100);
-                vwButton.Filter.Slider = axisButton.Filter.Slider;
+                vwButton.Filter = new(axisButton.Filter);
             }
             else
             {
-                //  Set to default values
-                vwButton.Filter.Curvature.Add(0);
-                vwButton.Filter.Deadzone = 0;
-                vwButton.Filter.HardwareDetent = false;
-                vwButton.Filter.HardwareDetentAB = 0;
-                vwButton.Filter.HardwareDetentMax = 0;
-                vwButton.Filter.Invert = false;
-                vwButton.Filter.SaturationX = 100;
-                vwButton.Filter.SaturationY = 100;
-                vwButton.Filter.Slider = false;
+                vwButton.Filter = new();
             }
         }
         else 

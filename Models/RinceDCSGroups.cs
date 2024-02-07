@@ -58,15 +58,7 @@ public class RinceDCSGroupAxisButton : IRinceDCSGroupButton
 {
     public string ButtonName { get; set; }
     public List<string> Modifiers { get; set; } = new();
-    public List<double> Curvature { get; set; } = new();
-    public double Deadzone { get; set; }
-    public bool HardwareDetent { get; set; }
-    public double HardwareDetentAB { get; set; }
-    public double HardwareDetentMax { get; set; }
-    public bool Invert { get; set; }
-    public double SaturationX { get; set; }
-    public double SaturationY { get; set; }
-    public bool Slider { get; set; }
+    public AxisFilter Filter { get; set; }
 }
 
 public class RinceDCSGroupKeyButton : IRinceDCSGroupButton

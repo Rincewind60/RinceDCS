@@ -433,40 +433,40 @@ public class DCSService : IDCSService
                 Table curvatureTable = filterTable.Values.ElementAt(j).Table;
                 for (int k = 0; k < curvatureTable.Keys.Count(); k++)
                 {
-                    axisButton.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
+                    axisButton.Filter.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
                 }
             }
             else if (sectionName == "deadzone")
             {
-                axisButton.Deadzone = filterTable.Values.ElementAt(j).Number;
+                axisButton.Filter.Deadzone = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetent")
             {
-                axisButton.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.Filter.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "hardwareDetentAB")
             {
-                axisButton.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
+                axisButton.Filter.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetentMax")
             {
-                axisButton.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
+                axisButton.Filter.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "invert")
             {
-                axisButton.Invert = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.Filter.Invert = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "saturationX")
             {
-                axisButton.SaturationX = filterTable.Values.ElementAt(j).Number;
+                axisButton.Filter.SaturationX = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "saturationY")
             {
-                axisButton.SaturationY = filterTable.Values.ElementAt(j).Number;
+                axisButton.Filter.SaturationY = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "slider")
             {
-                axisButton.Slider = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.Filter.Slider = filterTable.Values.ElementAt(j).Boolean;
             }
         }
     }
