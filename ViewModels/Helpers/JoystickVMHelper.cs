@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,14 +95,15 @@ public class JoystickVMHelper
         foreach (IDCSButton button in bindingButtons.AssignedButtons.Values)
         {
             AssignedButtonKey key;
+            GameAssignedButtonKey key;
+            bool isModifer = button.Modifiers.Count > 0;
             if (button is DCSAxisButton)
             {
-                key = new(button.Name, false);
+                key = new(button.Key.Name, isModifer);
             }
             else
             {
-                bool isModifer = ((DCSKeyButton)button).Modifiers.Count > 0;
-                key = new(button.Name, isModifer);
+                key = new(button.Key.Name, isModifer);
             }
             if (buttonsOnLayout.ContainsKey(key))
             {
@@ -112,30 +114,45 @@ public class JoystickVMHelper
         }
     }
 
-    private void AddButtonConfiguration(IDCSButton button, AssignedButton vwButton)
+    private void AddButtonConfiguration(DCSButton button, GameAssignedButton vwButton)
     {
+        vwButton.Modifiers.AddRange(button.Modifiers);
         if (button is DCSAxisButton)
         {
-            DCSAxisButton axisButton = button as DCSAxisButton;
             vwButton.IsAxisButton = true;
-            foreach(double curve in axisButton.Curvature)
+            DCSAxisButton axisButton = button as DCSAxisButton;
+            if (axisButton.Filter != null)
             {
-                vwButton.Curvature.Add((int)(curve * 100));
+                foreach (double curve in axisButton.Filter.Curvature)
+                {
+                    vwButton.Filter.Curvature.Add((int)(curve * 100));
+                }
+                vwButton.Filter.Deadzone = (int)axisButton.Filter.Deadzone;
+                vwButton.Filter.HardwareDetent = axisButton.Filter.HardwareDetent;
+                vwButton.Filter.HardwareDetentAB = (int)axisButton.Filter.HardwareDetentAB;
+                vwButton.Filter.HardwareDetentMax = (int)axisButton.Filter.HardwareDetentMax;
+                vwButton.Filter.Invert = axisButton.Filter.Invert;
+                vwButton.Filter.SaturationX = (int)(axisButton.Filter.SaturationX * 100);
+                vwButton.Filter.SaturationY = (int)(axisButton.Filter.SaturationY * 100);
+                vwButton.Filter.Slider = axisButton.Filter.Slider;
             }
-            vwButton.Deadzone = (int)axisButton.Deadzone;
-            vwButton.HardwareDetent = axisButton.HardwareDetent;
-            vwButton.HardwareDetentAB = (int)axisButton.HardwareDetentAB;
-            vwButton.HardwareDetentMax = (int)axisButton.HardwareDetentMax;
-            vwButton.Invert = axisButton.Invert;
-            vwButton.SaturationX = (int)(axisButton.SaturationX * 100);
-            vwButton.SaturationY = (int)(axisButton.SaturationY * 100);
-            vwButton.Slider = axisButton.Slider;
+            else
+            {
+                //  Set to default values
+                vwButton.Filter.Curvature.Add(0);
+                vwButton.Filter.Deadzone = 0;
+                vwButton.Filter.HardwareDetent = false;
+                vwButton.Filter.HardwareDetentAB = 0;
+                vwButton.Filter.HardwareDetentMax = 0;
+                vwButton.Filter.Invert = false;
+                vwButton.Filter.SaturationX = 100;
+                vwButton.Filter.SaturationY = 100;
+                vwButton.Filter.Slider = false;
+            }
         }
         else 
         {
-            DCSKeyButton keyButton = button as DCSKeyButton;
             vwButton.IsAxisButton = false;
-            vwButton.Modifiers.AddRange(keyButton.Modifiers);
         }
     }
 

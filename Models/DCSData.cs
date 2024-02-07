@@ -53,6 +53,7 @@ public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
+    public Dictionary<DCSButtonKey, IDCSButton> AssignedButtons { get; set; } = new();
     public Dictionary<string, IDCSButton> AssignedButtons { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
@@ -60,20 +61,33 @@ public class DCSAircraftJoystickBinding
 public class DCSButtonChanges
 {
     public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
+    public List<IDCSButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
     public List<DCSAxisButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
+    public List<IDCSButton> RemovedKeyButtons { get; set; } = new();
     public List<DCSKeyButton> RemovedKeyButtons { get; set; } = new();
 }
 
 public interface IDCSButton
 {
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; }
     public string Name { get; set; }
     public List<string> Modifiers { get; set; }
 }
 
 public class DCSKeyButton : IDCSButton
 {
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; } = new();
+}
+
+public class DCSAxisButton : IDCSButton
+{
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; } = new();
+    public DCSAxisFilter Filter { get; set; }
     public string Name { get; set; }
     public List<string> Modifiers { get; set; } = new();
 }
@@ -91,4 +105,24 @@ public class DCSAxisButton : IDCSButton
     public double SaturationX { get; set; }
     public double SaturationY { get; set; }
     public bool Slider { get; set; }
+
+    public DCSAxisFilter()
+    {
+        Curvature = new();
+    }
+}
+
+public class DCSKeyButton : DCSButton
+{
+    public List<string> Modifiers { get; set; } = new();
+}
+
+public class DCSKeyButton : DCSButton
+{
+    public List<string> Modifiers { get; set; } = new();
+}
+
+public class DCSKeyButton : DCSButton
+{
+    public List<string> Modifiers { get; set; } = new();
 }

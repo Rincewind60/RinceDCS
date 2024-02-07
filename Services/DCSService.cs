@@ -422,6 +422,8 @@ public class DCSService : IDCSService
 
     private void ReadAxisFilterLua(DCSAxisButton axisButton, Table filterTable)
     {
+        axisButton.Filter = new();
+
         for (int j = 0; j < filterTable.Keys.Count(); j++)
         {
             string sectionName = filterTable.Keys.ElementAt(j).String;
