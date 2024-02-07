@@ -54,7 +54,7 @@ public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
-    public Dictionary<DCSButtonKey, DCSButton> AssignedButtons { get; set; } = new();
+    public Dictionary<DCSButtonKey, IDCSButton> AssignedButtons { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
 
@@ -62,24 +62,28 @@ public class DCSButtonChanges
 {
     public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
     public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
-    public List<DCSButton> RemovedAxisButtons { get; set; } = new();
+    public List<IDCSButton> RemovedAxisButtons { get; set; } = new();
     public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
-    public List<DCSButton> RemovedKeyButtons { get; set; } = new();
+    public List<IDCSButton> RemovedKeyButtons { get; set; } = new();
 }
 
-public class DCSButton
+public interface IDCSButton
 {
-    public DCSButtonKey Key;
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; }
 }
 
-public class DCSAxisButton : DCSButton
+public class DCSKeyButton : IDCSButton
 {
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; } = new();
+}
+
+public class DCSAxisButton : IDCSButton
+{
+    public DCSButtonKey Key { get; set; }
+    public List<string> Modifiers { get; set; } = new();
     public DCSAxisFilter Filter { get; set; }
-
-    public DCSAxisButton()
-    {
-        Filter = new();
-    }
 }
 
 public class DCSAxisFilter
@@ -98,9 +102,4 @@ public class DCSAxisFilter
     {
         Curvature = new();
     }
-}
-
-public class DCSKeyButton : DCSButton
-{
-    public List<string> Modifiers { get; set; } = new();
 }

@@ -229,7 +229,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(IDCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
                 DCSKeyButton keyButton = button as DCSKeyButton;
                 if (keyButton != null)

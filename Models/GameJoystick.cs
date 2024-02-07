@@ -161,18 +161,9 @@ public class GameAssignedButton
     public List<GameAssignedCommand> Commands { get; } = new();
 
     // DCS Button Details
-    public bool IsAxisButton { get; set; }
-    public List<int> Curvature { get; } = new();
-    public bool HasUserCurve {  get { return Curvature.Count > 1; } }
-    public int Deadzone { get; set; }
-    public bool HardwareDetent { get; set; }
-    public int HardwareDetentAB { get; set; }
-    public int HardwareDetentMax { get; set; }
-    public bool Invert { get; set; }
-    public int SaturationX { get; set; }
-    public int SaturationY { get; set; }
-    public bool Slider { get; set; }
     public List<string> Modifiers { get; } = new();
+    public bool IsAxisButton { get; set; }
+    public GameAssignedButtonFilter Filter { get; set; } = new();
 
     public string Command
     {
@@ -231,5 +222,24 @@ public class GameAssignedButton
     public GameAssignedButton(GameJoystickButton joyButton)
     {
         JoystickButton = joyButton;
+    }
+}
+
+public class GameAssignedButtonFilter
+{
+    public List<double> Curvature { get; set; }
+    public double Deadzone { get; set; }
+    public bool HardwareDetent { get; set; }
+    public double HardwareDetentAB { get; set; }
+    public double HardwareDetentMax { get; set; }
+    public bool Invert { get; set; }
+    public double SaturationX { get; set; }
+    public double SaturationY { get; set; }
+    public bool Slider { get; set; }
+    public bool HasUserCurve { get { return Curvature.Count > 1; } }
+
+    public GameAssignedButtonFilter()
+    {
+        Curvature = new();
     }
 }

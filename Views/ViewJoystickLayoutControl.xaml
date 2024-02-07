@@ -161,49 +161,49 @@
                                                 <TextBlock Grid.Column="0" Grid.Row="2" Text="ID:" Style="{StaticResource InfoHeading}"/>
                                                 <TextBlock Grid.Column="1" Grid.Row="2" Text="{x:Bind ID}"/>
                                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Deadzone:" Style="{StaticResource InfoHeading}"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind Deadzone}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind Filter.Deadzone}"/>
                                                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Saturation X:" Style="{StaticResource InfoHeading}"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="4" Text="{x:Bind SaturationX}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="4" Text="{x:Bind Filter.SaturationX}"/>
                                                 <TextBlock Grid.Column="0" Grid.Row="5" Text="Saturation Y:" Style="{StaticResource InfoHeading}"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind SaturationY}"/>
-                                                <TextBlock Grid.Column="0" Grid.Row="6" Text="Curvature:" Style="{StaticResource InfoHeading}" Visibility="{x:Bind HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="6" Text="{x:Bind Curvature[0]}" Visibility="{x:Bind HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
-                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Content="Slider" FontWeight="Bold" IsChecked="{x:Bind Slider }"/>
-                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Content="Invert" FontWeight="Bold" IsChecked="{x:Bind Invert }"/>
-                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9" Content="User Curve" FontWeight="Bold" IsChecked="{x:Bind HasUserCurve }"/>
-                                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10" Orientation="Horizontal" Visibility="{x:Bind HasUserCurve, Converter={StaticResource TrueToVisibleConverter}}">
+                                                <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind Filter.SaturationY}"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="6" Text="Curvature:" Style="{StaticResource InfoHeading}" Visibility="{x:Bind Filter.HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
+                                                <TextBlock Grid.Column="1" Grid.Row="6" Text="{x:Bind Filter.Curvature[0]}" Visibility="{x:Bind Filter.HasUserCurve, Converter={StaticResource FalseToVisibleConverter}}"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Content="Slider" FontWeight="Bold" IsChecked="{x:Bind Filter.Slider }"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Content="Invert" FontWeight="Bold" IsChecked="{x:Bind Filter.Invert }"/>
+                                                <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9" Content="User Curve" FontWeight="Bold" IsChecked="{x:Bind Filter.HasUserCurve }"/>
+                                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10" Orientation="Horizontal" Visibility="{x:Bind Filter.HasUserCurve, Converter={StaticResource TrueToVisibleConverter}}">
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[0]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[0]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[1]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[1]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[2]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[2]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[3]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[3]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[4]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[4]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[5]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[5]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[6]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[6]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[7]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[7]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[8]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[8]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[9]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[9]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                     <Border Style="{StaticResource CurveBorder}">
-                                                        <TextBlock Text="{x:Bind Curvature[10]}" Style="{StaticResource CurveText}"/>
+                                                        <TextBlock Text="{x:Bind Filter.Curvature[10]}" Style="{StaticResource CurveText}"/>
                                                     </Border>
                                                 </StackPanel>
                                             </Grid>

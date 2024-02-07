@@ -269,6 +269,8 @@ public class DCSService : IDCSService
 
     private void ReadAxisFilterLua(DCSAxisButton axisButton, Table filterTable)
     {
+        axisButton.Filter = new();
+
         for (int j = 0; j < filterTable.Keys.Count(); j++)
         {
             string sectionName = filterTable.Keys.ElementAt(j).String;
@@ -322,7 +324,7 @@ public class DCSService : IDCSService
         {
             Table table = removedTable.Values.ElementAt(i).Table;
             string button = table.Values.ElementAt(i).String;
-            DCSButton removedButton = new() { Key = new(button) };
+            IDCSButton removedButton = new DCSAxisButton() { Key = new(button) };
             changes.RemovedAxisButtons.Add(removedButton);
 
             if(bindingData.AssignedButtons.ContainsKey(removedButton.Key))
@@ -404,7 +406,7 @@ public class DCSService : IDCSService
             for(int j = 0; j < table.Values.Count(); j++)
             {
                 string button = table.Values.ElementAt(j).String;
-                DCSButton removedButton = new() { Key = new(button) };
+                IDCSButton removedButton = new DCSKeyButton() { Key = new(button) };
                 changes.RemovedKeyButtons.Add(removedButton);
 
                 if (bindingData.AssignedButtons.ContainsKey(removedButton.Key))
