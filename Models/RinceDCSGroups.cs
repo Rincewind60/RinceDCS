@@ -39,32 +39,20 @@ public class RinceDCSGroup
 public class RinceDCSGroupBinding
 {
     public string Id { get; set; }
-    public string CommandName { get; set; }
+    public string Command { get; set; }
 }
 
 public class RinceDCSGroupJoystick
 {
     public AttachedJoystick Joystick { get; set; }
-    public List<IRinceDCSGroupButton> Buttons { get; set; }= new();
+    public List<RinceDCSGroupButton> Buttons { get; set; }= new();
 }
 
-public interface IRinceDCSGroupButton
-{
-    public string ButtonName { get; set; }
-    public List<string> Modifiers { get; set; }
-}
-
-public class RinceDCSGroupAxisButton : IRinceDCSGroupButton
+public class RinceDCSGroupButton
 {
     public string ButtonName { get; set; }
     public List<string> Modifiers { get; set; } = new();
     public AxisFilter Filter { get; set; }
-}
-
-public class RinceDCSGroupKeyButton : IRinceDCSGroupButton
-{
-    public string ButtonName { get; set; }
-    public List<string> Modifiers { get; set; } = new();
 }
 
 public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceDCSGroupAircraft>
@@ -74,8 +62,8 @@ public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceD
 
     [ObservableProperty]
     private bool isActive;
-    public string CommandName { get; set; }
-    public string CategoryName { get; set; }
+    public string Command { get; set; }
+    public string Category { get; set; }
 
     public RinceDCSGroupAircraft()
     {

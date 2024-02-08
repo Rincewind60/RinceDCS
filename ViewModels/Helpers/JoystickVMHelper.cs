@@ -50,8 +50,8 @@ public class JoystickVMHelper
         foreach (DCSBinding binding in dcsAircraft.Bindings.Values)
         {
             DCSAircraftBinding aircraftBinding = binding.AircraftWithBinding[aircraftKey];
-            string commandName = aircraftBinding.CommandName;
-            string categoryName = aircraftBinding.CategoryName;
+            string commandName = aircraftBinding.Command;
+            string categoryName = aircraftBinding.Category;
 
             DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.AttachedJoystick.JoystickGuid);
 
@@ -59,7 +59,7 @@ public class JoystickVMHelper
             {
                 DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
 
-                BuildAssignedButtons(stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
+                BuildAssignedButtons(binding.IsAxisBinding, stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
             }
         }
 
@@ -84,6 +84,7 @@ public class JoystickVMHelper
     }
 
     private void BuildAssignedButtons(
+        bool isAxisBinding,
         RinceDCSJoystick stick,
         List<AssignedButton> assignedButtons,
         Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout,
@@ -92,46 +93,27 @@ public class JoystickVMHelper
         string categoryName,
         DCSAircraftJoystickBinding bindingButtons)
     {
-        foreach (IDCSButton button in bindingButtons.AssignedButtons.Values)
+        foreach (DCSButton button in bindingButtons.AssignedButtons.Values)
         {
             AssignedButtonKey key;
             bool isModifer = button.Modifiers.Count > 0;
-            if (button is DCSAxisButton)
-            {
-                key = new(button.Name, isModifer);
-            }
-            else
-            {
-                key = new(button.Name, isModifer);
-            }
+            key = new(button.Name, isModifer);
             if (buttonsOnLayout.ContainsKey(key))
             {
                 AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
                 vwButton.Commands.Add(new(bindingId, commandName, categoryName));
-                AddButtonConfiguration(button, vwButton);
+                AddButtonConfiguration(isAxisBinding, button, vwButton);
             }
         }
     }
 
-    private void AddButtonConfiguration(IDCSButton button, AssignedButton vwButton)
+    private void AddButtonConfiguration(bool isAxisBinding, DCSButton button, AssignedButton vwButton)
     {
+        vwButton.IsAxisButton = isAxisBinding;
         vwButton.Modifiers.AddRange(button.Modifiers);
-        if (button is DCSAxisButton)
+        if (button.AxisFilter != null)
         {
-            vwButton.IsAxisButton = true;
-            DCSAxisButton axisButton = button as DCSAxisButton;
-            if (axisButton.Filter != null)
-            {
-                vwButton.Filter = new(axisButton.Filter);
-            }
-            else
-            {
-                vwButton.Filter = new();
-            }
-        }
-        else 
-        {
-            vwButton.IsAxisButton = false;
+            vwButton.Filter = new(button.AxisFilter);
         }
     }
 

@@ -168,7 +168,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
             dynamic dynCommand = new ExpandoObject();
             dynCommand.CategoryName = category.CategoryName;
-            dynCommand.CommandName = dcsAircraftBinding.CommandName;
+            dynCommand.CommandName = dcsAircraftBinding.Command;
 
             IDictionary<String, Object> dynCommandMembers = (IDictionary<String, Object>)dynCommand;
             for (int j = 0; j < joystickHeadingIndex.Count; j++)
@@ -209,7 +209,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
     {
         CommandCategory category;
 
-        string categoryName = string.IsNullOrWhiteSpace(dcsAircraftBinding.CategoryName) ? "Uknown" : dcsAircraftBinding.CategoryName;
+        string categoryName = string.IsNullOrWhiteSpace(dcsAircraftBinding.Category) ? "Uknown" : dcsAircraftBinding.Category;
 
         category = newCategories.Find(cat => cat.CategoryName == categoryName);
         if(category == null)
@@ -229,15 +229,16 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         if (binding.AircraftJoystickBindings.ContainsKey(key))
         {
-            foreach(IDCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
             {
-                DCSKeyButton keyButton = button as DCSKeyButton;
-                if (keyButton != null)
+                if(button.Modifiers.Count > 0)
                 {
-                    foreach (string modifier in keyButton.Modifiers)
+                    modifiers += "[";
+                    for(int i = 0; i < button.Modifiers.Count; i++)
                     {
-                        modifiers += modifier + " - ";
+                        modifiers += button.Modifiers[i] + (button.Modifiers.Count > 1 && i < (button.Modifiers.Count - 1) ? "," : "");
                     }
+                    modifiers += "] ";
                 }
 
                 buttons = buttons + (buttons.Length > 0 ? "; " : "") + button.Name;

@@ -34,7 +34,7 @@ public class DCSJoystick
 public class DCSBinding
 {
     public DCSBindingKey Key { get; set; }
-    public string CommandName { get; set; }
+    public string Command { get; set; }
     public bool IsAxisBinding { get; set; }
     public bool IsKeyBinding { get { return !IsAxisBinding; } }
     public Dictionary<DCSAircraftKey, DCSAircraftBinding> AircraftWithBinding { get; set; } = new();
@@ -45,42 +45,30 @@ public class DCSBinding
 public class DCSAircraftBinding
 {
     public DCSAircraftKey Key { get; set; }
-    public string CommandName { get; set; }
-    public string CategoryName { get; set; }
+    public string Command { get; set; }
+    public string Category { get; set; }
 }
 
 public class DCSAircraftJoystickBinding
 {
     public DCSAircraftKey AircraftKey { get; set; }
     public DCSJoystickKey JoystickKey { get; set; }
-    public Dictionary<string, IDCSButton> AssignedButtons { get; set; } = new();
+    public Dictionary<string, DCSButton> AssignedButtons { get; set; } = new();
     public DCSButtonChanges SavedGamesButtonChanges { get; set; } = new();
 }
 
 public class DCSButtonChanges
 {
-    public List<DCSAxisButton> ChangedAxisButtons { get; set; } = new();
-    public List<DCSAxisButton> RemovedAxisButtons { get; set; } = new();
-    public List<DCSAxisButton> AddedAxisButtons { get; set; } = new();
-    public List<DCSKeyButton> AddedKeyButtons { get; set; } = new();
-    public List<DCSKeyButton> RemovedKeyButtons { get; set; } = new();
+    public List<DCSButton> ChangedAxisButtons { get; set; } = new();
+    public List<DCSButton> RemovedAxisButtons { get; set; } = new();
+    public List<DCSButton> AddedAxisButtons { get; set; } = new();
+    public List<DCSButton> AddedKeyButtons { get; set; } = new();
+    public List<DCSButton> RemovedKeyButtons { get; set; } = new();
 }
 
-public interface IDCSButton
-{
-    public string Name { get; set; }
-    public List<string> Modifiers { get; set; }
-}
-
-public class DCSKeyButton : IDCSButton
+public class DCSButton
 {
     public string Name { get; set; }
     public List<string> Modifiers { get; set; } = new();
-}
-
-public class DCSAxisButton : IDCSButton
-{
-    public string Name { get; set; }
-    public List<string> Modifiers { get; set; } = new();
-    public AxisFilter Filter { get; set; }
+    public AxisFilter AxisFilter { get; set; }
 }

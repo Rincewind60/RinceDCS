@@ -96,7 +96,7 @@ public class DCSService : IDCSService
                                                               Joystick = joystick.Joystick,
                                                               IsAxisBinding = bindingGroup.IsAxisBinding,
                                                               BindingId = boundAircraft.BindingId,
-                                                              CommandName = boundAircraft.CommandName,
+                                                              Command = boundAircraft.Command,
                                                               AddButton = addButton
                                                           }).ToList();
 
@@ -114,7 +114,7 @@ public class DCSService : IDCSService
 
                 List<BindingAddsRemoves> bindingsWithRemoves = (from dcsBinding in data.Bindings.Values
                                                                 from ajb in dcsBinding.AircraftJoystickBindings.Values
-                                                                from removeButton in (new List<IDCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
+                                                                from removeButton in (new List<DCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
                                                                 where ajb.AircraftKey.Name == aircraftName &&
                                                                       ajb.JoystickKey == stick.Key &&
                                                                       (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
@@ -125,14 +125,14 @@ public class DCSService : IDCSService
                                                                     Joystick = stick.Joystick,
                                                                     IsAxisBinding = dcsBinding.IsAxisBinding,
                                                                     BindingId = dcsBinding.Key.Id,
-                                                                    CommandName = dcsBinding.CommandName,
+                                                                    Command = dcsBinding.Command,
                                                                     RemoveButton = removeButton
                                                                 }).ToList();
 
 
                 List < BindingAddsRemoves > bindings = (from dcsBinding in data.Bindings.Values
                                                         from ajb in dcsBinding.AircraftJoystickBindings.Values
-                                                        from removeButton in (new List<IDCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
+                                                        from removeButton in (new List<DCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
                                                         where ajb.AircraftKey.Name == aircraftName &&
                                                                 ajb.JoystickKey == stick.Key &&
                                                                 (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
@@ -143,7 +143,7 @@ public class DCSService : IDCSService
                                                             Joystick = stick.Joystick,
                                                             IsAxisBinding = dcsBinding.IsAxisBinding,
                                                             BindingId = dcsBinding.Key.Id,
-                                                            CommandName = dcsBinding.CommandName,
+                                                            Command = dcsBinding.Command,
                                                             RemoveButton = removeButton
                                                         }).ToList();
 
@@ -177,8 +177,8 @@ public class DCSService : IDCSService
 
                 foreach (BindingAddsRemoves record in bindingsWithAdds)
                 {
-                    string modifiers = record.AddButton is RinceDCSGroupKeyButton ? (((RinceDCSGroupKeyButton)record.AddButton).Modifiers.Count() > 0).ToString() : "";
-                    RinceLogger.Log.Info(record.AircraftName + ", " + record.Joystick.Name + ", " + record.IsAxisBinding + ", " + record.BindingId + ", " + record.CommandName + ", " + record.AddButton.ButtonName + ", " + modifiers);
+                    string modifiers = (((RinceDCSGroupButton)record.AddButton).Modifiers.Count() > 0).ToString();
+                    RinceLogger.Log.Info(record.AircraftName + ", " + record.Joystick.Name + ", " + record.IsAxisBinding + ", " + record.BindingId + ", " + record.Command + ", " + record.AddButton.ButtonName + ", " + modifiers);
                 }
 
                 BuildLuaFile(savedGameFolderPath, data, bindingsWithAdds);
@@ -279,7 +279,7 @@ public class DCSService : IDCSService
                 binding = new DCSBinding()
                 {
                     Key = new(id),
-                    CommandName = name,
+                    Command = name,
                     IsAxisBinding = id.StartsWith("a")
                 };
                 data.Bindings[bindKey] = binding;
@@ -287,7 +287,7 @@ public class DCSService : IDCSService
 
             if (!binding.AircraftWithBinding.ContainsKey(aircraft.Key))
             {
-                binding.AircraftWithBinding[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, CommandName = name, CategoryName = category };
+                binding.AircraftWithBinding[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, Command = name, Category = category };
             }
             if (!binding.JoysticksWithBinding.ContainsKey(stck.Key))
             {
@@ -374,7 +374,7 @@ public class DCSService : IDCSService
         {
             Table table = addedTable.Values.ElementAt(i).Table;
 
-            DCSAxisButton axisButton = new();
+            DCSButton axisButton = new();
             changes.AddedAxisButtons.Add(axisButton);
 
             for (int j = 0; j < table.Keys.Count(); j++)
@@ -400,7 +400,7 @@ public class DCSService : IDCSService
         {
             Table table = changedTable.Values.ElementAt(i).Table;
 
-            DCSAxisButton axisButton = new();
+            DCSButton axisButton = new();
             changes.ChangedAxisButtons.Add(axisButton);
 
             for (int j = 0; j < table.Keys.Count(); j++)
@@ -420,9 +420,9 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadAxisFilterLua(DCSAxisButton axisButton, Table filterTable)
+    private void ReadAxisFilterLua(DCSButton axisButton, Table filterTable)
     {
-        axisButton.Filter = new();
+        axisButton.AxisFilter = new();
 
         for (int j = 0; j < filterTable.Keys.Count(); j++)
         {
@@ -433,40 +433,40 @@ public class DCSService : IDCSService
                 Table curvatureTable = filterTable.Values.ElementAt(j).Table;
                 for (int k = 0; k < curvatureTable.Keys.Count(); k++)
                 {
-                    axisButton.Filter.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
+                    axisButton.AxisFilter.Curvature.Add(curvatureTable.Values.ElementAt(k).Number);
                 }
             }
             else if (sectionName == "deadzone")
             {
-                axisButton.Filter.Deadzone = filterTable.Values.ElementAt(j).Number;
+                axisButton.AxisFilter.Deadzone = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetent")
             {
-                axisButton.Filter.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.AxisFilter.HardwareDetent = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "hardwareDetentAB")
             {
-                axisButton.Filter.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
+                axisButton.AxisFilter.HardwareDetentAB = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "hardwareDetentMax")
             {
-                axisButton.Filter.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
+                axisButton.AxisFilter.HardwareDetentMax = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "invert")
             {
-                axisButton.Filter.Invert = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.AxisFilter.Invert = filterTable.Values.ElementAt(j).Boolean;
             }
             else if (sectionName == "saturationX")
             {
-                axisButton.Filter.SaturationX = filterTable.Values.ElementAt(j).Number;
+                axisButton.AxisFilter.SaturationX = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "saturationY")
             {
-                axisButton.Filter.SaturationY = filterTable.Values.ElementAt(j).Number;
+                axisButton.AxisFilter.SaturationY = filterTable.Values.ElementAt(j).Number;
             }
             else if (sectionName == "slider")
             {
-                axisButton.Filter.Slider = filterTable.Values.ElementAt(j).Boolean;
+                axisButton.AxisFilter.Slider = filterTable.Values.ElementAt(j).Boolean;
             }
         }
     }
@@ -476,7 +476,7 @@ public class DCSService : IDCSService
         for (int i = 0; i < removedTable.Values.Count(); i++)
         {
             Table table = removedTable.Values.ElementAt(i).Table;
-            DCSAxisButton removedButton = new() { Name = table.Values.ElementAt(i).String };
+            DCSButton removedButton = new() { Name = table.Values.ElementAt(i).String };
             changes.RemovedAxisButtons.Add(removedButton);
 
             if(bindingData.AssignedButtons.ContainsKey(removedButton.Name))
@@ -528,7 +528,7 @@ public class DCSService : IDCSService
         for (int i = 0; i < addedTable.Values.Count(); i++)
         {
             Table table = addedTable.Values.ElementAt(i).Table;
-            DCSKeyButton newButton = new();
+            DCSButton newButton = new();
 
             for (int j = 0; j < table.Keys.Count(); j++)
             {
@@ -548,7 +548,7 @@ public class DCSService : IDCSService
         }
     }
 
-    private void ReadKeyModifersLua(DCSKeyButton button, Table modifiersTable)
+    private void ReadKeyModifersLua(DCSButton button, Table modifiersTable)
     {
         for (int i = 0; i < modifiersTable.Values.Count(); i++)
         {
@@ -563,7 +563,7 @@ public class DCSService : IDCSService
             Table table = removedTable.Values.ElementAt(i).Table;
             for(int j = 0; j < table.Values.Count(); j++)
             {
-                DCSKeyButton removedButton = new() { Name = table.Values.ElementAt(j).String };
+                DCSButton removedButton = new() { Name = table.Values.ElementAt(j).String };
                 changes.RemovedKeyButtons.Add(removedButton);
 
                 if (bindingData.AssignedButtons.ContainsKey(removedButton.Name))
@@ -603,9 +603,9 @@ public class BindingAddsRemoves
     public AttachedJoystick Joystick;
     public bool IsAxisBinding;
     public string BindingId;
-    public string CommandName;
-    public IRinceDCSGroupButton AddButton;
-    public IDCSButton RemoveButton;
+    public string Command;
+    public RinceDCSGroupButton AddButton;
+    public DCSButton RemoveButton;
 }
 
 public class DCSLuaFileBuilder
