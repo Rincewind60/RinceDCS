@@ -12,7 +12,7 @@ namespace RinceDCS.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.8.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -44,6 +44,30 @@ namespace RinceDCS.Properties {
             }
             set {
                 this["JoysticScaleIndex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CreateGroupsCSVFile {
+            get {
+                return ((bool)(this["CreateGroupsCSVFile"]));
+            }
+            set {
+                this["CreateGroupsCSVFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4c5c32ff-bb9d-43b0-b5b4-2d72e54eaaa4")]
+        public global::System.Guid KnownFolderTypeSavedGames {
+            get {
+                return ((global::System.Guid)(this["KnownFolderTypeSavedGames"]));
+            }
+            set {
+                this["KnownFolderTypeSavedGames"] = value;
             }
         }
     }

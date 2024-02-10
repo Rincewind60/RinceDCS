@@ -44,7 +44,7 @@ public sealed partial class EditGroupsPage : Page
         newByAircraftItem.Header = "By Aircraft";
         newByAircraftItem.IsClosable = false;
 
-        EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.Values.ToList(), data.Item1.AllGroups);
+        EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.ToList(), data.Item1.AllGroups);
         //ctrl.ViewModel.IsActive = true;
 
         newByAircraftItem.Content = aircraftCtrl;

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using RinceDCS.Properties;
 using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
@@ -30,12 +31,13 @@ public partial class ScaleVMHelper : ObservableObject
 
     public void Initialize()
     {
-        string scaleIndex = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.JoysticScaleIndex);
+        string scaleIndex = Settings.Default.JoysticScaleIndex;
         CurrentScale = string.IsNullOrWhiteSpace(scaleIndex) ? 3 : int.Parse(scaleIndex);
     }
 
     partial void OnCurrentScaleChanged(int value)
     {
-        Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.JoysticScaleIndex, value.ToString());
+        Settings.Default.JoysticScaleIndex = value.ToString();
+        Settings.Default.Save();
     }
 }

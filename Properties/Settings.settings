@@ -8,5 +8,11 @@
     <Setting Name="JoysticScaleIndex" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="CreateGroupsCSVFile" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="KnownFolderTypeSavedGames" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">4c5c32ff-bb9d-43b0-b5b4-2d72e54eaaa4</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

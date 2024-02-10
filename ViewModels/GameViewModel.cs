@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using RinceDCS.Properties;
 
 namespace RinceDCS.ViewModels;
 
@@ -72,7 +73,7 @@ public partial class GameViewModel : ObservableRecipient
             AddNewInstances(m.Value);
         });
 
-        string savedPath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
+        string savedPath = Settings.Default.LastSavePath;
         if(!string.IsNullOrWhiteSpace(savedPath))
         {
             DoOpen(savedPath);
@@ -86,7 +87,8 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private void New()
     {
-        Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, null);
+        Settings.Default.LastSavePath = null;
+        Settings.Default.Save();
 
         RinceDCSFile newGame = new();
         LoadJoysticks(newGame);
@@ -218,8 +220,8 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             LoadBindingDataForInstance(CurrentInstance);
-            GroupsVMHelper bindHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
-            CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
+            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
+            CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
             CurrentInstanceDCSData = CurrentInstance.BindingsData;
             CurrentInstanceGroups = CurrentInstance.BindingGroups;
             SetCurrentAircraftForCurrentInstance();
@@ -406,8 +408,8 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.GameExePath = updated.gameExePath;
                 updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
                 LoadBindingDataForInstance(updated.instance);
-                GroupsVMHelper bindHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
-                CurrentInstance.BindingGroups = bindHelper.UpdatedGroups();
+                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
+                CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
             }
         }
     }

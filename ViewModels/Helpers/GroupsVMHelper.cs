@@ -1,40 +1,14 @@
-﻿using HtmlAgilityPack;
+﻿using Csv;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Shapes;
 using RinceDCS.Models;
-using RinceDCS.Utilities;
-using SharpDX.DirectInput;
+using RinceDCS.Properties;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace RinceDCS.ViewModels.Helpers;
-
-using GroupName = System.String;
-using BindingID = System.String;
-using AircraftName = System.String;
-using static System.Net.Mime.MediaTypeNames;
-
-/// <summary>
-/// TODO: Attached Joysticks , pass in those in RinceDCSFile
-/// TODO: Update all groups attached joysticks, add new, delete removed
-/// TODO: New Joysticks, copy buttons from DCSData
-/// TODO: Add new Groups
-/// TODO: Add/Delete Bindings to groups
-/// TODO: For each group calc new Aircraft
-/// TODO: For each binding, set IsActive false for new bindings/aircraft
-/// </summary>
-
-
 public class GroupsVMHelper
 {
     private List<RinceDCSJoystick> Joysticks { get; }
@@ -46,390 +20,361 @@ public class GroupsVMHelper
         Joysticks = joysticks;
         Data = data;
         Groups = groups ?? new();
+
+        BuildCache();
     }
+
+    private record BindingWithButtons
+        (
+        string BindingId,
+        string Group,
+        bool IsAxisBinding,
+        Guid StickId,
+        string AircraftName,
+        string AircraftCommand,
+        string AircraftCategory,
+        string ButtonName,
+        List<string> Modifiers,
+        AxisFilter Filter
+        );
+
+    private record NewGroup
+        (
+        string Group,
+        string Category,
+        bool IsAxisBinding
+        );
+
+    private record NewGroupJoystick
+        (
+        string Group,
+        Guid JoystickGuid,
+        RinceDCSJoystick Stick,
+        RinceDCSGroup Grp
+        );
+
+    private record NewGroupBinding
+        (
+        string Group,
+        string BindingId,
+        RinceDCSGroup Grp
+        );
+
+    private record NewGroupAircraft
+        (
+        RinceDCSGroup Grp,
+        string BindingId,
+        string Group,
+        string AircraftName,
+        string AircraftCommand,
+        string AircraftCategory
+        );
+
+    private record NewGroupSitckButton
+        (
+        string Group,
+        Guid StickId,
+        string ButtonName,
+        List<string> Modifiers,
+        AxisFilter Filter,
+        RinceDCSGroupJoystick GrpStick
+        );
 
     public RinceDCSGroups UpdatedGroups()
     {
-//        string filePath = "RinceDCSGroupsBuildTrace.csv";
-//        File.WriteAllText(filePath, "GroupName,BindingId,Command,IsAxisBinding,StickId,AircraftName,AircraftCommand,AircraftCategory,Button,Modifiers,Filter\n");
+        CsvExport csvDump = new CsvExport(",", true, true);
 
-        //  Find all bindings in game that have a button assigned to them
-        var allBindingsWithButtons = (from binding in Data.Bindings.Values
-                                      from aircraftStickBinding in binding.AircraftJoystickBindings.Values
-                                      from button in aircraftStickBinding.AssignedButtons.Values
-                                      from aircraft in binding.AircraftWithBinding.Values
-                                      select new {
-                                        BindingId = binding.Key.Id,
-                                        Command = binding.Command,
-                                        binding.IsAxisBinding,
-                                        StickId = aircraftStickBinding.JoystickKey.Id,
-                                        AircraftName = aircraftStickBinding.AircraftKey.Name,
-                                        AircraftCommand = aircraft.Command,
-                                        AircraftCategory = aircraft.Category,
-                                        ButtonName = button.Name,
-                                        button.Modifiers,
-                                        button.AxisFilter
-                                      }).OrderBy(row => row.BindingId)
-                                        .ThenBy(row => row.Command)
-                                        .ThenBy(row => row.StickId)
-                                        .ThenBy(row => row.AircraftName)
-                                        .ThenBy(row => row.ButtonName);
+        IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons = GetAllBindingsWithButtons(csvDump);
 
-//        File.AppendAllText(filePath, "All Bindings with Buttons\n");
-//        foreach (var b in allBindingsWithButtons)
-//        {
-//            File.AppendAllText(filePath, "," + b.BindingId + "," + b.Command + "," + b.IsAxisBinding + "," + b.StickId + "," + b.AircraftName + "," + b.AircraftCommand + "," + b.AircraftCategory + "," + b.ButtonName + "," + b.Modifiers.Count() + "," + (b.AxisFilter != null) + "\n");
-//        }
+        CreateNewGroups(csvDump, allBindingsWithButtons);
+        CreateNewGroupJoysticks(csvDump);
+        CreateNewGroupBindings(csvDump, allBindingsWithButtons);
+        CreateNewGroupAircraft(csvDump, allBindingsWithButtons);
+        CreateNewGroupJoystickButtons(csvDump, allBindingsWithButtons);
 
-        //  Find all bindings not part of a group and for which no group exists with their Command Name
-        var groupsToCreate = (from bindingWithNoGroup in allBindingsWithButtons
-                                   where !Groups.AllGroups.ContainsKey(bindingWithNoGroup.Command) &&
-                                         !Groups.AllBindings.ContainsKey(bindingWithNoGroup.BindingId)
-                                   select new {
-                                       Command = bindingWithNoGroup.Command,
-                                       bindingWithNoGroup.IsAxisBinding
-                                   }).Distinct();
-
-//        File.AppendAllText(filePath, "Groups To Create\n");
-        foreach (var a in groupsToCreate)
+        if (Settings.Default.CreateGroupsCSVFile)
         {
-//            File.AppendAllText(filePath, a.Command + ",,," + a.IsAxisBinding + "\n");
-
-            //  Create New Group
-            RinceDCSGroup group = new RinceDCSGroup() { Name = a.Command, IsAxisBinding = a.IsAxisBinding };
-            Groups.AllGroups[a.Command] = group;
-            Groups.Groups.Add(group);
+            string path = Path.GetDirectoryName(Settings.Default.LastSavePath) + "\\RinceDCSGroups.csv";
+            csvDump.ExportToFile(path, Encoding.UTF8);
         }
 
-        //  Find all Groups that are missing Joysticks add Add sticks to them
-        var groupsMissingSticks = (from stick in Joysticks
-                                   from grp in Groups.AllGroups.Values
-                                   where !grp.JoystickBindings.Any(a => a.Joystick == stick.AttachedJoystick)
-                                   select new
-                                   {
-                                       grp.Name,
-                                       stick.AttachedJoystick.JoystickGuid,
-                                       stick,
-                                       grp
-                                   }).OrderBy(row => row.Name)
-                                     .ThenBy(row => row.JoystickGuid);
+        return Groups;
+    }
 
-//        File.AppendAllText(filePath, "Joysticks to add to Groups\n");
-        foreach (var s in groupsMissingSticks)
+    private void CreateNewGroupJoystickButtons(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    {
+        //  Add Buttons to Group Joystick
+        var buttons = (from binding in allBindingsWithButtons
+                       from grp in Groups.AllGroups.Values
+                       from grpStick in grp.JoystickBindings
+                       where binding.Group == grp.Name &&
+                             binding.StickId == grpStick.Joystick.JoystickGuid
+                       select new NewGroupSitckButton
+                       (
+                           binding.Group,
+                           binding.StickId,
+                           binding.ButtonName,
+                           binding.Modifiers,
+                           binding.Filter,
+                           grpStick
+                       )).OrderBy(row => row.Group)
+                         .ThenBy(row => row.StickId)
+                         .ThenBy(row => row.ButtonName);
+
+        csvDump.AddRow();
+        csvDump["Group"] = "#### Add buttons to Group Joysticks ####";
+        string prevGroup = "";
+        Guid prevStickId = Guid.NewGuid();
+        string prevButtonName = "";
+        foreach (var a in buttons)
         {
-//            File.AppendAllText(filePath, s.grp.Name + ",,,," + s.stick.AttachedJoystick.JoystickGuid + "\n");
+            if (a.Group != prevGroup || a.StickId != prevStickId || a.ButtonName != prevButtonName)
+            {
+                bool updated = false;
 
-            //  Create New Joystick
-            RinceDCSGroupJoystick newStick = new() { Joystick = s.stick.AttachedJoystick };
+                RinceDCSGroupButton grpButton = a.GrpStick.Buttons.Find(b => b.ButtonName == a.ButtonName);
+                if (grpButton == null)
+                {
+                    //  Create new Group Button
+                    grpButton = new() { ButtonName = a.ButtonName };
+                    grpButton.Modifiers.AddRange(a.Modifiers);
+                    a.GrpStick.Buttons.Add(grpButton);
+                    updated = true;
+                }
 
-            //  Add to group
-            s.grp.JoystickBindings.Add(newStick);
+                if (grpButton.Filter == null && a.Filter != null)
+                {
+                    grpButton.Filter = new(a.Filter);
+                    updated = true;
+                }
+
+                if(updated)
+                {
+                    csvDump.AddRow();
+                    csvDump["Group"] = a.Group;
+                    csvDump["Stick"] = a.StickId;
+                    csvDump["Button"] = a.ButtonName;
+                    csvDump["Modifiers"] = a.Modifiers.Count();
+                    csvDump["Filter"] = a.Filter != null;
+                }
+            }
+
+            prevGroup = a.Group;
+            prevStickId = a.StickId;
+            prevButtonName = a.ButtonName;
         }
+    }
 
-        //  Find all bindings not part of a group and add to group 
-        var bindingsWithNoGroup = (from binding in allBindingsWithButtons
-                                   join grp in Groups.AllGroups.Values on binding.Command equals grp.Name
-                                   where !Groups.AllBindings.ContainsKey(binding.BindingId)
-                                   select new {
-                                        grp,
-                                        binding.BindingId,
-                                        binding.Command
-                                  }).Distinct();
-
-//        File.AppendAllText(filePath, "Bindings to add to Groups\n");
-        foreach (var a in bindingsWithNoGroup)
-        {
-//            File.AppendAllText(filePath, a.grp.Name + "," + a.BindingId + "," + a.Command + "\n");
-
-            //  Create New Binding
-            RinceDCSGroupBinding newBinding = new() { Id = a.BindingId, Command = a.Command };
-            Groups.AllBindings[newBinding.Id] = newBinding;
-
-            //  Add to group
-            a.grp.Bindings.Add(newBinding);
-        }
-
+    private void CreateNewGroupAircraft(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    {
         //  Find all Aircraft not part of a group that are a part of a binding in the group and add them to group
         var aircraftWithNoGroup = (from binding in allBindingsWithButtons
-                                  join grp in Groups.AllGroups.Values on binding.Command equals grp.Name
-                                  where !grp.AircraftNames.Contains(binding.AircraftName)
-                                  select new
-                                  {
-                                      grp,
-                                      binding.BindingId,
-                                      binding.Command,
-                                      binding.AircraftName,
-                                      binding.AircraftCommand,
-                                      binding.AircraftCategory
-                                  }).Distinct();
+                                   join grp in Groups.AllGroups.Values on binding.Group equals grp.Name
+                                   where !grp.AircraftNames.Contains(binding.AircraftName)
+                                   select new NewGroupAircraft
+                                   (
+                                       grp,
+                                       binding.BindingId,
+                                       binding.Group,
+                                       binding.AircraftName,
+                                       binding.AircraftCommand,
+                                       binding.AircraftCategory
+                                   )).Distinct();
 
-//        File.AppendAllText(filePath, "Aircraft to add to Groups\n");
+        csvDump.AddRow();
+        csvDump["Group"] = "#### Aircraft to add to Groups ####";
         foreach (var a in aircraftWithNoGroup)
         {
-//            File.AppendAllText(filePath, a.grp.Name + "," + a.BindingId + "," + a.Command + ",,," + a.AircraftName + "," + a.AircraftCommand + "," + a.AircraftCategory + "\n");
+            csvDump.AddRow();
+            csvDump["Group"] = a.Group;
+            csvDump["Binding"] = a.BindingId;
+            csvDump["Aircraft"] = a.AircraftName;
+            csvDump["Aircraft Command"] = a.AircraftCommand;
+            csvDump["Aircraft Category"] = a.AircraftCategory;
 
             //  Create new Group Aircraft
             RinceDCSGroupAircraft grpAircraft = new() { AircraftName = a.AircraftName, BindingId = a.BindingId, Command = a.AircraftCommand, Category = a.AircraftCategory, IsActive = true };
 
             //  Add to group
-            a.grp.AircraftNames.Add(grpAircraft.AircraftName);
-            a.grp.AircraftBindings.Add(grpAircraft);
+            a.Grp.AircraftNames.Add(grpAircraft.AircraftName);
+            a.Grp.AircraftBindings.Add(grpAircraft);
 
             //  Add to AllAircraftNames if not there aleady
-            if(!Groups.AllAircraftNames.ContainsKey(grpAircraft.AircraftName))
+            if (!Groups.AllAircraftNames.Contains(grpAircraft.AircraftName))
             {
-                Groups.AllAircraftNames[grpAircraft.AircraftName] = grpAircraft.AircraftName;
+                Groups.AllAircraftNames.Add(grpAircraft.AircraftName);
             }
         }
-
-        //  Add Buttons to Group Joystick
-        var buttons = from binding in allBindingsWithButtons
-                      from grp in Groups.AllGroups.Values
-                      from grpStick in grp.JoystickBindings
-                      where binding.Command == grp.Name &&
-                            binding.StickId == grpStick.Joystick.JoystickGuid
-                      select new
-                      {
-                          binding.Command,
-                          binding.StickId,
-                          binding.ButtonName,
-                          binding.Modifiers,
-                          binding.AxisFilter,
-                          grpStick
-                      };
-
- //       File.AppendAllText(filePath, "Add buttons to Group Joysticks\n");
-        foreach (var a in buttons)
-        {
-//            File.AppendAllText(filePath, a.Command + ",,,," + a.StickId + ",,," + a.ButtonName + "\n");
-
-            RinceDCSGroupButton grpButton = a.grpStick.Buttons.Find(b => b.ButtonName == a.ButtonName);
-            if(grpButton == null)
-            {
-                //  Create new Group Button
-                grpButton = new() { ButtonName = a.ButtonName };
-                grpButton.Modifiers.AddRange(a.Modifiers);
-                a.grpStick.Buttons.Add(grpButton);
-            }
-
-            if (grpButton.Filter == null && a.AxisFilter != null)
-            {
-                grpButton.Filter = new(a.AxisFilter);
-            }
-        }
-
-        //AddNewBindingsToGroups();
-        //AddNewAircraftToGroups();
-        //AddNewJoysticksToGroups();
-
-        //DeleteOldBindingsFromGroups();
-        //DeleteOldJoysticksFromGroups();
-        //DeleteOldAircraftFromGroups();
-        //DeleteOldBoundAircraft();
-
-        return Groups;
     }
 
-     /// <summary>
-    /// As there are over 1000 bindings in DCS we only want to automaticlly add those bindings that the user
-    /// might be interested in, otherwise the sheer volumne will be unmanageable.
-    /// 
-    /// 1. Find all bindings not a member of a current group.
-    /// 2. That either have a button binding OR have the same command name as an existing group.
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    private void AddNewBindingsToGroups()
+    private void CreateNewGroupBindings(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
     {
-        var bindingsToAdd = from binding in Data.Bindings.Values
-                            from aj in binding.AircraftJoystickBindings.Values
-                            where !Groups.AllBindings.ContainsKey(binding.Key.Id) &&
-                                  (aj.AssignedButtons.Count > 0 || Groups.AllGroups.ContainsKey(binding.Command))
-                            select binding;
+        //  Find all bindings not part of a group and add to group 
+        var bindingsWithNoGroup = (from binding in allBindingsWithButtons
+                                   join grp in Groups.AllGroups.Values on binding.Group equals grp.Name
+                                   //where !Groups.AllBindings.ContainsKey(binding.BindingId)
+                                   where !Groups.AllBindings.Contains(binding.BindingId)
+                                   select new NewGroupBinding
+                                   (
+                                       binding.Group,
+                                       binding.BindingId,
+                                       grp
+                                   )).Distinct();
 
-        foreach (DCSBinding dcsBinding in bindingsToAdd)
+        csvDump.AddRow();
+        csvDump["Group"] = "#### Bindings to add to Groups ####";
+        foreach (var a in bindingsWithNoGroup)
         {
-            //  We may have found multiple copies of the same binding to add, one for each new Aircraft using binding. So skip if already added.
-            if (Groups.AllBindings.ContainsKey(dcsBinding.Key.Id))
-                continue;
+            csvDump.AddRow();
+            csvDump["Group"] = a.Group;
+            csvDump["Binding"] = a.BindingId;
 
-            RinceDCSGroup group;
-            RinceDCSGroupBinding newBinding = new() {  Id = dcsBinding.Key.Id, Command = dcsBinding.Command };
-            Groups.AllBindings[newBinding.Id] = newBinding;
+            //  Create New Binding
+            RinceDCSGroupBinding newBinding = new() { Id = a.BindingId, Command = a.Group };
+            //Groups.AllBindings[newBinding.Id] = newBinding;
+            Groups.AllBindings.Add(newBinding.Id);
+            a.Grp.Bindings.Add(newBinding);
+        }
+    }
 
-            if (Groups.AllGroups.ContainsKey(dcsBinding.Command) && Groups.AllGroups[dcsBinding.Command].IsAxisBinding == dcsBinding.IsAxisBinding)
+    private void CreateNewGroupJoysticks(CsvExport csvDump)
+    {
+        //  Find all Groups that are missing Joysticks add Add sticks to them
+        var groupsMissingSticks = (from stick in Joysticks
+                                   from grp in Groups.AllGroups.Values
+                                   where !grp.JoystickBindings.Any(a => a.Joystick == stick.AttachedJoystick)
+                                   select new NewGroupJoystick
+                                   (
+                                       grp.Name,
+                                       stick.AttachedJoystick.JoystickGuid,
+                                       stick,
+                                       grp
+                                   )).OrderBy(row => row.Group)
+                                     .ThenBy(row => row.JoystickGuid);
+
+        csvDump.AddRow();
+        csvDump["Group"] = "#### Joysticks to add to Groups ####";
+        foreach (var s in groupsMissingSticks)
+        {
+            csvDump.AddRow();
+            csvDump["Group"] = s.Group;
+            csvDump["Stick"] = s.JoystickGuid;
+
+            //  Create New Joystick
+            RinceDCSGroupJoystick newStick = new() { Joystick = s.Stick.AttachedJoystick };
+
+            //  Add to group
+            s.Grp.JoystickBindings.Add(newStick);
+        }
+    }
+
+    private void CreateNewGroups(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    {
+        //  Find all bindings not part of a group and for which no group exists with their Command Name
+        var groupsToCreate = (from bindingWithNoGroup in allBindingsWithButtons
+                              where !Groups.AllGroups.ContainsKey(bindingWithNoGroup.Group) &&
+                                    //!Groups.AllBindings.ContainsKey(bindingWithNoGroup.BindingId)
+                                    !Groups.AllBindings.Contains(bindingWithNoGroup.BindingId)
+                              select new NewGroup
+                              (
+                                  bindingWithNoGroup.Group, 
+                                  bindingWithNoGroup.AircraftCategory, 
+                                  bindingWithNoGroup.IsAxisBinding
+                              )).Distinct()
+                                .OrderBy(row => row.Group)
+                                .ThenByDescending(row => row.Category);
+
+        csvDump.AddRow();
+        csvDump["Group"] = "#### Groups To Create ####";
+        string prevGroup = "";
+        foreach (var a in groupsToCreate)
+        {
+            if(a.Group != prevGroup)
             {
-                group = Groups.AllGroups[dcsBinding.Command];
-            }
-            else
-            {
-                group = new RinceDCSGroup() { Name = dcsBinding.Command, IsAxisBinding = dcsBinding.IsAxisBinding };
-                Groups.AllGroups[dcsBinding.Command] = group;
+                csvDump.AddRow();
+                csvDump["Group"] = a.Group;
+                csvDump["Category"] = a.Category;
+                csvDump["Is Axis"] = a.IsAxisBinding;
+
+                RinceDCSGroup group = new RinceDCSGroup() { Name = a.Group, Category = a.Category, IsAxisBinding = a.IsAxisBinding };
+                Groups.AllGroups[a.Group] = group;
                 Groups.Groups.Add(group);
             }
-            group.Bindings.Add(newBinding);
+
+            prevGroup = a.Group;
         }
     }
 
-    private void AddNewJoysticksToGroups()
+    private IOrderedEnumerable<BindingWithButtons> GetAllBindingsWithButtons(CsvExport csvDump)
     {
-        foreach (RinceDCSJoystick stick in Joysticks)
+        //  Find all bindings in game that have a button assigned to them
+        var allBindingsWithButtons = (from binding in Data.Bindings.Values
+                                      from aircraftStickBinding in binding.AircraftJoystickBindings.Values
+                                      from button in aircraftStickBinding.AssignedButtons.Values
+                                      from aircraft in binding.AircraftWithBinding.Values
+                                      where aircraftStickBinding.AircraftKey == aircraft.Key
+                                      select new BindingWithButtons(
+                                        binding.Key.Id,
+                                        binding.Command,
+                                        binding.IsAxisBinding,
+                                        aircraftStickBinding.JoystickKey.Id,
+                                        aircraftStickBinding.AircraftKey.Name,
+                                        aircraft.Command,
+                                        aircraft.Category,
+                                        button.Name,
+                                        button.Modifiers,
+                                        button.AxisFilter
+                                      )).OrderBy(row => row.BindingId)
+                                        .ThenBy(row => row.Group)
+                                        .ThenByDescending(row => row.AircraftCategory)
+                                        .ThenBy(row => row.StickId)
+                                        .ThenBy(row => row.AircraftName)
+                                        .ThenBy(row => row.ButtonName)
+                                        .ThenBy(row => row.Filter);
+
+        csvDump.AddRow();
+        csvDump["Group"] = "#### All Bindings with Buttons ####";
+        foreach (var b in allBindingsWithButtons)
         {
-            var query = from grp in Groups.Groups
-                        where stick != (from stk in grp.JoystickBindings where stk.Joystick == stick.AttachedJoystick select stk.Joystick)
-                        select grp;
-            foreach(RinceDCSGroup group in query)
-            {
-                RinceDCSGroupJoystick bindingStick = new() { Joystick = stick.AttachedJoystick };
-                group.JoystickBindings.Add(bindingStick);
-                AddButtonsToNewJoystick(group.Bindings, bindingStick);
-            }
+            csvDump.AddRow();
+            csvDump["Group"] = b.Group;
+            csvDump["Binding"] = b.BindingId;
+            csvDump["Is Axis"] = b.IsAxisBinding;
+            csvDump["Stick"] = b.StickId;
+            csvDump["Aircraft"] = b.AircraftName;
+            csvDump["Aircraft Command"] = b.AircraftCommand;
+            csvDump["Aircraft Category"] = b.AircraftCategory;
+            csvDump["Button"] = b.ButtonName;
+            csvDump["Modifiers"] = b.Modifiers.Count();
+            csvDump["Filter"] = b.Filter != null;
         }
+
+        return allBindingsWithButtons;
     }
 
-    private void AddButtonsToNewJoystick(List<RinceDCSGroupBinding> bindings, RinceDCSGroupJoystick bindingStick)
+    private void BuildCache()
     {
-        //var newButtons = from binding in bindings
-        //                 from dcsBinding in Data.Bindings.Values
-        //                 from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
-        //                 from button in dcsAircraftJoystickBinding.AssignedButtons.Values
-        //                 where binding.Id == dcsBinding.Key.Id &&
-        //                       dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid
-        //                 select new
-        //                 {
-        //                     AircraftName = dcsAircraftJoystickBinding.AircraftKey.Name,
-        //                     ButtonName = button.Key.Name,
-        //                 };
+        Groups.AllGroups.Clear();
+        Groups.AllBindings.Clear();
+        Groups.AllAircraftNames.Clear();
 
-        //  Find all buttons for each aircraft for current group bindings and joystick
-        var newAircraftButtons = from binding in bindings
-                                 from dcsBinding in Data.Bindings.Values
-                                 from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
-                                 from button in dcsAircraftJoystickBinding.AssignedButtons.Values
-                                 where binding.Id == dcsBinding.Key.Id &&
-                                       dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid
-                                 select new { dcsAircraftJoystickBinding, button };
-
-        foreach(var aircraftButton in newAircraftButtons)
+        foreach (RinceDCSGroup grp in Groups.Groups)
         {
-            //  Find all groups this aircraft belongs to
-            var aircraftGroups = from aircraftGroup in Groups.AllGroups.Values
-                                 where aircraftGroup.AircraftNames.Contains(aircraftButton.dcsAircraftJoystickBinding.AircraftKey.Name)
-                                 select aircraftGroup;
-
-            if (aircraftGroups.Count() > 0)
-            {
-                //  Check to see if this button is already defined in one of these groups
-                var buttonGroups = from aGroup in aircraftGroups
-                                   from joystickBinding in aGroup.JoystickBindings
-                                   from button in joystickBinding.Buttons
-                                   where joystickBinding.Joystick.JoystickGuid == bindingStick.Joystick.JoystickGuid &&
-                                         button.ButtonName == aircraftButton.button.Name
-                                   select new { aGroup, joystickBinding, button };
-
-                if(buttonGroups.Count() == 0)
-                {
-                    //  Find the first DCSDataBinding that has buttons for one of the groups bindings that is also for this joystick
-                    Tuple<RinceDCSGroupBinding, DCSAircraftJoystickBinding> newBinding =
-                        (from binding in bindings
-                         from dcsBinding in Data.Bindings.Values
-                         from dcsAircraftJoystickBinding in dcsBinding.AircraftJoystickBindings.Values
-                         where binding.Id == dcsBinding.Key.Id &&
-                               dcsAircraftJoystickBinding.JoystickKey.Id == bindingStick.Joystick.JoystickGuid &&
-                               dcsAircraftJoystickBinding.AssignedButtons.Count > 0
-                         select Tuple.Create(binding, dcsAircraftJoystickBinding)).FirstOrDefault();
-
-                    if (newBinding != null)
-                    {
-                        foreach (DCSButton button in newBinding.Item2.AssignedButtons.Values)
-                        {
-                            RinceDCSGroupButton newButton = new()
-                            {
-                                ButtonName = button.Name,
-                                Modifiers = button.Modifiers.ToList()
-                            };
-                            if(button.AxisFilter != null)
-                            {
-                                newButton.Filter = new(button.AxisFilter);
-                            }
-                            bindingStick.Buttons.Add(newButton);
-                        }
-                    }
-                }
-            }
+            Groups.AllGroups[grp.Name] = grp;
         }
-
-     }
-
-    private void AddNewAircraftToGroups()
-    {
-        var query = from grp in Groups.Groups
-                    from grpBinding in grp.Bindings
-                    from binding in Data.Bindings.Values
-                    from aircraft in binding.AircraftWithBinding.Values
-                    where binding.Key.Id == grpBinding.Id &&
-                          !grp.AircraftNames.Contains(aircraft.Key.Name)
-                    select Tuple.Create(grp, grpBinding, aircraft);
-
-        foreach(var newGroupAircraft in query)
+        var bindings = (from grp in Groups.Groups
+                        from binding in grp.Bindings
+                        select binding.Id).Distinct();
+        foreach (string bindingId in bindings)
         {
-            RinceDCSGroup group = newGroupAircraft.Item1;
-            RinceDCSGroupBinding grpBinding = newGroupAircraft.Item2;
-            DCSAircraftBinding dCSAircraftBinding = newGroupAircraft.Item3;
-            RinceDCSGroupAircraft boundAircraft = new()
-            {
-                AircraftName = dCSAircraftBinding.Key.Name,
-                BindingId = grpBinding.Id,
-                Category = dCSAircraftBinding.Category,
-                Command = dCSAircraftBinding.Command,
-                IsActive = true
-            };
-
-            group.AircraftNames.Add(dCSAircraftBinding.Key.Name);
-            group.AircraftBindings.Add(boundAircraft);
-            if(!Groups.AllAircraftNames.ContainsKey(dCSAircraftBinding.Key.Name))
-            {
-                Groups.AllAircraftNames[dCSAircraftBinding.Key.Name] = dCSAircraftBinding.Key.Name;
-            }
+            Groups.AllBindings.Add(bindingId);
+        }
+        var aircraft = (from grp in Groups.Groups
+                        from craft in grp.AircraftNames
+                        select craft).Distinct();
+        foreach (string craft in aircraft)
+        {
+            Groups.AllAircraftNames.Add(craft);
         }
     }
-
-    private void DeleteOldBindingsFromGroups()
-    {
-//        throw new NotImplementedException();
-    }
-
-    private void DeleteOldJoysticksFromGroups()
-    {
-//        throw new NotImplementedException();
-    }
-
-    private void DeleteOldAircraftFromGroups()
-    {
-//        throw new NotImplementedException();
-    }
-
-    private void DeleteOldBoundAircraft()
-    {
-//        throw new NotImplementedException();
-    }
-
-    //private Dictionary<AircraftName, AircraftName> FindAllAircraftForGroup(BindingGroup group)
-    //{
-    //    //  Find all Aircraft that have bindings for any binding in this group
-    //    Dictionary<AircraftName, AircraftName> aircraft = new();
-
-    //    foreach(Binding binding in group.Bindings.Values)
-    //    {
-    //        DCSBindingKey bindKey = new(binding.Id);
-    //        foreach (DCSAircraftKey aircraftKey in Data.Bindings[bindKey].AircraftWithBinding.Keys)
-    //        {
-    //            if (!aircraft.ContainsKey(aircraftKey.Name))
-    //            {
-    //                aircraft[aircraftKey.Name] = aircraftKey.Name;
-    //            }
-    //        }
-    //    }
-    //    return aircraft;
-    //}
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.Utilities;
 
-public static class Extensions
+public static class ObservableCollectionExtensions
 {
     public static void Sort<T>(this ObservableCollection<T> collection) where T : IComparable
     {

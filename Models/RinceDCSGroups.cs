@@ -19,17 +19,19 @@ public class RinceDCSGroups
     public Dictionary<string, RinceDCSGroup> AllGroups { get; set; } = new();
 
     [property: JsonIgnore] 
-    public Dictionary<string, RinceDCSGroupBinding> AllBindings { get; set; } = new();
+    //public Dictionary<string, RinceDCSGroupBinding> AllBindings { get; set; } = new();
+    public HashSet<string> AllBindings { get; set; } = new();
 
     [property: JsonIgnore]
-    public Dictionary<string, string> AllAircraftNames { get; set; } = new();
+    //public Dictionary<string, string> AllAircraftNames { get; set; } = new();
+    public HashSet<string> AllAircraftNames { get; set; } = new();
 }
 
 public class RinceDCSGroup
 {
     public string Name { get; set; }
+    public string Category {  get; set; }
     public bool IsAxisBinding { get; set; }
-    public bool IsKeyBinding { get { return !IsAxisBinding; } }
     public List<string> AircraftNames { get; set; } = new();
     public List<RinceDCSGroupBinding> Bindings { get; set; } = new();
     public List<RinceDCSGroupJoystick> JoystickBindings { get; set; } = new();

@@ -36,7 +36,6 @@ public class DCSBinding
     public DCSBindingKey Key { get; set; }
     public string Command { get; set; }
     public bool IsAxisBinding { get; set; }
-    public bool IsKeyBinding { get { return !IsAxisBinding; } }
     public Dictionary<DCSAircraftKey, DCSAircraftBinding> AircraftWithBinding { get; set; } = new();
     public Dictionary<DCSJoystickKey, DCSJoystick> JoysticksWithBinding { get; set; } = new();
     public Dictionary<DCSAircraftJoystickKey, DCSAircraftJoystickBinding> AircraftJoystickBindings { get; set; } = new();

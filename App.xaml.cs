@@ -57,7 +57,6 @@ namespace RinceDCS
                 new ServiceCollection()
                     .AddSingleton<IDialogService>(new DialogService(m_window))
                     .AddSingleton<IJoystickService>(new JoystickService())
-                    .AddSingleton<ISettingsService>(new SettingsService())
                     .AddSingleton<IFileService>(new FileService())
                     .AddSingleton<IDCSService>(new DCSService())
                     .AddSingleton<ScaleVMHelper>(new ScaleVMHelper())

@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using MoonSharp.Interpreter;
 using NLog;
 using RinceDCS.Models;
+using RinceDCS.Properties;
 using RinceDCS.ServiceModels;
 using RinceDCS.Utilities;
 using SharpDX.DirectInput;
@@ -52,7 +53,7 @@ public class DCSService : IDCSService
 
     public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
     {
-        string savedGamesFolder = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.SavedGamesPath);
+        string savedGamesFolder = Ioc.Default.GetRequiredService<IFileService>().GetSavedGamesFolderPath();
         string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
         string variantName = null;
 
@@ -78,7 +79,7 @@ public class DCSService : IDCSService
     public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data)
     {
         //  For each Aircraft
-        foreach(string aircraftName in bindingGroups.AllAircraftNames.Values)
+        foreach(string aircraftName in bindingGroups.AllAircraftNames)
         {
             //  For each Joystick
             foreach(var stick in data.Joysticks.Values)

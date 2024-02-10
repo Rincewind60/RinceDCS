@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Models;
+using RinceDCS.Properties;
 using RinceDCS.ServiceModels;
+using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -30,7 +33,8 @@ public class FileService : IFileService
 
             stream.Dispose();
 
-            Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, path);
+            Settings.Default.LastSavePath = path;
+            Settings.Default.Save();
         }
 
         return rinceDCSFile;
@@ -38,7 +42,7 @@ public class FileService : IFileService
 
     public async Task SaveGame(RinceDCSFile rinceDCSFile)
     {
-        string savePath = Ioc.Default.GetRequiredService<ISettingsService>().GetSetting(RinceDCSSettings.LastSavePath);
+        string savePath = Settings.Default.LastSavePath;
         if(savePath == null)
         {
             await SaveAsGame(rinceDCSFile);
@@ -89,10 +93,29 @@ public class FileService : IFileService
         return data;
     }
 
+    public string GetSavedGamesFolderPath()
+    {
+        IntPtr pathPtr = IntPtr.Zero;
+        Guid guid = Settings.Default.KnownFolderTypeSavedGames;
+        try
+        {
+            SHGetKnownFolderPath(ref guid, 0, IntPtr.Zero, out pathPtr);
+            return Marshal.PtrToStringUni(pathPtr);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(pathPtr);
+        }
+    }
+
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
+
     private async Task SaveGameToPath(RinceDCSFile rinceDCSFile, string savePath)
     {
         //  Update Save Path setting so we remember where to save to/open from
-        Ioc.Default.GetRequiredService<ISettingsService>().SetSetting(RinceDCSSettings.LastSavePath, savePath);
+        Settings.Default.LastSavePath = savePath;
+        Settings.Default.Save();
 
         using (FileStream stream = File.Create(savePath))
         {
