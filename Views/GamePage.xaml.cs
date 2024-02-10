@@ -131,9 +131,12 @@ namespace RinceDCS.Views
 
         private void NavigateToViewPage()
         {
-            string instanceFolderName = ViewModel.CurrentInstance.SavedGameFolderPath.Split("\\").Last();
             DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
-                Tuple.Create(ViewModel.CurrentInstance.Name, instanceFolderName, ViewModel.CurrentGame, ViewModel.CurrentInstanceBindingsData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentInstance.Name,
+                             ViewModel.CurrentInstance.SavedGameFolderPath,
+                             ViewModel.CurrentGame,
+                             ViewModel.CurrentInstanceBindingsData,
+                             ViewModel.CurrentAircraft));
         }
     }
 }
