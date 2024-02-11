@@ -28,21 +28,21 @@ public class GroupsVMHelper
         (
         string BindingId,
         string Group,
-        bool IsAxisBinding,
+        bool IsAxis,
         Guid StickId,
         string AircraftName,
         string AircraftCommand,
         string AircraftCategory,
         string ButtonName,
         List<string> Modifiers,
-        AxisFilter Filter
+        AxisFilter AxisFilter
         );
 
     private record NewGroup
         (
         string Group,
         string Category,
-        bool IsAxisBinding
+        bool IsAxis
         );
 
     private record NewGroupJoystick
@@ -76,7 +76,7 @@ public class GroupsVMHelper
         Guid StickId,
         string ButtonName,
         List<string> Modifiers,
-        AxisFilter Filter,
+        AxisFilter AxisFilter,
         RinceDCSGroupJoystick GrpStick
         );
 
@@ -115,7 +115,7 @@ public class GroupsVMHelper
                            binding.StickId,
                            binding.ButtonName,
                            binding.Modifiers,
-                           binding.Filter,
+                           binding.AxisFilter,
                            grpStick
                        )).OrderBy(row => row.Group)
                          .ThenBy(row => row.StickId)
@@ -142,9 +142,9 @@ public class GroupsVMHelper
                     updated = true;
                 }
 
-                if (grpButton.Filter == null && a.Filter != null)
+                if (grpButton.AxisFilter == null && a.AxisFilter != null)
                 {
-                    grpButton.Filter = new(a.Filter);
+                    grpButton.AxisFilter = new(a.AxisFilter);
                     updated = true;
                 }
 
@@ -155,7 +155,7 @@ public class GroupsVMHelper
                     csvDump["Stick"] = a.StickId;
                     csvDump["Button"] = a.ButtonName;
                     csvDump["Modifiers"] = a.Modifiers.Count();
-                    csvDump["Filter"] = a.Filter != null;
+                    csvDump["Filter"] = a.AxisFilter != null;
                 }
             }
 
@@ -279,7 +279,7 @@ public class GroupsVMHelper
                               (
                                   bindingWithNoGroup.Group, 
                                   bindingWithNoGroup.AircraftCategory, 
-                                  bindingWithNoGroup.IsAxisBinding
+                                  bindingWithNoGroup.IsAxis
                               )).Distinct()
                                 .OrderBy(row => row.Group)
                                 .ThenByDescending(row => row.Category);
@@ -294,9 +294,9 @@ public class GroupsVMHelper
                 csvDump.AddRow();
                 csvDump["Group"] = a.Group;
                 csvDump["Category"] = a.Category;
-                csvDump["Is Axis"] = a.IsAxisBinding;
+                csvDump["Is Axis"] = a.IsAxis;
 
-                RinceDCSGroup group = new RinceDCSGroup() { Name = a.Group, Category = a.Category, IsAxisBinding = a.IsAxisBinding };
+                RinceDCSGroup group = new RinceDCSGroup() { Name = a.Group, Category = a.Category, IsAxis = a.IsAxis };
                 Groups.AllGroups[a.Group] = group;
                 Groups.Groups.Add(group);
             }
@@ -316,7 +316,7 @@ public class GroupsVMHelper
                                       select new BindingWithButtons(
                                         binding.Key.Id,
                                         binding.Command,
-                                        binding.IsAxisBinding,
+                                        binding.IsAxis,
                                         aircraftStickBinding.JoystickKey.Id,
                                         aircraftStickBinding.AircraftKey.Name,
                                         aircraft.Command,
@@ -330,7 +330,7 @@ public class GroupsVMHelper
                                         .ThenBy(row => row.StickId)
                                         .ThenBy(row => row.AircraftName)
                                         .ThenBy(row => row.ButtonName)
-                                        .ThenBy(row => row.Filter);
+                                        .ThenBy(row => row.AxisFilter);
 
         csvDump.AddRow();
         csvDump["Group"] = "#### All Bindings with Buttons ####";
@@ -339,14 +339,14 @@ public class GroupsVMHelper
             csvDump.AddRow();
             csvDump["Group"] = b.Group;
             csvDump["Binding"] = b.BindingId;
-            csvDump["Is Axis"] = b.IsAxisBinding;
+            csvDump["Is Axis"] = b.IsAxis;
             csvDump["Stick"] = b.StickId;
             csvDump["Aircraft"] = b.AircraftName;
             csvDump["Aircraft Command"] = b.AircraftCommand;
             csvDump["Aircraft Category"] = b.AircraftCategory;
             csvDump["Button"] = b.ButtonName;
             csvDump["Modifiers"] = b.Modifiers.Count();
-            csvDump["Filter"] = b.Filter != null;
+            csvDump["Filter"] = b.AxisFilter != null;
         }
 
         return allBindingsWithButtons;

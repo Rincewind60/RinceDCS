@@ -14,7 +14,7 @@ public class AssignedButton
     public RinceDCSJoystickButton JoystickButton { get; }
     public List<string> Modifiers { get; } = new();
     public List<AssignedCommand> Commands { get; } = new();
-    public AxisFilter Filter { get; set; }
+    public AxisFilter AxisFilter { get; set; }
 
     public string Command
     {

@@ -59,7 +59,7 @@ public class JoystickVMHelper
             {
                 DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
 
-                BuildAssignedButtons(binding.IsAxisBinding, stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
+                BuildAssignedButtons(binding.IsAxis, stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
             }
         }
 
@@ -84,7 +84,7 @@ public class JoystickVMHelper
     }
 
     private void BuildAssignedButtons(
-        bool isAxisBinding,
+        bool IsAxis,
         RinceDCSJoystick stick,
         List<AssignedButton> assignedButtons,
         Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout,
@@ -102,18 +102,18 @@ public class JoystickVMHelper
             {
                 AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
                 vwButton.Commands.Add(new(bindingId, commandName, categoryName));
-                AddButtonConfiguration(isAxisBinding, button, vwButton);
+                AddButtonConfiguration(IsAxis, button, vwButton);
             }
         }
     }
 
-    private void AddButtonConfiguration(bool isAxisBinding, DCSButton button, AssignedButton vwButton)
+    private void AddButtonConfiguration(bool IsAxis, DCSButton button, AssignedButton vwButton)
     {
-        vwButton.IsAxisButton = isAxisBinding;
+        vwButton.IsAxisButton = IsAxis;
         vwButton.Modifiers.AddRange(button.Modifiers);
         if (button.AxisFilter != null)
         {
-            vwButton.Filter = new(button.AxisFilter);
+            vwButton.AxisFilter = new(button.AxisFilter);
         }
     }
 

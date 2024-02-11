@@ -95,7 +95,7 @@ public class DCSService : IDCSService
                                                           {
                                                               AircraftName = boundAircraft.AircraftName,
                                                               Joystick = joystick.Joystick,
-                                                              IsAxisBinding = bindingGroup.IsAxisBinding,
+                                                              IsAxis = bindingGroup.IsAxis,
                                                               BindingId = boundAircraft.BindingId,
                                                               Command = boundAircraft.Command,
                                                               AddButton = addButton
@@ -115,16 +115,16 @@ public class DCSService : IDCSService
 
                 List<BindingAddsRemoves> bindingsWithRemoves = (from dcsBinding in data.Bindings.Values
                                                                 from ajb in dcsBinding.AircraftJoystickBindings.Values
-                                                                from removeButton in (new List<DCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
+                                                                from removeButton in (new List<DCSButton>(ajb.ButtonChanges.RemovedAxisButtons).Concat(ajb.ButtonChanges.RemovedKeyButtons))
                                                                 where ajb.AircraftKey.Name == aircraftName &&
                                                                       ajb.JoystickKey == stick.Key &&
-                                                                      (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
-                                                                       ajb.SavedGamesButtonChanges.RemovedKeyButtons.Count() > 0)
+                                                                      (ajb.ButtonChanges.RemovedAxisButtons.Count() > 0 ||
+                                                                       ajb.ButtonChanges.RemovedKeyButtons.Count() > 0)
                                                                 select new BindingAddsRemoves()
                                                                 {
                                                                     AircraftName = aircraftName,
                                                                     Joystick = stick.Joystick,
-                                                                    IsAxisBinding = dcsBinding.IsAxisBinding,
+                                                                    IsAxis = dcsBinding.IsAxis,
                                                                     BindingId = dcsBinding.Key.Id,
                                                                     Command = dcsBinding.Command,
                                                                     RemoveButton = removeButton
@@ -133,16 +133,16 @@ public class DCSService : IDCSService
 
                 List < BindingAddsRemoves > bindings = (from dcsBinding in data.Bindings.Values
                                                         from ajb in dcsBinding.AircraftJoystickBindings.Values
-                                                        from removeButton in (new List<DCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
+                                                        from removeButton in (new List<DCSButton>(ajb.ButtonChanges.RemovedAxisButtons).Concat(ajb.ButtonChanges.RemovedKeyButtons))
                                                         where ajb.AircraftKey.Name == aircraftName &&
                                                                 ajb.JoystickKey == stick.Key &&
-                                                                (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
-                                                                ajb.SavedGamesButtonChanges.RemovedKeyButtons.Count() > 0)
+                                                                (ajb.ButtonChanges.RemovedAxisButtons.Count() > 0 ||
+                                                                ajb.ButtonChanges.RemovedKeyButtons.Count() > 0)
                                                         select new BindingAddsRemoves()
                                                         {
                                                             AircraftName = aircraftName,
                                                             Joystick = stick.Joystick,
-                                                            IsAxisBinding = dcsBinding.IsAxisBinding,
+                                                            IsAxis = dcsBinding.IsAxis,
                                                             BindingId = dcsBinding.Key.Id,
                                                             Command = dcsBinding.Command,
                                                             RemoveButton = removeButton
@@ -155,7 +155,7 @@ public class DCSService : IDCSService
                 //                                     from addButton in joystick.Buttons
                 //                                     from dcsBinding in data.Bindings.Values
                 //                                     from ajb in dcsBinding.AircraftJoystickBindings.Values
-                //                                     from removeButton in (new List<IDCSButton>(ajb.SavedGamesButtonChanges.RemovedAxisButtons).Concat(ajb.SavedGamesButtonChanges.RemovedKeyButtons))
+                //                                     from removeButton in (new List<IDCSButton>(ajb.ButtonChanges.RemovedAxisButtons).Concat(ajb.ButtonChanges.RemovedKeyButtons))
                 //                                     where joystick.Buttons.Count() > 0 &&
                 //                                           joystick.Joystick == stick.Joystick &&
                 //                                           boundAircraft.AircraftName == aircraftName &&
@@ -163,13 +163,13 @@ public class DCSService : IDCSService
                 //                                           dcsBinding.Key.Id == boundAircraft.BindingId &&
                 //                                           ajb.AircraftKey.Name == aircraftName &&
                 //                                           ajb.JoystickKey == stick.Key &&
-                //                                           (ajb.SavedGamesButtonChanges.RemovedAxisButtons.Count() > 0 ||
-                //                                            ajb.SavedGamesButtonChanges.RemovedKeyButtons.Count() > 0)
+                //                                           (ajb.ButtonChanges.RemovedAxisButtons.Count() > 0 ||
+                //                                            ajb.ButtonChanges.RemovedKeyButtons.Count() > 0)
                 //                                     select new BindingAddsRemoves()
                 //                                     {
                 //                                         AircraftName = aircraftName,
                 //                                         Joystick = stick.Joystick,
-                //                                         IsAxisBinding = bindingGroup.IsAxisBinding,
+                //                                         IsAxis = bindingGroup.IsAxis,
                 //                                         BindingId = boundAircraft.BindingId,
                 //                                         CommandName = boundAircraft.CommandName,
                 //                                         AddButton = addButton,
@@ -179,7 +179,7 @@ public class DCSService : IDCSService
                 foreach (BindingAddsRemoves record in bindingsWithAdds)
                 {
                     string modifiers = (((RinceDCSGroupButton)record.AddButton).Modifiers.Count() > 0).ToString();
-                    RinceLogger.Log.Info(record.AircraftName + ", " + record.Joystick.Name + ", " + record.IsAxisBinding + ", " + record.BindingId + ", " + record.Command + ", " + record.AddButton.ButtonName + ", " + modifiers);
+                    RinceLogger.Log.Info(record.AircraftName + ", " + record.Joystick.Name + ", " + record.IsAxis + ", " + record.BindingId + ", " + record.Command + ", " + record.AddButton.ButtonName + ", " + modifiers);
                 }
 
                 BuildLuaFile(savedGameFolderPath, data, bindingsWithAdds);
@@ -202,7 +202,7 @@ public class DCSService : IDCSService
         //  Add bindings to be added to Aircraft
         foreach (var binding in bindingsWithAdds)
         {
-            if (binding.IsAxisBinding)
+            if (binding.IsAxis)
             {
                 luaBuilder.AddGroupAxisButtons(binding);
             }
@@ -281,7 +281,7 @@ public class DCSService : IDCSService
                 {
                     Key = new(id),
                     Command = name,
-                    IsAxisBinding = id.StartsWith("a")
+                    IsAxis = id.StartsWith("a")
                 };
                 data.Bindings[bindKey] = binding;
             }
@@ -351,15 +351,15 @@ public class DCSService : IDCSService
                 string sectionName = bindingsTable.Keys.ElementAt(j).String;
                 if(sectionName == "added")
                 {
-                    ReadAddedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.SavedGamesButtonChanges);
+                    ReadAddedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.ButtonChanges);
                 }
                 else if (sectionName == "changed")
                 {
-                    ReadChangedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.SavedGamesButtonChanges);
+                    ReadChangedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.ButtonChanges);
                 }
                 else if (sectionName == "removed")
                 {
-                    ReadRemovedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.SavedGamesButtonChanges);
+                    ReadRemovedAxisLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.ButtonChanges);
                 }
                 else if (sectionName == "name")
                 {
@@ -510,11 +510,11 @@ public class DCSService : IDCSService
                 string sectionName = bindingsTable.Keys.ElementAt(j).String;
                 if (sectionName == "added")
                 {
-                    ReadAddedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.SavedGamesButtonChanges);
+                    ReadAddedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.ButtonChanges);
                 }
                 else if (sectionName == "removed")
                 {
-                    ReadRemovedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.SavedGamesButtonChanges);
+                    ReadRemovedKeyLua(bindingData, bindingsTable.Values.ElementAt(j).Table, bindingData.ButtonChanges);
                 }
                 else if (sectionName == "name")
                 {
@@ -602,7 +602,7 @@ public class BindingAddsRemoves
 {
     public string AircraftName;
     public AttachedJoystick Joystick;
-    public bool IsAxisBinding;
+    public bool IsAxis;
     public string BindingId;
     public string Command;
     public RinceDCSGroupButton AddButton;

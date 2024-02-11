@@ -19,11 +19,9 @@ public class RinceDCSGroups
     public Dictionary<string, RinceDCSGroup> AllGroups { get; set; } = new();
 
     [property: JsonIgnore] 
-    //public Dictionary<string, RinceDCSGroupBinding> AllBindings { get; set; } = new();
     public HashSet<string> AllBindings { get; set; } = new();
 
     [property: JsonIgnore]
-    //public Dictionary<string, string> AllAircraftNames { get; set; } = new();
     public HashSet<string> AllAircraftNames { get; set; } = new();
 }
 
@@ -31,7 +29,7 @@ public class RinceDCSGroup
 {
     public string Name { get; set; }
     public string Category {  get; set; }
-    public bool IsAxisBinding { get; set; }
+    public bool IsAxis { get; set; }
     public List<string> AircraftNames { get; set; } = new();
     public List<RinceDCSGroupBinding> Bindings { get; set; } = new();
     public List<RinceDCSGroupJoystick> JoystickBindings { get; set; } = new();
@@ -54,7 +52,7 @@ public class RinceDCSGroupButton
 {
     public string ButtonName { get; set; }
     public List<string> Modifiers { get; set; } = new();
-    public AxisFilter Filter { get; set; }
+    public AxisFilter AxisFilter { get; set; }
 }
 
 public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceDCSGroupAircraft>
