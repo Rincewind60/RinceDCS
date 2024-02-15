@@ -3,7 +3,7 @@
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using RinceDCS.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -69,7 +69,7 @@ namespace RinceDCS.Views
                 Path = new PropertyPath("IsValid"),
                 Mode = BindingMode.OneWay
             };
-            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Manage Game Instances", page, "Save", SaveButtonBinding, null, "Cancel");
+            ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Manage Game Instances", page, "Save", SaveButtonBinding, null, "Cancel");
 
             if (result == ContentDialogResult.Primary)
             {
@@ -80,7 +80,7 @@ namespace RinceDCS.Views
         private async void About_Click(object sender, RoutedEventArgs e)
         {
             AboutPage about = new();
-            await Ioc.Default.GetRequiredService<IDialogService>().OpenInfoPageDialog("About", about);
+            await DialogService.Default.OpenInfoPageDialog("About", about);
         }
 
         private void InstancesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

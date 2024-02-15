@@ -1,27 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using HtmlAgilityPack;
-using Microsoft.UI.Xaml.Controls;
 using MoonSharp.Interpreter;
-using NLog;
 using RinceDCS.Models;
-using RinceDCS.Properties;
-using RinceDCS.ServiceModels;
 using RinceDCS.Utilities;
-using SharpDX.DirectInput;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Windows.Devices.Geolocation;
-using Windows.Media.AppBroadcasting;
 
 namespace RinceDCS.Services;
 
-public class DCSService : IDCSService
+public class DCSService
 {
+    private static DCSService defaultInstance = new DCSService();
+
+    public static DCSService Default
+    {
+        get { return defaultInstance; }
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -54,7 +54,7 @@ public class DCSService : IDCSService
 
     public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
     {
-        string savedGamesFolder = Ioc.Default.GetRequiredService<IFileService>().GetSavedGamesFolderPath();
+        string savedGamesFolder = FileService.Default.GetSavedGamesFolderPath();
         string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
         string variantName = null;
 

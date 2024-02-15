@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml.Media.Imaging;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -35,7 +35,7 @@ public class JoystickUtil
 
     public static async void ExportButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
     {
-        string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("JoystickButtons.png", "PNG", ".png");
+        string savePath = await DialogService.Default.OpenPickSaveFile("JoystickButtons.png", "PNG", ".png");
         if (string.IsNullOrWhiteSpace(savePath)) { return; }
 
         Image image = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
@@ -47,7 +47,7 @@ public class JoystickUtil
         using (PrintDocument printDoc = new())
         {
             PrintPage pp = new(printDoc);
-            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Print Joystick", pp, "Print", null, null, "Cancel");
+            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Print Joystick", pp, "Print", null, null, "Cancel");
 
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
@@ -85,7 +85,7 @@ public class JoystickUtil
         using (PrintDocument printDoc = new())
         {
             PrintPage pp = new(printDoc);
-            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog("Print Assigned Buttons", pp, "Print", null, null, "Cancel");
+            Microsoft.UI.Xaml.Controls.ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Print Assigned Buttons", pp, "Print", null, null, "Cancel");
 
             if(result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {

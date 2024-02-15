@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using RinceDCS.ViewModels.Messages;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -88,7 +88,7 @@ public partial class GameInstancesViewModel : ObservableObject
             instance.Name = gameFolderPath.Split('\\').Last();
         }
 
-        instance.SavedGameFolderPath = Ioc.Default.GetRequiredService<IDCSService>().GetSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
+        instance.SavedGameFolderPath = DCSService.Default.GetSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
 
         ValidateInstances();
     }

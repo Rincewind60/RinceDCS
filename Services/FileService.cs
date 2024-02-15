@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Models;
 using RinceDCS.Properties;
-using RinceDCS.ServiceModels;
 using System;
 using System.Drawing;
 using System.IO;
@@ -11,8 +10,15 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.Services;
 
-public class FileService : IFileService
+public class FileService
 {
+    private static FileService defaultInstance = new FileService();
+
+    public static FileService Default
+    {
+        get { return defaultInstance; }
+    }
+
     public async Task<RinceDCSFile> OpenGame(string path)
     {
         RinceDCSFile rinceDCSFile = null;
@@ -55,10 +61,10 @@ public class FileService : IFileService
 
     public async Task SaveAsGame(RinceDCSFile rinceDCSFile)
     {
-        string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("RinceDCS.json","DCS Tool",".json");
+        string savePath = await DialogService.Default.OpenPickSaveFile("RinceDCS.json","DCS Tool",".json");
         if (savePath == null)
         {
-            await Ioc.Default.GetRequiredService<IDialogService>().OpenInfoDialog("Save Error", "No save file selected.");
+            await DialogService.Default.OpenInfoDialog("Save Error", "No save file selected.");
         }
         else
         {

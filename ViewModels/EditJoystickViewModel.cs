@@ -1,19 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using RinceDCS.ViewModels.Helpers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
@@ -73,7 +66,7 @@ public partial class EditJoystickViewModel : ObservableObject
 
     public void UpdateImage(string path)
     {
-        Stick.Image = Ioc.Default.GetRequiredService<IFileService>().ReadImageFile(path);
+        Stick.Image = FileService.Default.ReadImageFile(path);
     }
 
     partial void OnCurrentButtonChanged(RinceDCSJoystickButton oldValue, RinceDCSJoystickButton newValue)

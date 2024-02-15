@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using RinceDCS.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,15 +9,23 @@ using Windows.Storage.Pickers;
 
 namespace RinceDCS.Services;
 
-public class DialogService : IDialogService
+public class DialogService
 {
+    private static DialogService defaultInstance;
+
     private readonly Window AppWindow;
     private readonly FrameworkElement Parent;
+
+    public static DialogService Default
+    {
+        get { return defaultInstance; }
+    }
 
     public DialogService(Window appWindow)
     {
         AppWindow = appWindow;
         Parent =appWindow.Content as FrameworkElement;
+        defaultInstance = this;
     }
 
     public async Task OpenInfoDialog(string title, string message)

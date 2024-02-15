@@ -9,8 +9,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using RinceDCS.ViewModels;
+using RinceDCS.ViewModels.Helpers;
 using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
@@ -44,17 +45,17 @@ namespace RinceDCS.Views
 
         private void Expand_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.ScaleHelper.CurrentScale = Math.Max(ViewModel.ScaleHelper.CurrentScale - 1, 0);
+            ScaleVMHelper.Default.CurrentScale = Math.Max(ScaleVMHelper.Default.CurrentScale - 1, 0);
         }
 
         private void ScaleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+            JoystickScrollViewer.ChangeView(0, 0, ScaleVMHelper.Default.ZoomFactors[ScaleVMHelper.Default.CurrentScale]);
         }
 
         private void Shrink_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.ScaleHelper.CurrentScale = Math.Min(ViewModel.ScaleHelper.CurrentScale + 1, ViewModel.ScaleHelper.Scales.Count - 1);
+            ScaleVMHelper.Default.CurrentScale = Math.Min(ScaleVMHelper.Default.CurrentScale + 1, ScaleVMHelper.Default.Scales.Count - 1);
         }
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
@@ -64,7 +65,7 @@ namespace RinceDCS.Views
 
         private async void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            string savePath = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickSaveFile("JoystickLabels.png", "PNG", ".png");
+            string savePath = await DialogService.Default.OpenPickSaveFile("JoystickLabels.png", "PNG", ".png");
 
             JoystickUtil.ExportAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize, savePath);
         }
@@ -76,9 +77,9 @@ namespace RinceDCS.Views
 
         private void ButtonsItemsControl_LayoutUpdated(object sender, object e)
         {
-            if (JoystickScrollViewer.ZoomFactor != ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
+            if (JoystickScrollViewer.ZoomFactor != ScaleVMHelper.Default.ZoomFactors[ScaleVMHelper.Default.CurrentScale])
             {
-                JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+                JoystickScrollViewer.ChangeView(0, 0, ScaleVMHelper.Default.ZoomFactors[ScaleVMHelper.Default.CurrentScale]);
             }
         }
     }

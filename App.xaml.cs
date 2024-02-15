@@ -11,7 +11,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
-using RinceDCS.ServiceModels;
 using RinceDCS.Services;
 using RinceDCS.Utilities;
 using RinceDCS.ViewModels.Helpers;
@@ -53,15 +52,7 @@ namespace RinceDCS
             m_window = new MainWindow();
             m_window.Activate();
 
-            Ioc.Default.ConfigureServices(
-                new ServiceCollection()
-                    .AddSingleton<IDialogService>(new DialogService(m_window))
-                    .AddSingleton<IJoystickService>(new JoystickService())
-                    .AddSingleton<IFileService>(new FileService())
-                    .AddSingleton<IDCSService>(new DCSService())
-                    .AddSingleton<ScaleVMHelper>(new ScaleVMHelper())
-                    .BuildServiceProvider());
-            Ioc.Default.GetRequiredService<ScaleVMHelper>().Initialize();
+            new DialogService(m_window);
 
             Application.Current.UnhandledException += new Microsoft.UI.Xaml.UnhandledExceptionEventHandler(GlobalExceptionHandler.UnhandledException);
 

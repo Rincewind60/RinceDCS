@@ -1,13 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using RinceDCS.Properties;
-using RinceDCS.ServiceModels;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels.Helpers;
 
@@ -23,13 +16,20 @@ namespace RinceDCS.ViewModels.Helpers;
 /// </summary>
 public partial class ScaleVMHelper : ObservableObject
 {
+    private static ScaleVMHelper defaultInstance = new ScaleVMHelper();
+
+    public static ScaleVMHelper Default
+    {
+        get { return defaultInstance; }
+    }
+
     public List<string> Scales { get; set; } = new() { "400%", "200%", "150%", "100%", "80%", "60%", "50%", "40%", "30%" };
     public float[] ZoomFactors = { 4F, 2F, 1.5F, 1F, 0.8F, 0.6F, 0.5F, 0.4F, 0.30F };
 
     [ObservableProperty]
     private int currentScale;
 
-    public void Initialize()
+    public ScaleVMHelper()
     {
         string scaleIndex = Settings.Default.JoysticScaleIndex;
         CurrentScale = string.IsNullOrWhiteSpace(scaleIndex) ? 3 : int.Parse(scaleIndex);

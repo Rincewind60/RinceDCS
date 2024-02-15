@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using RinceDCS.ViewModels;
 using RinceDCS.Views.Utilities;
 using System;
@@ -59,7 +59,7 @@ namespace RinceDCS.Views
 
         private async void EditImage_Click(object sender, RoutedEventArgs e)
         {
-            string newImageFile = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".png");
+            string newImageFile = await DialogService.Default.OpenPickFile(".png");
             if (!string.IsNullOrEmpty(newImageFile))
             {
                 ViewModel.UpdateImage(newImageFile);
@@ -127,7 +127,7 @@ namespace RinceDCS.Views
         {
             JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
             string stickName = ViewModel.Stick.AttachedJoystick.Name;
-            ContentDialogResult result = await Ioc.Default.GetRequiredService<IDialogService>().OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
+            ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
             if (result == ContentDialogResult.Primary)
             {
                 ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);

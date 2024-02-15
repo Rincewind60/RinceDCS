@@ -1,10 +1,16 @@
 ﻿using RinceDCS.Models;
-using RinceDCS.ServiceModels;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 
 namespace RinceDCS.Services;
+
+public class JoystickInfo
+{
+    public List<string> Buttons { get; set; }
+    public List<string> POVs { get; set; }
+    public List<string> SupportedAxes { get; set; }
+}
 
 /// <summary>
 /// Returns list of attached flight joysticks.
@@ -12,13 +18,20 @@ namespace RinceDCS.Services;
 /// Is designed as a Singleton service and chaches the list of joysticks on first call.
 /// This allows and View, ViewModel, Model to get list without depnding on another class.
 /// </summary>
-public class JoystickService : IJoystickService
+public class JoystickService
 {
+    private static JoystickService defaultInstance = new JoystickService();
+
     private List<AttachedJoystick> sticks;
 
     //  Used to help build list of available joystick axes, an array of built in enum values, used to quiry DirectInput.
     private static List<JoystickOffset> JoystickAxisOffsets = new() { JoystickOffset.X, JoystickOffset.Y, JoystickOffset.Z, JoystickOffset.RotationX, JoystickOffset.RotationY, JoystickOffset.RotationZ, JoystickOffset.Sliders0, JoystickOffset.Sliders1 };
     private static string[] DCSjoystickAxisLabels = { "JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"};
+
+    public static JoystickService Default
+    {
+        get { return defaultInstance; }
+    }
 
     public List<AttachedJoystick> GetAttachedJoysticks()
     {

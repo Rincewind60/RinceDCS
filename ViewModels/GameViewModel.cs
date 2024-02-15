@@ -3,17 +3,16 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
-using RinceDCS.ServiceModels;
+using RinceDCS.Properties;
+using RinceDCS.Services;
+using RinceDCS.Utilities;
 using RinceDCS.ViewModels.Helpers;
 using RinceDCS.ViewModels.Messages;
-using RinceDCS.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using RinceDCS.Properties;
 
 namespace RinceDCS.ViewModels;
 
@@ -64,7 +63,7 @@ public partial class GameViewModel : ObservableRecipient
 
         JoystickMode = DetailsDisplayMode.None;
 
-        AttachedJoysticks = Ioc.Default.GetRequiredService<IJoystickService>().GetAttachedJoysticks();
+        AttachedJoysticks = JoystickService.Default.GetAttachedJoysticks();
 
         WeakReferenceMessenger.Default.Register<GameInstancesUpdatedMessage>(this, (r, m) =>
         {
@@ -101,14 +100,14 @@ public partial class GameViewModel : ObservableRecipient
     {
         if(CurrentFile != null)
         {
-            bool? result = await Ioc.Default.GetRequiredService<IDialogService>().OpenConfirmationDialog("Save RinceDCS File", "Do you want to save the existing file first?");
+            bool? result = await DialogService.Default.OpenConfirmationDialog("Save RinceDCS File", "Do you want to save the existing file first?");
             if(result.HasValue && result.Value)
             {
-                await Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentFile);
+                await FileService.Default.SaveGame(CurrentFile);
             }
         }
 
-        string path = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFile(".json");
+        string path = await DialogService.Default.OpenPickFile(".json");
         if(!string.IsNullOrWhiteSpace(path))
         {
             DoOpen(path);
@@ -117,7 +116,7 @@ public partial class GameViewModel : ObservableRecipient
 
     private void DoOpen(string path)
     {
-        RinceDCSFile openedGame = Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().OpenGame(path)).GetAwaiter().GetResult();
+        RinceDCSFile openedGame = Task.Run(() => FileService.Default.OpenGame(path)).GetAwaiter().GetResult();
         if (openedGame != null)
         {
             CheckForNewJoysticks(openedGame);
@@ -156,14 +155,14 @@ public partial class GameViewModel : ObservableRecipient
     private void Save()
     {
         ApplyChangesToModels();
-        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveGame(CurrentFile)).Wait();
+        Task.Run(() => FileService.Default.SaveGame(CurrentFile)).Wait();
     }
 
      [RelayCommand]
     private void SaveAs()
     {
         ApplyChangesToModels();
-        Task.Run(() => Ioc.Default.GetRequiredService<IFileService>().SaveAsGame(CurrentFile)).Wait();
+        Task.Run(() => FileService.Default.SaveAsGame(CurrentFile)).Wait();
     }
 
     [RelayCommand]
@@ -175,7 +174,7 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private async void ExportImages()
     {
-        string exportFolder = await Ioc.Default.GetRequiredService<IDialogService>().OpenPickFolder();
+        string exportFolder = await DialogService.Default.OpenPickFolder();
         JoystickVMHelper helper = new(CurrentInstanceDCSData);
         foreach(RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
@@ -207,8 +206,8 @@ public partial class GameViewModel : ObservableRecipient
     [RelayCommand]
     private void UpdateDCS()
     {
-        Ioc.Default.GetRequiredService<IDCSService>().UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData);
-        Ioc.Default.GetRequiredService<IDialogService>().OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
+        DCSService.Default.UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData);
+        DialogService.Default.OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
     }
 
     public void CurrentInstanceChanged()
@@ -265,7 +264,7 @@ public partial class GameViewModel : ObservableRecipient
     /// <param name="joystick"></param>
     private void AddJoystickButtons(RinceDCSJoystick joystick)
     {
-        JoystickInfo info = Ioc.Default.GetRequiredService<IJoystickService>().GetJoystickInfo(joystick.AttachedJoystick);
+        JoystickInfo info = JoystickService.Default.GetJoystickInfo(joystick.AttachedJoystick);
 
         joystick.Buttons = new ObservableCollection<RinceDCSJoystickButton>();
 
@@ -434,7 +433,7 @@ public partial class GameViewModel : ObservableRecipient
     {
         if(instance.BindingsData != null) { return; }
 
-        DCSData data = Ioc.Default.GetRequiredService<IDCSService>().GetBindingData(
+        DCSData data = DCSService.Default.GetBindingData(
             instance.Name,
             instance.GameExePath,
             instance.SavedGameFolderPath,

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using RinceDCS.ServiceModels;
+using RinceDCS.Services;
 using System;
 using System.Drawing;
 using System.IO;
