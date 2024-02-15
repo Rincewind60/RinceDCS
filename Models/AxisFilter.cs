@@ -23,7 +23,6 @@ public sealed class AxisFilter
     public AxisFilter()
     {
         //  Set to default values
-        Curvature.Add(0);
         Deadzone = 0;
         HardwareDetent = false;
         HardwareDetentAB = 0;

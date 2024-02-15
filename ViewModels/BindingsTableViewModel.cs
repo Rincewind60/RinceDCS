@@ -163,7 +163,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
         foreach(DCSBinding binding in BindingsData.Aircraft[CurrentAircraftKey].Bindings.Values)
         {
-            DCSAircraftBinding dcsAircraftBinding = binding.AircraftWithBinding[CurrentAircraftKey];
+            DCSAircraftBinding dcsAircraftBinding = binding.Aircraft[CurrentAircraftKey];
             CommandCategory category = AddCategory(newCategories, dcsAircraftBinding);
 
             dynamic dynCommand = new ExpandoObject();
@@ -227,9 +227,9 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         string modifiers = "";
         DCSAircraftJoystickKey key = new(CurrentAircraftKey.Name, joystickKey.Id);
 
-        if (binding.AircraftJoystickBindings.ContainsKey(key))
+        if (binding.AircraftJoysticks.ContainsKey(key))
         {
-            foreach(DCSButton button in binding.AircraftJoystickBindings[key].AssignedButtons.Values)
+            foreach(DCSButton button in binding.AircraftJoysticks[key].Buttons.Values)
             {
                 if(button.Modifiers.Count > 0)
                 {

@@ -50,7 +50,7 @@ public partial class EditGroupAircraftViewModel : ObservableObject
         AircraftData = new();
 
         var query = from grp in Groups.Values
-                    from aircraft in grp.AircraftBindings
+                    from aircraft in grp.Aircraft
                     where aircraft.AircraftName == CurrentAircraft
                     orderby grp.Name
                     select Tuple.Create(grp, aircraft);

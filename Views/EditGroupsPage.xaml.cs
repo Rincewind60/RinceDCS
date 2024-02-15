@@ -27,38 +27,25 @@ public sealed partial class EditGroupsPage : Page
 
         Tuple<RinceDCSGroups, DCSData> data = e.Parameter as Tuple<RinceDCSGroups, DCSData>;
 
-        EditGroupsViewModel vm = new(data.Item1.Groups, data.Item2);
-        this.DataContext = vm;
+        TabViewItem newByGroupsItem = new TabViewItem();
+        newByGroupsItem.Header = "All Groups";
+        newByGroupsItem.IsClosable = false;
+        EditGroupsControl groupsCtrl = new(data.Item1);
+        newByGroupsItem.Content = groupsCtrl;
+        EditGroupTabs.TabItems.Add(newByGroupsItem);
 
         TabViewItem newByGroupItem = new TabViewItem();
         newByGroupItem.Header = "By Group";
         newByGroupItem.IsClosable = false;
-
-        EditGroupControl groupCtrl = new(data.Item1.Groups);
-        //ctrl.ViewModel.IsActive = true;
-
+        EditGroupControl groupCtrl = new(data.Item1);
         newByGroupItem.Content = groupCtrl;
         EditGroupTabs.TabItems.Add(newByGroupItem);
 
         TabViewItem newByAircraftItem = new TabViewItem();
         newByAircraftItem.Header = "By Aircraft";
         newByAircraftItem.IsClosable = false;
-
         EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.ToList(), data.Item1.AllGroups);
-        //ctrl.ViewModel.IsActive = true;
-
         newByAircraftItem.Content = aircraftCtrl;
         EditGroupTabs.TabItems.Add(newByAircraftItem);
-
-        //vm.IsActive = true;
     }
-
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
-        base.OnNavigatedFrom(e);
-
-        //ViewModel.IsActive = false;
-    }
-
-    public EditGroupsViewModel ViewModel => (EditGroupsViewModel)DataContext;
 }

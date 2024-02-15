@@ -48,6 +48,7 @@
     <None Remove="Views\BindingsTablePage.xaml" />
     <None Remove="Views\EditGroupAircraftControl.xaml" />
     <None Remove="Views\EditGroupControl.xaml" />
+    <None Remove="Views\EditGroupsControl.xaml" />
     <None Remove="Views\EditGroupsPage.xaml" />
     <None Remove="Views\EditJoystickLayoutControl.xaml" />
     <None Remove="Views\EditJoystickLayoutPage.xaml" />
@@ -177,6 +178,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\EditGroupsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\EditGroupAircraftControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -239,6 +243,9 @@
     <Page Update="Views\ManageJoystickLayoutTab.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Themes\" />
   </ItemGroup>
 
   <!-- 

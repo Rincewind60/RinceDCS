@@ -49,15 +49,15 @@ public class JoystickVMHelper
 
         foreach (DCSBinding binding in dcsAircraft.Bindings.Values)
         {
-            DCSAircraftBinding aircraftBinding = binding.AircraftWithBinding[aircraftKey];
+            DCSAircraftBinding aircraftBinding = binding.Aircraft[aircraftKey];
             string commandName = aircraftBinding.Command;
             string categoryName = aircraftBinding.Category;
 
             DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.AttachedJoystick.JoystickGuid);
 
-            if (binding.AircraftJoystickBindings.ContainsKey(key))
+            if (binding.AircraftJoysticks.ContainsKey(key))
             {
-                DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoystickBindings[key];
+                DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoysticks[key];
 
                 BuildAssignedButtons(binding.IsAxis, stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
             }
@@ -93,7 +93,7 @@ public class JoystickVMHelper
         string categoryName,
         DCSAircraftJoystickBinding bindingButtons)
     {
-        foreach (DCSButton button in bindingButtons.AssignedButtons.Values)
+        foreach (DCSButton button in bindingButtons.Buttons.Values)
         {
             AssignedButtonKey key;
             bool isModifer = button.Modifiers.Count > 0;

@@ -34,7 +34,6 @@ public partial class EditGroupViewModel : ObservableObject
         Groups.Sort((x, y) => {
             return x.Name.CompareTo(y.Name);
         });
-
     }
 
     public void CurrentBindingGroupChanged()
@@ -57,7 +56,7 @@ public partial class EditGroupViewModel : ObservableObject
             newGroupData.BindingHeadings.Add(CurrentBindingGroup.Bindings[i].Id);
         }
 
-        foreach (RinceDCSGroupAircraft boundAircraft in CurrentBindingGroup.AircraftBindings)
+        foreach (RinceDCSGroupAircraft boundAircraft in CurrentBindingGroup.Aircraft)
         {
             dynamic dynAircraft = new ExpandoObject();
             dynAircraft.AircraftName = boundAircraft.AircraftName;
@@ -81,7 +80,7 @@ public partial class EditGroupViewModel : ObservableObject
 
         GroupData = newGroupData;
 
-        var query = from stickBinding in currentBindingGroup.JoystickBindings
+        var query = from stickBinding in currentBindingGroup.Joysticks
                     from button in stickBinding.Buttons
                     select Tuple.Create(stickBinding.Joystick, button);
     }

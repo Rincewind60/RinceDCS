@@ -19,7 +19,8 @@ public class GroupsVMHelper
     {
         Joysticks = joysticks;
         Data = data;
-        Groups = groups ?? new();
+//        Groups = groups ?? new();
+        Groups = new();
 
         BuildCache();
     }
@@ -106,7 +107,7 @@ public class GroupsVMHelper
         //  Add Buttons to Group Joystick
         var buttons = (from binding in allBindingsWithButtons
                        from grp in Groups.AllGroups.Values
-                       from grpStick in grp.JoystickBindings
+                       from grpStick in grp.Joysticks
                        where binding.Group == grp.Name &&
                              binding.StickId == grpStick.Joystick.JoystickGuid
                        select new NewGroupSitckButton
@@ -132,11 +133,11 @@ public class GroupsVMHelper
             {
                 bool updated = false;
 
-                RinceDCSGroupButton grpButton = a.GrpStick.Buttons.Find(b => b.ButtonName == a.ButtonName);
+                RinceDCSGroupButton grpButton = a.GrpStick.Buttons.Find(b => b.Name == a.ButtonName);
                 if (grpButton == null)
                 {
                     //  Create new Group Button
-                    grpButton = new() { ButtonName = a.ButtonName };
+                    grpButton = new() { Name = a.ButtonName };
                     grpButton.Modifiers.AddRange(a.Modifiers);
                     a.GrpStick.Buttons.Add(grpButton);
                     updated = true;
@@ -197,7 +198,7 @@ public class GroupsVMHelper
 
             //  Add to group
             a.Grp.AircraftNames.Add(grpAircraft.AircraftName);
-            a.Grp.AircraftBindings.Add(grpAircraft);
+            a.Grp.Aircraft.Add(grpAircraft);
 
             //  Add to AllAircraftNames if not there aleady
             if (!Groups.AllAircraftNames.Contains(grpAircraft.AircraftName))
@@ -242,7 +243,7 @@ public class GroupsVMHelper
         //  Find all Groups that are missing Joysticks add Add sticks to them
         var groupsMissingSticks = (from stick in Joysticks
                                    from grp in Groups.AllGroups.Values
-                                   where !grp.JoystickBindings.Any(a => a.Joystick == stick.AttachedJoystick)
+                                   where !grp.Joysticks.Any(a => a.Joystick == stick.AttachedJoystick)
                                    select new NewGroupJoystick
                                    (
                                        grp.Name,
@@ -264,7 +265,7 @@ public class GroupsVMHelper
             RinceDCSGroupJoystick newStick = new() { Joystick = s.Stick.AttachedJoystick };
 
             //  Add to group
-            s.Grp.JoystickBindings.Add(newStick);
+            s.Grp.Joysticks.Add(newStick);
         }
     }
 
@@ -309,9 +310,9 @@ public class GroupsVMHelper
     {
         //  Find all bindings in game that have a button assigned to them
         var allBindingsWithButtons = (from binding in Data.Bindings.Values
-                                      from aircraftStickBinding in binding.AircraftJoystickBindings.Values
-                                      from button in aircraftStickBinding.AssignedButtons.Values
-                                      from aircraft in binding.AircraftWithBinding.Values
+                                      from aircraftStickBinding in binding.AircraftJoysticks.Values
+                                      from button in aircraftStickBinding.Buttons.Values
+                                      from aircraft in binding.Aircraft.Values
                                       where aircraftStickBinding.AircraftKey == aircraft.Key
                                       select new BindingWithButtons(
                                         binding.Key.Id,

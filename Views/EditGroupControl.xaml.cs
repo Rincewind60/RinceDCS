@@ -24,11 +24,11 @@ namespace RinceDCS.Views;
 
 public sealed partial class EditGroupControl : UserControl
 {
-    public EditGroupControl(List<RinceDCSGroup> groups)
+    public EditGroupControl(RinceDCSGroups groups)
     {
         this.InitializeComponent();
 
-        EditGroupViewModel vm = new(groups);
+        EditGroupViewModel vm = new(groups.Groups);
 
         DataContext = vm;
     }

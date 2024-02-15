@@ -208,6 +208,7 @@ public partial class GameViewModel : ObservableRecipient
     private void UpdateDCS()
     {
         Ioc.Default.GetRequiredService<IDCSService>().UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData);
+        Ioc.Default.GetRequiredService<IDialogService>().OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
     }
 
     public void CurrentInstanceChanged()

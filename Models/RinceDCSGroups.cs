@@ -32,8 +32,8 @@ public class RinceDCSGroup
     public bool IsAxis { get; set; }
     public List<string> AircraftNames { get; set; } = new();
     public List<RinceDCSGroupBinding> Bindings { get; set; } = new();
-    public List<RinceDCSGroupJoystick> JoystickBindings { get; set; } = new();
-    public List<RinceDCSGroupAircraft> AircraftBindings { get; set; } = new();
+    public List<RinceDCSGroupJoystick> Joysticks { get; set; } = new();
+    public List<RinceDCSGroupAircraft> Aircraft { get; set; } = new();
 }
 
 public class RinceDCSGroupBinding
@@ -50,7 +50,7 @@ public class RinceDCSGroupJoystick
 
 public class RinceDCSGroupButton
 {
-    public string ButtonName { get; set; }
+    public string Name { get; set; }
     public List<string> Modifiers { get; set; } = new();
     public AxisFilter AxisFilter { get; set; }
 }
