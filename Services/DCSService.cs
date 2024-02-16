@@ -259,6 +259,7 @@ public class DCSService
                     if (prevUpdate.AddButton != null)
                     {
                         luaBuilder.AppendAddFooter();
+                        luaBuilder.AppendBindingName(prevUpdate);
                     }
                     else
                     {
@@ -309,6 +310,7 @@ public class DCSService
                 }
                 else
                 {
+                    luaBuilder.AppendBindingName(update);
                     luaBuilder.AppendRemoveHeader();
                 }
                 buttonIndex = 0;
@@ -320,6 +322,7 @@ public class DCSService
                     if (prevUpdate.AddButton != null)
                     {
                         luaBuilder.AppendAddFooter();
+                        luaBuilder.AppendBindingName(prevUpdate);
                     }
                     if (prevUpdate.RemoveButton != null)
                     {
@@ -352,6 +355,7 @@ public class DCSService
                     if (prevUpdate.AddButton != null)
                     {
                         luaBuilder.AppendAddFooter();
+                        luaBuilder.AppendBindingName(prevUpdate);
                     }
                     if (prevUpdate.RemoveButton != null)
                     {
@@ -366,6 +370,7 @@ public class DCSService
                     }
                     else
                     {
+                        luaBuilder.AppendBindingName(update);
                         luaBuilder.AppendRemoveHeader();
                     }
                     buttonIndex = 0;
@@ -801,6 +806,10 @@ public class DCSService
         internal void AppendBindingHeader(GameUpdateButton button)
         {
             sb.AppendLine("\t\t[\"" + button.BindingId + "\"] = {");
+        }
+
+        internal void AppendBindingName(GameUpdateButton button)
+        {
             sb.AppendLine("\t\t\t[\"name\"] = \"" + button.Command + "\",");
         }
 
@@ -833,9 +842,8 @@ public class DCSService
         {
             string buttonName = button.AddButton != null ? button.AddButton.Name : button.RemoveButton.Name;
             AxisFilter filter = button.AddButton != null ? button.AddButton.AxisFilter : button.RemoveButton.AxisFilter;
-
+            
             sb.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-            sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + buttonName + "\",");
             if (filter != null)
             {
                 sb.AppendLine("\t\t\t\t\t[\"filter\"] = {");
@@ -855,6 +863,18 @@ public class DCSService
                 sb.AppendLine("\t\t\t\t\t\t[\"slider\"] = " + filter.Slider.ToString().ToLower() + ",");
                 sb.AppendLine("\t\t\t\t\t},");
             }
+            sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + buttonName + "\",");
+            List<string> modifiers = button.AddButton != null ? button.AddButton.Modifiers != null ? button.AddButton.Modifiers : null : null;
+            if(modifiers != null && modifiers.Count > 0)
+            {
+                sb.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
+                for(int index = 0; index < modifiers.Count; index++)
+                {
+                    sb.AppendLine("\t\t\t\t\t\t[" + (index + 1) + "] = \"" + modifiers[index] + "\",");
+                }
+                sb.AppendLine("\t\t\t\t\t},");
+            }
+
             sb.AppendLine("\t\t\t\t},");
         }
 
@@ -862,80 +882,5 @@ public class DCSService
         {
             File.WriteAllText(luaFileName, sb.ToString());
         }
-
-        //internal void AppendAxisButtons(StringBuilder sb, BindingAddsRemoves binding)
-        //{
-        //if (binding.AddButtons != null)
-        //{
-        //    for (int buttonIndex = 0; buttonIndex < binding.AddButtons.Count(); buttonIndex++)
-        //    {
-        //        RinceDCSGroupButton button = binding.AddButtons[buttonIndex];
-        //        sb.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-        //        sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + button.Name + "\",");
-        //        if(button.AxisFilter != null)
-        //        {
-        //        sb.AppendLine("\t\t\t\t\t[\"filter\"] = {");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"curvature\"] = {");
-        //        for (int curveIndex = 0; curveIndex < button.AxisFilter.Curvature.Count(); curveIndex++)
-        //        {
-        //            sb.AppendLine("\t\t\t\t\t\t\t[" + (curveIndex + 1).ToString() + "] = " + button.AxisFilter.Curvature[curveIndex].ToString() + ",");
-        //        }
-        //        sb.AppendLine("\t\t\t\t\t\t},");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"deadzone\"] = " + button.AxisFilter.Deadzone.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"hardwareDetent\"] = " + button.AxisFilter.HardwareDetent.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"hardwareDetentAB\"] = " + button.AxisFilter.HardwareDetentAB.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"hardwareDetentMax\"] = " + button.AxisFilter.HardwareDetentMax.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"invert\"] = " + button.AxisFilter.Invert.ToString().ToLower() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"saturationX\"] = " + button.AxisFilter.SaturationX.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"saturationY\"] = " + button.AxisFilter.SaturationY.ToString() + ",");
-        //        sb.AppendLine("\t\t\t\t\t\t[\"slider\"] = " + button.AxisFilter.Slider.ToString().ToLower() + ",");
-        //        sb.AppendLine("\t\t\t\t\t},");
-        //    }
-        //    }
-        //}
-        //if(binding.RemoveButtons != null)
-        //{
-        //    AppendRemovedButtons(sb, binding);
-        //}
-        //}
-
-        //internal void AppendKeyButtons(StringBuilder sb, BindingAddsRemoves binding)
-        //{
-        //sb.AppendLine("\t\t[\"" + binding.BindingId + "\"] = {");
-        //sb.AppendLine("\t\t\t[\"name\"] = \"" + binding.CommandName + "\",");
-        //sb.AppendLine("\t\t\t[\"added\"] = {");
-        //for (int buttonIndex = 0; buttonIndex < binding.Buttons.Count(); buttonIndex++)
-        //{
-        //    RinceDCSGroupKeyButton axisButton = (RinceDCSGroupKeyButton)binding.Buttons[buttonIndex];
-        //    sb.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-        //    sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + axisButton.ButtonName + "\",");
-        //    if (axisButton.Modifiers.Count() > 0)
-        //    {
-        //        sb.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
-        //        for (int reformerIndex = 0; reformerIndex < axisButton.Modifiers.Count(); reformerIndex++)
-        //        {
-        //            sb.AppendLine("\t\t\t\t\t\t[" + (reformerIndex + 1).ToString() + "] = \"" + axisButton.Modifiers[reformerIndex].ToString() + "\",");
-        //        }
-        //        sb.AppendLine("\t\t\t\t\t},");
-        //    }
-        //    sb.AppendLine("\t\t\t\t},");
-        //}
-        //sb.AppendLine("\t\t\t},");
-        //sb.AppendLine("\t\t},");
-        //}
-
-        //internal void AppendRemovedButtons(StringBuilder sb, BindingAddsRemoves binding)
-        //{
-        //    sb.AppendLine("\t\t\t[\"removed\"] = {");
-        //    for (int buttonIndex = 0; buttonIndex < binding.RemoveButtons.Count(); buttonIndex++)
-        //    {
-        //        DCSButton button = binding.RemoveButtons[buttonIndex];
-        //        sb.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
-        //        sb.AppendLine("\t\t\t\t[1] = {");
-        //        sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + button.Name + "\",");
-        //        sb.AppendLine("\t\t\t\t},");
-        //    }
-        //    sb.AppendLine("\t\t\t},");
-        //}
     }
 }
