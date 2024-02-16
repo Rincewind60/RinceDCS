@@ -114,14 +114,15 @@ public class DCSService
         }
     }
 
-    public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data)
+    public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data, List<string> aircraftNames)
     {
         //  Find all RinceDCS buttons to be added
         var rinceButtons = from grp in bindingGroups.Groups
                            from aircraft in grp.Aircraft
                            from gj in grp.Joysticks
                            from button in gj.Buttons
-                           where aircraft.IsActive == true
+                           where aircraft.IsActive == true &&
+                                 aircraftNames.Contains(aircraft.AircraftName)
                            select new GameUpdateButton()
                            {
                                AircraftName = aircraft.AircraftName,

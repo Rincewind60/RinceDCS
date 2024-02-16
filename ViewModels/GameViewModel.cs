@@ -2,12 +2,16 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml;
 using RinceDCS.Models;
 using RinceDCS.Properties;
 using RinceDCS.Services;
 using RinceDCS.Utilities;
 using RinceDCS.ViewModels.Helpers;
 using RinceDCS.ViewModels.Messages;
+using RinceDCS.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -204,10 +208,16 @@ public partial class GameViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private void UpdateDCS()
+    private async Task UpdateDCSAsync()
     {
-        DCSService.Default.UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData);
-        DialogService.Default.OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
+        List<string> aircraftNames = (from aircraft in CurrentInstance.Aircraft select aircraft.Name).ToList();
+        SelectAircraftPage page = new(aircraftNames);
+        ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Update DCS", page, "Start Export", null, null, "Cancel");
+        if (result == ContentDialogResult.Primary)
+        {
+            DCSService.Default.UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData, page.ViewModel.GetSelectedAircraft());
+            await DialogService.Default.OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
+        }
     }
 
     public void CurrentInstanceChanged()

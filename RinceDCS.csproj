@@ -59,6 +59,7 @@
     <None Remove="Views\ManageJoystickLayoutPage.xaml" />
     <None Remove="Views\ManageJoystickLayoutTab.xaml" />
     <None Remove="Views\PrintPage.xaml" />
+    <None Remove="Views\SelectAircraftPage.xaml" />
     <None Remove="Views\ViewJoystickLayoutControl.xaml" />
     <None Remove="Views\ViewJoystickLayoutPage.xaml" />
   </ItemGroup>
@@ -178,6 +179,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\SelectAircraftPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\EditGroupsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
