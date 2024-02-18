@@ -20,7 +20,7 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-/// TODO: When IsActive changes it is not reflected on other vies as it is not an observable property, should it be, or use messages?
+/// TODO: When IsActive changes it is not reflected on other views as it is not an observable property, should it be, or use messages?
 
 namespace RinceDCS.Views
 {

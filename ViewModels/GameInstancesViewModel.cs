@@ -88,7 +88,7 @@ public partial class GameInstancesViewModel : ObservableObject
             instance.Name = gameFolderPath.Split('\\').Last();
         }
 
-        instance.SavedGameFolderPath = DCSService.Default.GetSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
+        instance.SavedGameFolderPath = DCSService.Default.GetDCSSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
 
         ValidateInstances();
     }

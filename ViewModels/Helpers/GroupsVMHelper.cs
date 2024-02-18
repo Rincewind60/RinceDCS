@@ -2,11 +2,13 @@
 using Microsoft.UI.Xaml.Controls;
 using RinceDCS.Models;
 using RinceDCS.Properties;
+using RinceDCS.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RinceDCS.ViewModels.Helpers;
 public class GroupsVMHelper
@@ -14,13 +16,17 @@ public class GroupsVMHelper
     private List<RinceDCSJoystick> Joysticks { get; }
     private DCSData Data { get; }
     private RinceDCSGroups Groups { get; }
+    private string SavedGameFolderPath;
 
-    public GroupsVMHelper(List<RinceDCSJoystick> joysticks, DCSData data, RinceDCSGroups groups)
+    CsvExport CsvDump = new CsvExport(",", true, true);
+
+    public GroupsVMHelper(List<RinceDCSJoystick> joysticks, DCSData data, RinceDCSGroups groups, string savedGameFolderPath)
     {
         Joysticks = joysticks;
         Data = data;
 //        Groups = groups ?? new();
         Groups = new();
+        SavedGameFolderPath = savedGameFolderPath;
 
         BuildCache();
     }
@@ -83,26 +89,71 @@ public class GroupsVMHelper
 
     public RinceDCSGroups UpdatedGroups()
     {
-        CsvExport csvDump = new CsvExport(",", true, true);
+        IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons = GetAllBindingsWithButtons();
 
-        IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons = GetAllBindingsWithButtons(csvDump);
-
-        CreateNewGroups(csvDump, allBindingsWithButtons);
-        CreateNewGroupJoysticks(csvDump);
-        CreateNewGroupBindings(csvDump, allBindingsWithButtons);
-        CreateNewGroupAircraft(csvDump, allBindingsWithButtons);
-        CreateNewGroupJoystickButtons(csvDump, allBindingsWithButtons);
+        CreateNewGroups(allBindingsWithButtons);
+        CreateNewGroupJoysticks();
+        CreateNewGroupBindings(allBindingsWithButtons);
+        CreateNewGroupAircraft(allBindingsWithButtons);
+        CreateNewGroupJoystickButtons(allBindingsWithButtons);
+        AddMissingAircraftFromHTMLFiles();
 
         if (Settings.Default.CreateGroupsCSVFile)
         {
             string path = Path.GetDirectoryName(Settings.Default.LastSavePath) + "\\RinceDCSGroups.csv";
-            csvDump.ExportToFile(path, Encoding.UTF8);
+            CsvDump.ExportToFile(path, Encoding.UTF8);
         }
 
         return Groups;
     }
 
-    private void CreateNewGroupJoystickButtons(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    /// <summary>
+    /// The DCSData built from the config files only contains data for bindings with assigned buttons.
+    /// This means some diff.lua files dont even exist if no buttons have been assigned to them and
+    /// some bindings for an aircraft dont appear as there are no buttons.
+    /// 
+    /// We want these aircraft attached to any groups that their bindings belong to, wether they have
+    /// a diff.lua file or not as well as a button or not.
+    /// </summary>
+    private void AddMissingAircraftFromHTMLFiles()
+    {
+        string htmlFilesFolder = SavedGameFolderPath + "\\InputLayoutsTxt";
+
+        foreach (DCSAircraft aircraft in Data.Aircraft.Values)
+        {
+            foreach(DCSJoystick stick in Data.Joysticks.Values)
+            {
+                string aircraftStickHtmlPath = htmlFilesFolder + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
+                if (File.Exists(aircraftStickHtmlPath))
+                {
+                    List<DCSHtmlFileRecord> htmlBindings = DCSService.Default.ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
+
+                    var query = from grp in Groups.Groups
+                                from grpBinding in grp.Bindings
+                                join htmlBinding in htmlBindings on grpBinding.Id equals htmlBinding.Id
+                                where !grp.Aircraft.Any(a => a.AircraftName == aircraft.Key.Name)
+                                select new { grp, grpBinding, htmlBinding };
+                    foreach(var newAircraft in query)
+                    {
+                        RinceDCSGroupAircraft grpAircraft = new()
+                        {
+
+                            AircraftName = aircraft.Key.Name,
+                            BindingId = newAircraft.grpBinding.Id,
+                            Category = newAircraft.htmlBinding.Category,
+                            Command = newAircraft.htmlBinding.Name,
+                            IsActive = true
+
+                        };
+                        newAircraft.grp.Aircraft.Add(grpAircraft);
+                        newAircraft.grp.AircraftNames.Add(grpAircraft.AircraftName);
+                    }
+                }
+            }
+        }
+    }
+
+    private void CreateNewGroupJoystickButtons(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
     {
         //  Add Buttons to Group Joystick
         var buttons = (from binding in allBindingsWithButtons
@@ -122,8 +173,8 @@ public class GroupsVMHelper
                          .ThenBy(row => row.StickId)
                          .ThenBy(row => row.ButtonName);
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### Add buttons to Group Joysticks ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### Add buttons to Group Joysticks ####";
         string prevGroup = "";
         Guid prevStickId = Guid.NewGuid();
         string prevButtonName = "";
@@ -151,12 +202,12 @@ public class GroupsVMHelper
 
                 if(updated)
                 {
-                    csvDump.AddRow();
-                    csvDump["Group"] = a.Group;
-                    csvDump["Stick"] = a.StickId;
-                    csvDump["Button"] = a.ButtonName;
-                    csvDump["Modifiers"] = a.Modifiers.Count();
-                    csvDump["Filter"] = a.AxisFilter != null;
+                    CsvDump.AddRow();
+                    CsvDump["Group"] = a.Group;
+                    CsvDump["Stick"] = a.StickId;
+                    CsvDump["Button"] = a.ButtonName;
+                    CsvDump["Modifiers"] = a.Modifiers.Count();
+                    CsvDump["Filter"] = a.AxisFilter != null;
                 }
             }
 
@@ -166,7 +217,7 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupAircraft(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroupAircraft(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
     {
         //  Find all Aircraft not part of a group that are a part of a binding in the group and add them to group
         var aircraftWithNoGroup = (from binding in allBindingsWithButtons
@@ -182,16 +233,16 @@ public class GroupsVMHelper
                                        binding.AircraftCategory
                                    )).Distinct();
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### Aircraft to add to Groups ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### Aircraft to add to Groups ####";
         foreach (var a in aircraftWithNoGroup)
         {
-            csvDump.AddRow();
-            csvDump["Group"] = a.Group;
-            csvDump["Binding"] = a.BindingId;
-            csvDump["Aircraft"] = a.AircraftName;
-            csvDump["Aircraft Command"] = a.AircraftCommand;
-            csvDump["Aircraft Category"] = a.AircraftCategory;
+            CsvDump.AddRow();
+            CsvDump["Group"] = a.Group;
+            CsvDump["Binding"] = a.BindingId;
+            CsvDump["Aircraft"] = a.AircraftName;
+            CsvDump["Aircraft Command"] = a.AircraftCommand;
+            CsvDump["Aircraft Category"] = a.AircraftCategory;
 
             //  Create new Group Aircraft
             RinceDCSGroupAircraft grpAircraft = new() { AircraftName = a.AircraftName, BindingId = a.BindingId, Command = a.AircraftCommand, Category = a.AircraftCategory, IsActive = true };
@@ -208,7 +259,7 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupBindings(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroupBindings(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
     {
         //  Find all bindings not part of a group and add to group 
         var bindingsWithNoGroup = (from binding in allBindingsWithButtons
@@ -222,13 +273,13 @@ public class GroupsVMHelper
                                        grp
                                    )).Distinct();
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### Bindings to add to Groups ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### Bindings to add to Groups ####";
         foreach (var a in bindingsWithNoGroup)
         {
-            csvDump.AddRow();
-            csvDump["Group"] = a.Group;
-            csvDump["Binding"] = a.BindingId;
+            CsvDump.AddRow();
+            CsvDump["Group"] = a.Group;
+            CsvDump["Binding"] = a.BindingId;
 
             //  Create New Binding
             RinceDCSGroupBinding newBinding = new() { Id = a.BindingId, Command = a.Group };
@@ -238,7 +289,7 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupJoysticks(CsvExport csvDump)
+    private void CreateNewGroupJoysticks()
     {
         //  Find all Groups that are missing Joysticks add Add sticks to them
         var groupsMissingSticks = (from stick in Joysticks
@@ -253,13 +304,13 @@ public class GroupsVMHelper
                                    )).OrderBy(row => row.Group)
                                      .ThenBy(row => row.JoystickGuid);
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### Joysticks to add to Groups ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### Joysticks to add to Groups ####";
         foreach (var s in groupsMissingSticks)
         {
-            csvDump.AddRow();
-            csvDump["Group"] = s.Group;
-            csvDump["Stick"] = s.JoystickGuid;
+            CsvDump.AddRow();
+            CsvDump["Group"] = s.Group;
+            CsvDump["Stick"] = s.JoystickGuid;
 
             //  Create New Joystick
             RinceDCSGroupJoystick newStick = new() { Joystick = s.Stick.AttachedJoystick };
@@ -269,7 +320,7 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroups(CsvExport csvDump, IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroups(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
     {
         //  Find all bindings not part of a group and for which no group exists with their Command Name
         var groupsToCreate = (from bindingWithNoGroup in allBindingsWithButtons
@@ -285,17 +336,17 @@ public class GroupsVMHelper
                                 .OrderBy(row => row.Group)
                                 .ThenByDescending(row => row.Category);
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### Groups To Create ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### Groups To Create ####";
         string prevGroup = "";
         foreach (var a in groupsToCreate)
         {
             if(a.Group != prevGroup)
             {
-                csvDump.AddRow();
-                csvDump["Group"] = a.Group;
-                csvDump["Category"] = a.Category;
-                csvDump["Is Axis"] = a.IsAxis;
+                CsvDump.AddRow();
+                CsvDump["Group"] = a.Group;
+                CsvDump["Category"] = a.Category;
+                CsvDump["Is Axis"] = a.IsAxis;
 
                 RinceDCSGroup group = new RinceDCSGroup() { Name = a.Group, Category = a.Category, IsAxis = a.IsAxis };
                 Groups.AllGroups[a.Group] = group;
@@ -306,7 +357,7 @@ public class GroupsVMHelper
         }
     }
 
-    private IOrderedEnumerable<BindingWithButtons> GetAllBindingsWithButtons(CsvExport csvDump)
+    private IOrderedEnumerable<BindingWithButtons> GetAllBindingsWithButtons()
     {
         //  Find all bindings in game that have a button assigned to them
         var allBindingsWithButtons = (from binding in Data.Bindings.Values
@@ -333,21 +384,21 @@ public class GroupsVMHelper
                                         .ThenBy(row => row.ButtonName)
                                         .ThenBy(row => row.AxisFilter);
 
-        csvDump.AddRow();
-        csvDump["Group"] = "#### All Bindings with Buttons ####";
+        CsvDump.AddRow();
+        CsvDump["Group"] = "#### All Bindings with Buttons ####";
         foreach (var b in allBindingsWithButtons)
         {
-            csvDump.AddRow();
-            csvDump["Group"] = b.Group;
-            csvDump["Binding"] = b.BindingId;
-            csvDump["Is Axis"] = b.IsAxis;
-            csvDump["Stick"] = b.StickId;
-            csvDump["Aircraft"] = b.AircraftName;
-            csvDump["Aircraft Command"] = b.AircraftCommand;
-            csvDump["Aircraft Category"] = b.AircraftCategory;
-            csvDump["Button"] = b.ButtonName;
-            csvDump["Modifiers"] = b.Modifiers.Count();
-            csvDump["Filter"] = b.AxisFilter != null;
+            CsvDump.AddRow();
+            CsvDump["Group"] = b.Group;
+            CsvDump["Binding"] = b.BindingId;
+            CsvDump["Is Axis"] = b.IsAxis;
+            CsvDump["Stick"] = b.StickId;
+            CsvDump["Aircraft"] = b.AircraftName;
+            CsvDump["Aircraft Command"] = b.AircraftCommand;
+            CsvDump["Aircraft Category"] = b.AircraftCategory;
+            CsvDump["Button"] = b.ButtonName;
+            CsvDump["Modifiers"] = b.Modifiers.Count();
+            CsvDump["Filter"] = b.AxisFilter != null;
         }
 
         return allBindingsWithButtons;

@@ -190,6 +190,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
 
             newCommandData.Commands.Add(dynCommand);
         }
+        CommandData = newCommandData;
 
         newCategories.Sort();
         Categories.Add(new CommandCategory() { CategoryName = "All" });
@@ -198,7 +199,6 @@ public partial class BindingsTableViewModel : ObservableRecipient,
             Categories.Add(category);
         }
         CurrentCategory = Categories[0];
-        CommandData = newCommandData;
 
         WeakReferenceMessenger.Default.Send(new BindingsDataUpdatedMessage());
 

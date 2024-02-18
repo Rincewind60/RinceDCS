@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,8 @@ public partial class SelectAircraftViewModel : ObservableObject
         SelectAll = true;
     }
 
-    public void SelectChecked()
+    [RelayCommand]
+    public void SelectAllChecked()
     {
         foreach(SelectAircraft aircraft in Aircraft)
         {
@@ -42,7 +44,7 @@ public partial class SelectAircraftViewModel : ObservableObject
         }
     }
 
-    public void SelectUnchecked()
+    public void SelectAllUnchecked()
     {
         foreach (SelectAircraft aircraft in Aircraft)
         {

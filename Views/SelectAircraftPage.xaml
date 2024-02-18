@@ -22,18 +22,24 @@
         <CheckBox
             Grid.Column="0"
             Grid.Row="0"
+            Name="SelectAll"
             Content="Select All"
             IsChecked="{x:Bind ViewModel.SelectAll, Mode=TwoWay}"
-            Checked="{x:Bind ViewModel.SelectChecked}"
-            Unchecked="{x:Bind ViewModel.SelectUnchecked}"/>
+            Checked="SelectAll_Checked"
+            Unchecked="SelectAll_Unchecked"/>
 
         <ListView
             Grid.Column="0"
             Grid.Row="1"
+            Name="SelectAircraft"
             ItemsSource="{x:Bind ViewModel.Aircraft}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:SelectAircraft">
-                    <CheckBox Content="{x:Bind Name, Mode=OneTime}" IsChecked="{x:Bind Selected, Mode=TwoWay}" />
+                    <CheckBox
+                        Content="{x:Bind Name, Mode=OneTime}" 
+                        IsChecked="{x:Bind Selected, Mode=TwoWay}"
+                        Checked="SelectAircraft_Checked"
+                        Unchecked="SelectAircraft_Unchecked"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

@@ -12,6 +12,8 @@ using System.Text;
 
 namespace RinceDCS.Services;
 
+public record DCSHtmlFileRecord(string Name, string Category, string Id);
+
 public class DCSService
 {
     private static DCSService defaultInstance = new DCSService();
@@ -20,7 +22,6 @@ public class DCSService
     {
         get { return defaultInstance; }
     }
-
 
     /// <summary>
     /// 
@@ -32,6 +33,7 @@ public class DCSService
     /// <returns></returns>
     public DCSData GetBindingData(string gameName, string gameExePath, string savedGameFolderPath, List<AttachedJoystick> sticks)
     {
+        ///TODO: If no diff.lua file exists for an aircraft/joystick combination then assume there should be (the default)
         DCSData data = new();
 
         BuildListOfJoysticks(data, sticks);
@@ -52,7 +54,7 @@ public class DCSService
         return data;
     }
 
-    public string GetSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
+    public string GetDCSSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
     {
         string savedGamesFolder = FileService.Default.GetSavedGamesFolderPath();
         string variantFilePath = gameFolderPath + "\\dcs_variant.txt";
@@ -77,44 +79,24 @@ public class DCSService
         return currentSavedGamesFolder;
     }
 
-    private class GameUpdateButton
+    public List<DCSHtmlFileRecord> ReadAircraftStickHtmlFile(string aircraftStickHtmlPath)
     {
-        public string AircraftName;
-        public AttachedJoystick Joystick;
-        public bool IsAxis;
-        public string BindingId;
-        public string Command;
-        public DCSButton AddButton;
-        public DCSButton RemoveButton;
+        List<DCSHtmlFileRecord> bindings = new();
+        HtmlDocument document = new();
+
+        document.Load(aircraftStickHtmlPath);
+        var rows = document.DocumentNode.SelectNodes("//tr");
+        for (int i = 1; i < rows.Count; i++)
+        {
+            HtmlNode row = rows[i];
+            bindings.Add(new DCSHtmlFileRecord(row.ChildNodes[3].GetDirectInnerText().Trim(),
+                                               row.ChildNodes[5].GetDirectInnerText().Trim().Split(";").First(),
+                                               row.ChildNodes[7].GetDirectInnerText().Trim()));
+        }
+        return bindings;
     }
 
-    private class GameUpdateButtonComparer : IEqualityComparer<GameUpdateButton>
-    {
-        public bool Equals(GameUpdateButton x, GameUpdateButton y)
-        {
-            if (x == null || y == null) return false;
-
-            if (ReferenceEquals(x, y)) return true;
-
-            string xButtonName = x.AddButton == null ? x.RemoveButton.Name : x.AddButton.Name;
-            string yButtonName = y.AddButton == null ? y.RemoveButton.Name : y.AddButton.Name;
-
-            return x.AircraftName == y.AircraftName &&
-                   x.Joystick == y.Joystick &&
-                   x.BindingId == y.BindingId &&
-                   xButtonName == yButtonName;
-        }
-
-        public int GetHashCode([DisallowNull] GameUpdateButton obj)
-        {
-            if (obj == null)
-                return 0;
-
-            return (obj.AircraftName + obj.Joystick.Name + obj.BindingId + (obj.AddButton == null ? obj.RemoveButton.Name : obj.AddButton.Name)).GetHashCode();
-        }
-    }
-
-    public void UpdateGameBindingData(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data, List<string> aircraftNames)
+    public void UpdateDCSConfigFiles(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data, List<string> aircraftNames)
     {
         //  Find all RinceDCS buttons to be added
         var rinceButtons = from grp in bindingGroups.Groups
@@ -163,83 +145,15 @@ public class DCSService
 
         var updates = from update in rinceButtons.Concat(dcsRemoveButtons).Concat(dcsAddedButtons) select update;
 
-        BuildLuaFile(savedGameFolderPath, updates);
-
-
-        //  For each Aircraft
-        //foreach (string aircraftName in bindingGroups.AllAircraftNames)
-        //{
-        //    //  For each Joystick
-        //    foreach(var joystick in data.Joysticks.Values)
-        //    {
-
-
-
-
-        //        //  All RinceDCS buttons include in the add list
-        //        List<BindingAddsRemoves> rinceDCSAdds = (from bindingGroup in bindingGroups.Groups
-        //                                                 from stick in bindingGroup.Joysticks
-        //                                                 from boundAircraft in bindingGroup.Aircraft
-        //                                                 where stick.Buttons.Count() > 0 &&
-        //                                                       stick.Joystick == stick.Joystick &&
-        //                                                       boundAircraft.AircraftName == aircraftName && boundAircraft.IsActive == true
-        //                                                 select new BindingAddsRemoves()
-        //                                                 {
-        //                                                    AircraftName = boundAircraft.AircraftName,
-        //                                                    Joystick = stick.Joystick,
-        //                                                    IsAxis = bindingGroup.IsAxis,
-        //                                                    BindingId = boundAircraft.BindingId,
-        //                                                    Command = boundAircraft.Command,
-        //                                                    AddButtons = stick.Buttons
-        //                                                 }).ToList();
-
-        //        //  Add bindings to be removed from Aircraft
-        //        //      - Include all existing Remove bindings in current DCS file that are not in the Bindings list to be added
-        //        //      - Include all existing Add bindings in current DCS file that are not in the Bindings list to be added
-        //        //              (need to test, can we ignore old adds, or do we need a remove in file to delete them?)
-        //        //  This is done at the button level, i.e. a Binding could have both Add and Remove actions depending on changes
-        //        //  to the bound buttons
-
-        //        //List<BindingAddsRemoves> dcsRemoves = (from dcsBinding in data.Bindings.Values
-        //        //                                       from ajb in dcsBinding.AircraftJoystickBindings.Values
-        //        //                                       where ajb.AircraftKey.Name == aircraftName &&
-        //        //                                             ajb.JoystickKey == joystick.Key &&
-        //        //                                             ajb.ButtonChanges.RemovedButtons.Count() > 0 &&
-        //        //                                             !rinceDCSAdds.Any(r => r.BindingId == dcsBinding.Key.Id && r.AddButtons.ButtonName == removeButton.Name)
-        //        //                                       select new BindingAddsRemoves()
-        //        //                                       {
-        //        //                                            AircraftName = aircraftName,
-        //        //                                            Joystick = joystick.Joystick,
-        //        //                                            IsAxis = dcsBinding.IsAxis,
-        //        //                                            BindingId = dcsBinding.Key.Id,
-        //        //                                            Command = dcsBinding.Command,
-        //        //                                            RemoveButtons = ajb.ButtonChanges.RemovedButtons
-        //        //                                       }).ToList();
-
-        //        //List < BindingAddsRemoves > dcsAddsNoRinceAdds = (from dcsBinding in data.Bindings.Values
-        //        //                                                  from ajb in dcsBinding.AircraftJoystickBindings.Values
-        //        //                                                  where ajb.AircraftKey.Name == aircraftName &&
-        //        //                                                        ajb.JoystickKey == joystick.Key &&
-        //        //                                                        ajb.ButtonChanges.AddedButtons.Count() > 0 &&
-        //        //                                                        !rinceDCSAdds.Any(r => r.BindingId == dcsBinding.Key.Id && r.AddButtons.ButtonName == addButtons.Name)
-        //        //                                                  select new BindingAddsRemoves()
-        //        //                                                  {
-        //        //                                                    AircraftName = aircraftName,
-        //        //                                                    Joystick = joystick.Joystick,
-        //        //                                                    IsAxis = dcsBinding.IsAxis,
-        //        //                                                    BindingId = dcsBinding.Key.Id,
-        //        //                                                    Command = dcsBinding.Command,
-        //        //                                                    RemoveButtons = ajb.ButtonChanges.AddedButtons
-        //        //                                                  }).ToList();
-
-        //        //var newBindings = rinceDCSAdds.Concat(dcsRemoves).Concat(dcsAddsNoRinceAdds).OrderBy(row => row.IsAxis).ThenBy(row => row.BindingId);
-        //        //BuildLuaFile(savedGameFolderPath, aircraftName, joystick.Joystick.DCSName, newBindings);
-        //    }
-        //}
+        BuildLuaFile(savedGameFolderPath, updates, aircraftNames);
     }
 
-    private void BuildLuaFile(string savedGameFolderPath, IEnumerable<GameUpdateButton> updates)
+    private void BuildLuaFile(string savedGameFolderPath, IEnumerable<GameUpdateButton> updates, List<string> aircraftNames)
     {
+        string configFolder = savedGameFolderPath + "\\Config\\Input";
+
+        BackupAircraftConfigFiles(savedGameFolderPath, aircraftNames, configFolder);
+
         var ordedUpdates = updates.OrderBy(row => row.AircraftName)
                                   .ThenBy(row => row.Joystick.Name)
                                   .ThenByDescending(row => row.IsAxis)
@@ -257,25 +171,7 @@ public class DCSService
             {
                 if (luaBuilder != null)
                 {
-                    if (prevUpdate.AddButton != null)
-                    {
-                        luaBuilder.AppendAddFooter();
-                        luaBuilder.AppendBindingName(prevUpdate);
-                    }
-                    else
-                    {
-                        luaBuilder.AppendRemoveFooter();
-                    }
-                    luaBuilder.AppendBindingFooter();
-                    if (prevUpdate.IsAxis)
-                    {
-                        luaBuilder.AppendAxisFooter();
-                    }
-                    else
-                    {
-                        luaBuilder.AppendKeyFooter();
-                    }
-                    luaBuilder.AppendFooter();
+                    FinalizePreviousFile(luaBuilder, prevUpdate);
                     luaBuilder.WriteFile();
                 }
 
@@ -319,7 +215,7 @@ public class DCSService
             else
             {
                 if (prevUpdate.IsAxis != update.IsAxis)
-                { 
+                {
                     if (prevUpdate.AddButton != null)
                     {
                         luaBuilder.AppendAddFooter();
@@ -376,7 +272,7 @@ public class DCSService
                     }
                     buttonIndex = 0;
                 }
-                else if(prevUpdate.AddButton != null && update.RemoveButton != null)
+                else if (prevUpdate.AddButton != null && update.RemoveButton != null)
                 {
                     luaBuilder.AppendAddFooter();
                     luaBuilder.AppendRemoveHeader();
@@ -387,6 +283,51 @@ public class DCSService
             luaBuilder.AppendButton(update, buttonIndex);
             prevUpdate = update;
             buttonIndex += 1;
+        }
+    }
+
+    private static void FinalizePreviousFile(DCSLuaFileBuilder luaBuilder, GameUpdateButton prevUpdate)
+    {
+        if (prevUpdate.AddButton != null)
+        {
+            luaBuilder.AppendAddFooter();
+            luaBuilder.AppendBindingName(prevUpdate);
+        }
+        else
+        {
+            luaBuilder.AppendRemoveFooter();
+        }
+        luaBuilder.AppendBindingFooter();
+        if (prevUpdate.IsAxis)
+        {
+            luaBuilder.AppendAxisFooter();
+        }
+        else
+        {
+            luaBuilder.AppendKeyFooter();
+        }
+        luaBuilder.AppendFooter();
+    }
+
+    private static void BackupAircraftConfigFiles(string savedGameFolderPath, List<string> aircraftNames, string configFolder)
+    {
+        string backupFolder = savedGameFolderPath + "\\RinceDCS\\Backups\\Config_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "\\Input";
+
+        Directory.CreateDirectory(backupFolder);
+
+        //  Copy existing Aircraft config files to backup, only for Aircraft being updated
+        foreach (string aircraft in aircraftNames)
+        {
+            string fromFolder = configFolder + "\\" + aircraft + "\\joystick";
+            string toFolder = backupFolder + "\\" + aircraft + "\\joystick";
+
+            Directory.CreateDirectory(toFolder);
+
+            foreach (string filePath in Directory.GetFiles(fromFolder))
+            {
+                string fileName = Path.GetFileName(filePath);
+                File.Copy(fromFolder + "\\" + fileName, toFolder + "\\" + fileName, true);
+            }
         }
     }
 
@@ -417,25 +358,18 @@ public class DCSService
                 string aircraftStickHtmlPath = htmlFolderPath + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
                 if (File.Exists(aircraftStickHtmlPath))
                 {
-                    ReadAircraftStickHtmlFile(data, aircraft, stick, aircraftStickHtmlPath);
+                    List<DCSHtmlFileRecord>  htmlBindings = ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
+                    BuildHTMLBindings(data, aircraft, stick, htmlBindings);
                 }
             }
         }
     }
 
-    private void ReadAircraftStickHtmlFile(DCSData data, DCSAircraft aircraft, DCSJoystick stck, string aircraftStickHtmlPath)
+    private void BuildHTMLBindings(DCSData data, DCSAircraft aircraft, DCSJoystick stck, List<DCSHtmlFileRecord> htmlBindings)
     {
-        HtmlDocument document = new();
-        document.Load(aircraftStickHtmlPath);
-        var rows = document.DocumentNode.SelectNodes("//tr");
-        for (int i = 1; i < rows.Count; i++)
+        foreach(DCSHtmlFileRecord row in htmlBindings)
         {
-            HtmlNode row = rows[i];
-            string name = row.ChildNodes[3].GetDirectInnerText().Trim();
-            string category = row.ChildNodes[5].GetDirectInnerText().Trim().Split(";").First();
-            string id = row.ChildNodes[7].GetDirectInnerText().Trim();
-
-            DCSBindingKey bindKey = new(id);
+            DCSBindingKey bindKey = new(row.Id);
             DCSBinding binding;
             if (data.Bindings.ContainsKey(bindKey))
             {
@@ -445,16 +379,16 @@ public class DCSService
             {
                 binding = new DCSBinding()
                 {
-                    Key = new(id),
-                    Command = name,
-                    IsAxis = id.StartsWith("a")
+                    Key = new(row.Id),
+                    Command = row.Name,
+                    IsAxis = row.Id.StartsWith("a")
                 };
                 data.Bindings[bindKey] = binding;
             }
 
             if (!binding.Aircraft.ContainsKey(aircraft.Key))
             {
-                binding.Aircraft[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, Command = name, Category = category };
+                binding.Aircraft[aircraft.Key] = new DCSAircraftBinding() { Key = aircraft.Key, Command = row.Name, Category = row.Category };
             }
             if (!binding.Joysticks.ContainsKey(stck.Key))
             {
@@ -762,6 +696,44 @@ public class DCSService
 
         return bindingData;
     }
+
+    private class GameUpdateButton
+    {
+        public string AircraftName;
+        public AttachedJoystick Joystick;
+        public bool IsAxis;
+        public string BindingId;
+        public string Command;
+        public DCSButton AddButton;
+        public DCSButton RemoveButton;
+    }
+
+    private class GameUpdateButtonComparer : IEqualityComparer<GameUpdateButton>
+    {
+        public bool Equals(GameUpdateButton x, GameUpdateButton y)
+        {
+            if (x == null || y == null) return false;
+
+            if (ReferenceEquals(x, y)) return true;
+
+            string xButtonName = x.AddButton == null ? x.RemoveButton.Name : x.AddButton.Name;
+            string yButtonName = y.AddButton == null ? y.RemoveButton.Name : y.AddButton.Name;
+
+            return x.AircraftName == y.AircraftName &&
+                   x.Joystick == y.Joystick &&
+                   x.BindingId == y.BindingId &&
+                   xButtonName == yButtonName;
+        }
+
+        public int GetHashCode([DisallowNull] GameUpdateButton obj)
+        {
+            if (obj == null)
+                return 0;
+
+            return (obj.AircraftName + obj.Joystick.Name + obj.BindingId + (obj.AddButton == null ? obj.RemoveButton.Name : obj.AddButton.Name)).GetHashCode();
+        }
+    }
+
 
     private class DCSLuaFileBuilder
     {

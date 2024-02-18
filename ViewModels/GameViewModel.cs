@@ -215,7 +215,7 @@ public partial class GameViewModel : ObservableRecipient
         ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Update DCS", page, "Start Export", null, null, "Cancel");
         if (result == ContentDialogResult.Primary)
         {
-            DCSService.Default.UpdateGameBindingData(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData, page.ViewModel.GetSelectedAircraft());
+            DCSService.Default.UpdateDCSConfigFiles(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData, page.ViewModel.GetSelectedAircraft());
             await DialogService.Default.OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
         }
     }
@@ -230,7 +230,7 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             LoadBindingDataForInstance(CurrentInstance);
-            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups);
+            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups, CurrentInstance.SavedGameFolderPath);
             CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
             CurrentInstanceDCSData = CurrentInstance.BindingsData;
             CurrentInstanceGroups = CurrentInstance.BindingGroups;
@@ -418,7 +418,7 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.GameExePath = updated.gameExePath;
                 updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
                 LoadBindingDataForInstance(updated.instance);
-                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups);
+                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups, updated.instance.SavedGameFolderPath);
                 CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
             }
         }

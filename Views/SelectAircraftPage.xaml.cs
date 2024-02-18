@@ -1,3 +1,4 @@
+using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -33,5 +34,78 @@ namespace RinceDCS.Views
         }
 
         public SelectAircraftViewModel ViewModel => (SelectAircraftViewModel)DataContext;
+
+        private void SelectAircraft_Checked(object sender, RoutedEventArgs e)
+        {
+            bool allChecked = true;
+            foreach(var item in SelectAircraft.Items)
+            {
+                ListViewItem listViewItem = SelectAircraft.ContainerFromItem(item) as ListViewItem;
+                if(listViewItem != null)
+                {
+                    CheckBox checkbox = listViewItem.FindDescendant<CheckBox>();
+                    allChecked &= checkbox.IsChecked.Value;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if(allChecked)
+            {
+                SelectAll.Checked -= SelectAll_Checked;
+                ViewModel.SelectAll = true;
+                SelectAll.Checked += SelectAll_Checked;
+            }
+            else
+            {
+                SelectAll.Unchecked -= SelectAll_Unchecked;
+                ViewModel.SelectAll = false;
+                SelectAll.Unchecked += SelectAll_Unchecked;
+            }
+        }
+
+        private void SelectAircraft_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bool allUnchecked = true;
+            foreach (var item in SelectAircraft.Items)
+            {
+                ListViewItem listViewItem = SelectAircraft.ContainerFromItem(item) as ListViewItem;
+                if (listViewItem != null)
+                {
+                    CheckBox checkbox = listViewItem.FindDescendant<CheckBox>();
+                    allUnchecked &= !checkbox.IsChecked.Value;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if (allUnchecked)
+            {
+                SelectAll.Unchecked -= SelectAll_Unchecked;
+                ViewModel.SelectAll = false;
+                SelectAll.Unchecked += SelectAll_Unchecked;
+            }
+            else
+            {
+                SelectAll.Checked -= SelectAll_Checked;
+                ViewModel.SelectAll = true;
+                SelectAll.Checked += SelectAll_Checked;
+            }
+
+        }
+
+        private void SelectAll_Checked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SelectAllChecked();
+        }
+
+        private void SelectAll_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SelectAllUnchecked();
+        }
     }
 }
