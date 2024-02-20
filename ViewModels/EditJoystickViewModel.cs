@@ -31,7 +31,7 @@ public partial class EditJoystickViewModel : ObservableObject
         {
             FontNames.Add(font);
         }
-        ScaleHelper = Ioc.Default.GetRequiredService<ScaleVMHelper>();
+        ScaleHelper = ScaleVMHelper.Default;
     }
 
     [RelayCommand]

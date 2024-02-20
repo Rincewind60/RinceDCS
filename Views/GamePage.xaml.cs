@@ -120,8 +120,8 @@ namespace RinceDCS.Views
 
         private void ManageButton_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(ManageJoystickLayoutPage),
-                Tuple.Create(ViewModel.CurrentFile, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
+            DetailsViewFrame.Navigate(typeof(ManageJoystickPage),
+                Tuple.Create(ViewModel.CurrentFile.Joysticks.ToList(), ViewModel.CurrentInstance, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
         }
 
         private void GroupsButton_Click(object sender, RoutedEventArgs e)
@@ -137,7 +137,7 @@ namespace RinceDCS.Views
 
         private void NavigateToViewPage()
         {
-            DetailsViewFrame.Navigate(typeof(ViewJoystickLayoutPage),
+            DetailsViewFrame.Navigate(typeof(ViewJoystickPage),
                 Tuple.Create(ViewModel.CurrentInstance.Name,
                              ViewModel.CurrentInstance.SavedGameFolderPath,
                              ViewModel.CurrentFile,

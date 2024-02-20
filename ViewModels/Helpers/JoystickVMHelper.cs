@@ -36,9 +36,9 @@ public class JoystickVMHelper
 
     public List<AssignedButton> GetAssignedButtons(RinceDCSJoystick stick, Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout, string instanceName, string aircraftName)
     {
-        List<AssignedButton> assignedButtons = new();
-
         if (string.IsNullOrWhiteSpace(aircraftName)) return null;
+
+        List<AssignedButton> assignedButtons = new();
 
         DCSAircraftKey aircraftKey = new(aircraftName);
         DCSAircraft dcsAircraft = Data.Aircraft[aircraftKey];
@@ -64,6 +64,54 @@ public class JoystickVMHelper
         }
 
         return assignedButtons;
+    }
+
+    public List<ManagedButton> GetManagedButtons(RinceDCSJoystick stick, RinceDCSGroups groups, Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout, string aircraftName)
+    {
+        if (string.IsNullOrWhiteSpace(aircraftName)) return null;
+
+        List<ManagedButton> buttons = new();
+
+        List<RinceDCSGroup> axisGroups = (from grp in groups.Groups
+                                          where grp.IsAxis == true &&
+                                                grp.AircraftNames.Contains(aircraftName)
+                                          select grp).OrderBy(row => row.Name).ToList();
+
+        List<RinceDCSGroup> keyGroups = (from grp in groups.Groups
+                                         where grp.IsAxis != true &&
+                                               grp.AircraftNames.Contains(aircraftName)
+                                         select grp).OrderBy(row => row.Name).ToList();
+
+        foreach(RinceDCSJoystickButton button in buttonsOnLayout.Values)
+        {
+            if (button.ButtonName != "Game" && button.ButtonName != "Plane" && button.ButtonName != "Joystick")
+            {
+                ManagedButton newButton;
+                if (button.IsKeyButton)
+                {
+                    newButton = new(button, keyGroups);
+                }
+                else
+                {
+                    newButton = new(button, axisGroups);
+                }
+                var groupsWithButton = from grp in groups.Groups
+                                      from gj in grp.Joysticks
+                                      from grpButton in gj.Buttons
+                                      where gj.Joystick == stick.AttachedJoystick &&
+                                            grpButton.Name == button.ButtonName &&
+                                            ((button.IsModifier == true && grpButton.Modifiers.Count > 0) ||
+                                            (button.IsModifier == false && grpButton.Modifiers.Count == 0))
+                                      select grp;
+                if (groupsWithButton.Count() > 0)
+                {
+                    newButton.Group = groupsWithButton.First();
+                }
+                buttons.Add(newButton);
+            }
+        }
+
+        return buttons;
     }
 
     private void BuildAppButtons(

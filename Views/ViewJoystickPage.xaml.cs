@@ -26,9 +26,9 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class ViewJoystickLayoutPage : Page
+    public sealed partial class ViewJoystickPage : Page
     {
-        public ViewJoystickLayoutPage()
+        public ViewJoystickPage()
         {
             this.InitializeComponent();
         }
@@ -52,11 +52,11 @@ namespace RinceDCS.Views
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                ViewJoystickLayoutControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
+                ViewJoystickControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
                 ctrl.ViewModel.IsActive = true;
 
                 newItem.Content = ctrl;
-                ViewJoystickLayouts.TabItems.Add(newItem);
+                ViewJoysticks.TabItems.Add(newItem);
             }
         }
 
@@ -64,9 +64,9 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedFrom(e);
 
-            foreach(TabViewItem item in ViewJoystickLayouts.TabItems)
+            foreach(TabViewItem item in ViewJoysticks.TabItems)
             {
-                ViewJoystickLayoutControl ctrl = item.Content as ViewJoystickLayoutControl;
+                ViewJoystickControl ctrl = item.Content as ViewJoystickControl;
                 if (ctrl != null)
                 {
                     ctrl.ViewModel.IsActive = false;

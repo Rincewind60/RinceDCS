@@ -56,12 +56,12 @@
     <None Remove="Views\GamePage.xaml" />
     <None Remove="Views\HelpPage.xaml" />
     <None Remove="Views\JoystickSettingsPage.xaml" />
-    <None Remove="Views\ManageJoystickLayoutPage.xaml" />
-    <None Remove="Views\ManageJoystickLayoutTab.xaml" />
+    <None Remove="Views\ManageJoystickControl.xaml" />
+    <None Remove="Views\ManageJoystickPage.xaml" />
     <None Remove="Views\PrintPage.xaml" />
     <None Remove="Views\SelectAircraftPage.xaml" />
-    <None Remove="Views\ViewJoystickLayoutControl.xaml" />
-    <None Remove="Views\ViewJoystickLayoutPage.xaml" />
+    <None Remove="Views\ViewJoystickControl.xaml" />
+    <None Remove="Views\ViewJoystickPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -179,6 +179,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\ManageJoystickControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SelectAircraftPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -197,7 +200,7 @@
     <Page Update="Views\EditJoystickLayoutControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\ViewJoystickLayoutControl.xaml">
+    <Page Update="Views\ViewJoystickControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -212,12 +215,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ViewJoystickLayoutPage.xaml">
+    <Page Update="Views\ViewJoystickPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ManageJoystickLayoutPage.xaml">
+    <Page Update="Views\ManageJoystickPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -242,9 +245,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\GamePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\ManageJoystickLayoutTab.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
