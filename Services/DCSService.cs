@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using HtmlAgilityPack;
+using Microsoft.VisualBasic;
 using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.Utilities;
@@ -77,11 +78,11 @@ public class DCSService
                 string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
                 if(modifierPropertyName == "device")
                 {
-                    newModifier.Device = modiferTable.Values.ElementAt(j).ToString();
+                    newModifier.Device = modiferTable.Values.ElementAt(j).String;
                 }
                 else if(modifierPropertyName == "key")
                 {
-                    newModifier.Key = modiferTable.Values.ElementAt(j).ToString();
+                    newModifier.Key = modiferTable.Values.ElementAt(j).String;
                 }
             }
             data.Modifiers[newModifier.Name] = newModifier;
@@ -109,11 +110,11 @@ public class DCSService
                             string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
                             if(modifierPropertyName == "device")
                             {
-                                newModifier.Device = modiferTable.Values.ElementAt(j).ToString();
+                                newModifier.Device = modiferTable.Values.ElementAt(j).String;
                             }
                             else if(modifierPropertyName == "key")
                             {
-                                newModifier.Key = modiferTable.Values.ElementAt(j).ToString();
+                                newModifier.Key = modiferTable.Values.ElementAt(j).String;
                             }
                         }
                         data.Modifiers[newModifier.Name] = newModifier;
@@ -165,10 +166,14 @@ public class DCSService
         return bindings;
     }
 
-    public void UpdateDCSConfigFiles(string SavedGamesPath, RinceDCSGroups Groups, DCSData data, List<string> aircraftNames)
+    public void UpdateDCSConfigFiles(string savedGamesPath, RinceDCSGroups groups, DCSData data, List<string> aircraftNames)
     {
+        BackupDCSFiles(savedGamesPath, aircraftNames);
+
+        BuildModifiersFiles(savedGamesPath, groups, aircraftNames);
+
         //  Find all RinceDCS buttons to be added
-        var rinceButtons = from grp in Groups.Groups
+        var rinceButtons = from grp in groups.Groups
                            from aircraft in grp.Aircraft
                            from gj in grp.Joysticks
                            from button in gj.Buttons
@@ -213,16 +218,37 @@ public class DCSService
                                }).Except(rinceButtons, new GameUpdateButtonComparer());
 
         var updates = from update in rinceButtons.Concat(dcsRemoveButtons).Concat(dcsAddedButtons) select update;
-
-        BuildLuaFile(SavedGamesPath, updates, aircraftNames);
+        BuildLuaFiles(savedGamesPath, updates, aircraftNames);
     }
 
-    private void BuildLuaFile(string SavedGamesPath, IEnumerable<GameUpdateButton> updates, List<string> aircraftNames)
+    private void BuildModifiersFiles(string savedGamesPath, RinceDCSGroups groups, List<string> aircraftNames)
     {
-        string configFolder = SavedGamesPath + "\\Config\\Input";
+        StringBuilder sb = new();
+        sb.AppendLine("local modifiers = {");
+        foreach(RinceDCSGroupModifier modifier in groups.Modifiers)
+        {
+            sb.AppendLine("\t[\"" + modifier.Name + "\"] = {");
+            sb.AppendLine("\t\t[\"device\"] = \"" + modifier.Device + "\",");
+            sb.AppendLine("\t\t[\"key\"] = \"" + modifier.Key + "\",");
+            sb.AppendLine("\t\t[\"switch\"] = false,");
+            sb.AppendLine("\t},");
+        }
+        sb.AppendLine("}");
+        sb.AppendLine("return modifiers");
+        string luaString = sb.ToString();
+        string configFolder = savedGamesPath + "\\Config\\Input";
 
-        BackupAircraftConfigFiles(SavedGamesPath, aircraftNames, configFolder);
+        string TestFolder = "S:\\RinceConfigBackup\\Input\\";
 
+        foreach (string aircraft in aircraftNames)
+        {
+            string modifierPath = TestFolder + "\\" + aircraft + "\\modifiers.lua";
+            File.WriteAllText(modifierPath, luaString);
+        }
+    }
+
+    private void BuildLuaFiles(string savedGamesPath, IEnumerable<GameUpdateButton> updates, List<string> aircraftNames)
+    {
         var ordedUpdates = updates.OrderBy(row => row.AircraftName)
                                   .ThenBy(row => row.Joystick.Name)
                                   .ThenByDescending(row => row.IsAxis)
@@ -244,11 +270,11 @@ public class DCSService
                     luaBuilder.WriteFile();
                 }
 
-                string luaBackupFolder = "S:/RinceConfigBackup/Input/" + update.AircraftName + "/joystick/";
-                string luaFileName = luaBackupFolder + update.Joystick.DCSName + ".diff.lua";
-                if (!Directory.Exists(luaBackupFolder))
+                string TestFolder = "S:/RinceConfigBackup/Input/" + update.AircraftName + "/joystick/";
+                string luaFileName = TestFolder + update.Joystick.DCSName + ".diff.lua";
+                if (!Directory.Exists(TestFolder))
                 {
-                    Directory.CreateDirectory(luaBackupFolder);
+                    Directory.CreateDirectory(TestFolder);
                 }
                 luaBuilder = new(luaFileName);
                 luaBuilder.AppendHeader();
@@ -353,6 +379,11 @@ public class DCSService
             prevUpdate = update;
             buttonIndex += 1;
         }
+        if (luaBuilder != null)
+        {
+            FinalizePreviousFile(luaBuilder, prevUpdate);
+            luaBuilder.WriteFile();
+        }
     }
 
     private static void FinalizePreviousFile(DCSLuaFileBuilder luaBuilder, GameUpdateButton prevUpdate)
@@ -378,24 +409,36 @@ public class DCSService
         luaBuilder.AppendFooter();
     }
 
-    private static void BackupAircraftConfigFiles(string SavedGamesPath, List<string> aircraftNames, string configFolder)
+    private static void BackupDCSFiles(string savedGamesPath, List<string> aircraftNames)
     {
-        string backupFolder = SavedGamesPath + "\\RinceDCS\\Backups\\Config_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "\\Input";
+        string backupFolder = savedGamesPath + "\\RinceDCS\\Backups\\Config_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "\\Input";
 
         Directory.CreateDirectory(backupFolder);
 
         //  Copy existing Aircraft config files to backup, only for Aircraft being updated
+        string fromConfigFolder = savedGamesPath + "\\Config\\Input";
         foreach (string aircraft in aircraftNames)
         {
-            string fromFolder = configFolder + "\\" + aircraft + "\\joystick";
-            string toFolder = backupFolder + "\\" + aircraft + "\\joystick";
+            string fromAircraftFolder = fromConfigFolder + "\\" + aircraft;
+            string toAircraftFolder = backupFolder + "\\" + aircraft;
+            Directory.CreateDirectory(toAircraftFolder);
 
-            Directory.CreateDirectory(toFolder);
+            string fromModifersFileName = fromAircraftFolder + "\\modifiers.lua";
+            string toModifiersFileName = toAircraftFolder + "\\modifiers.lua";
+            if (File.Exists(fromModifersFileName))
+            {
+                File.Copy(fromModifersFileName, toModifiersFileName);
+            }
 
-            foreach (string filePath in Directory.GetFiles(fromFolder))
+            string fromJoystickFolder = fromAircraftFolder + "\\joystick";
+            string toJoystickFolder = toAircraftFolder + "\\joystick";
+
+            Directory.CreateDirectory(toJoystickFolder);
+
+            foreach (string filePath in Directory.GetFiles(fromJoystickFolder))
             {
                 string fileName = Path.GetFileName(filePath);
-                File.Copy(fromFolder + "\\" + fileName, toFolder + "\\" + fileName, true);
+                File.Copy(fromJoystickFolder + "\\" + fileName, toJoystickFolder + "\\" + fileName, true);
             }
         }
     }
