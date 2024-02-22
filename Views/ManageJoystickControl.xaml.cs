@@ -69,8 +69,7 @@ namespace RinceDCS.Views
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ManagedButton button = ((ComboBox)sender).DataContext as ManagedButton;
-            RinceDCSGroup newGroup = e.AddedItems[0] as RinceDCSGroup;
-            ViewModel.ButtonGroupChanged(button, newGroup);
+            ViewModel.ButtonGroupChanged(button);
         }
     }
 }
