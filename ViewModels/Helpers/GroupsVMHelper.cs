@@ -1,5 +1,6 @@
 ﻿using Csv;
 using Microsoft.UI.Xaml.Controls;
+using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.Properties;
 using RinceDCS.Services;
@@ -16,17 +17,17 @@ public class GroupsVMHelper
     private List<RinceDCSJoystick> Joysticks { get; }
     private DCSData Data { get; }
     private RinceDCSGroups Groups { get; }
-    private string SavedGameFolderPath;
+    private string SavedGamesPath;
 
     CsvExport CsvDump = new CsvExport(",", true, true);
 
-    public GroupsVMHelper(List<RinceDCSJoystick> joysticks, DCSData data, RinceDCSGroups groups, string savedGameFolderPath)
+    public GroupsVMHelper(List<RinceDCSJoystick> joysticks, DCSData data, RinceDCSGroups groups, string savedGamesPath)
     {
         Joysticks = joysticks;
         Data = data;
 //        Groups = groups ?? new();
         Groups = new();
-        SavedGameFolderPath = savedGameFolderPath;
+        SavedGamesPath = savedGamesPath;
 
         BuildCache();
     }
@@ -91,6 +92,7 @@ public class GroupsVMHelper
     {
         IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons = GetAllBindingsWithButtons();
 
+        CreateNewModifiers();
         CreateNewGroups(allBindingsWithButtons);
         CreateNewGroupJoysticks();
         CreateNewGroupBindings(allBindingsWithButtons);
@@ -107,6 +109,27 @@ public class GroupsVMHelper
         return Groups;
     }
 
+    private void CreateNewModifiers()
+    {
+        var query = from modifier in Data.Modifiers.Values
+                    where !Groups.Modifiers.Any(row => row.Key == modifier.Key )
+                    select modifier;
+        foreach( var modifier in query )
+        {
+            RinceDCSGroupModifier newModifier = new()
+            {
+                Name = modifier.Name,
+                Key = modifier.Key,
+                Device = modifier.Device
+            };
+            Groups.Modifiers.Add(newModifier);
+        }
+        if(string.IsNullOrWhiteSpace(Groups.DefaultModifierName))
+        {
+            Groups.DefaultModifierName = Groups.Modifiers[Groups.Modifiers.Count-1].Name;
+        }
+    }
+
     /// <summary>
     /// The DCSData built from the config files only contains data for bindings with assigned buttons.
     /// This means some diff.lua files dont even exist if no buttons have been assigned to them and
@@ -117,7 +140,7 @@ public class GroupsVMHelper
     /// </summary>
     private void AddMissingAircraftFromHTMLFiles()
     {
-        string htmlFilesFolder = SavedGameFolderPath + "\\InputLayoutsTxt";
+        string htmlFilesFolder = SavedGamesPath + "\\InputLayoutsTxt";
 
         foreach (DCSAircraft aircraft in Data.Aircraft.Values)
         {

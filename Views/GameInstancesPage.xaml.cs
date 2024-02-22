@@ -42,13 +42,13 @@ namespace RinceDCS.Views
             ViewModel.UpdateGameExePath(instance, newPath);
         }
 
-        private async void SelectSavedGameFolderPath_Click(object sender, RoutedEventArgs e)
+        private async void SelectSavedGamesPath_Click(object sender, RoutedEventArgs e)
         {
             InstanceData instance = (InstanceData)((Button)sender).DataContext;
 
             string newPath = await DialogService.Default.OpenPickFolder();
 
-            ViewModel.UpdateSavedGameFolderPathh(instance, newPath);
+            ViewModel.UpdateSavedGamesPathh(instance, newPath);
         }
 
         private void DeleteInstance_Click(object sender, RoutedEventArgs e)

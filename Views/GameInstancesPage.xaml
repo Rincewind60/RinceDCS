@@ -72,15 +72,15 @@
                         <TextBlock 
                             Grid.Row="0" 
                             Grid.Column="3" 
-                            Text="{x:Bind SavedGameFolderPath, Mode=OneWay}" 
+                            Text="{x:Bind SavedGamesPath, Mode=OneWay}" 
                             VerticalAlignment="Center"
                             FontWeight="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource StyleRowFontWeight}}"/>
                         <Button 
                             Grid.Row="0" 
                             Grid.Column="4" 
-                            Name="SelectSavedGameFolderPath" 
+                            Name="SelectSavedGamesPath" 
                             Visibility="{x:Bind IsHeading, Mode=OneWay, Converter={StaticResource HideIfHeading}}" 
-                            Click="SelectSavedGameFolderPath_Click">
+                            Click="SelectSavedGamesPath_Click">
                             <SymbolIcon Symbol="OpenFile"/>
                         </Button>
                         <Button 

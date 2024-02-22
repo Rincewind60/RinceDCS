@@ -16,12 +16,12 @@ public class DCSData
     public Dictionary<DCSAircraftKey, DCSAircraft> Aircraft { get; set; } = new();
     public Dictionary<DCSJoystickKey, DCSJoystick> Joysticks { get; set; } = new();
     public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
+    public Dictionary<string, DCSModifier> Modifiers { get; set; } = new();
 }
 
 public class DCSAircraft
 {
     public DCSAircraftKey Key { get; set; }
-
     public Dictionary<DCSBindingKey, DCSBinding> Bindings { get; set; } = new();
 }
 
@@ -61,6 +61,7 @@ public class DCSButton
     public string Name { get; set; }
     public List<string> Modifiers { get; set; } = new();
     public AxisFilter AxisFilter { get; set; }
+    public bool IsModifier { get { return Modifiers.Count > 0; } }
 }
 
 public class DCSButtonChanges
@@ -68,4 +69,12 @@ public class DCSButtonChanges
     public List<DCSButton> Changed { get; set; } = new();
     public List<DCSButton> Added { get; set; } = new();
     public List<DCSButton> Removed { get; set; } = new();
+}
+
+public class DCSModifier
+{
+    public string Name { get; set; }
+    public string Device { get; set; }
+    public string Key { get; set; }
+    public bool Switch { get; set; }
 }

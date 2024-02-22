@@ -24,7 +24,7 @@ public partial class InstanceData : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNameEditable))]
-    private string savedGameFolderPath;
+    private string savedGamesPath;
 
     [ObservableProperty]
     private bool isHeading;
@@ -37,7 +37,7 @@ public partial class InstanceData : ObservableObject
 
     public bool IsValid
     {
-        get { return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(GameExePath) && !string.IsNullOrWhiteSpace(SavedGameFolderPath); }
+        get { return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(GameExePath) && !string.IsNullOrWhiteSpace(SavedGamesPath); }
     }
 }
 
@@ -53,10 +53,10 @@ public partial class GameInstancesViewModel : ObservableObject
     public GameInstancesViewModel(List<RinceDCSInstance> instances)
     {
         Instances = new();
-        Instances.Add(new InstanceData() { Name = "Name", GameExePath = "Game Executable Path", SavedGameFolderPath = "Saved Games Folder Path", IsHeading = true });
+        Instances.Add(new InstanceData() { Name = "Name", GameExePath = "Game Executable Path", SavedGamesPath = "Saved Games Folder Path", IsHeading = true });
         foreach(RinceDCSInstance instance in instances)
         {
-            InstanceData instanceData = new InstanceData() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath, IsHeading = false };
+            InstanceData instanceData = new InstanceData() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGamesPath = instance.SavedGamesPath, IsHeading = false };
             Instances.Add(instanceData);
         }
 
@@ -66,7 +66,7 @@ public partial class GameInstancesViewModel : ObservableObject
     [RelayCommand]
     public void AddInstance()
     {
-        Instances.Add(new InstanceData() { Name = "", GameExePath = "", SavedGameFolderPath = "", IsHeading = false });
+        Instances.Add(new InstanceData() { Name = "", GameExePath = "", SavedGamesPath = "", IsHeading = false });
         ValidateInstances();
     }
 
@@ -88,16 +88,16 @@ public partial class GameInstancesViewModel : ObservableObject
             instance.Name = gameFolderPath.Split('\\').Last();
         }
 
-        instance.SavedGameFolderPath = DCSService.Default.GetDCSSavedGamesPath(gameFolderPath, instance.SavedGameFolderPath);
+        instance.SavedGamesPath = DCSService.Default.GetDCSSavedGamesPath(gameFolderPath, instance.SavedGamesPath);
 
         ValidateInstances();
     }
 
-    public void UpdateSavedGameFolderPathh(InstanceData instance, string newPath)
+    public void UpdateSavedGamesPathh(InstanceData instance, string newPath)
     {
         if (string.IsNullOrEmpty(newPath)) return;
 
-        instance.SavedGameFolderPath = newPath;
+        instance.SavedGamesPath = newPath;
 
         ValidateInstances();
     }

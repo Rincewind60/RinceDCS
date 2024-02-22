@@ -77,7 +77,12 @@
                 Label="Sticks" 
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditSticks}"
                 Click="EditButton_Click"/>
-            <AppBarSeparator/>
+            <AppBarButton
+                Name="Modifiers"
+                Icon="Edit"
+                Label="Modifiers"
+                Click="Modifiers_Click"
+                />
             <AppBarButton Label="Help" Click="Help_Click"/>
             <AppBarButton Label="About" Click="About_Click"/>
         </CommandBar>

@@ -15,6 +15,10 @@ public class RinceDCSGroups
 {
     public List<RinceDCSGroup> Groups { get; set; } = new();
 
+    public List<RinceDCSGroupModifier> Modifiers { get; set; } = new();
+
+    public string DefaultModifierName { get; set; }
+
     [property: JsonIgnore]
     public Dictionary<string, RinceDCSGroup> AllGroups { get; set; } = new();
 
@@ -36,6 +40,14 @@ public class RinceDCSGroup
     public List<RinceDCSGroupAircraft> Aircraft { get; set; } = new();
 }
 
+public class RinceDCSGroupModifier
+{
+    public string Name { get; set; }
+    public string Device { get; set; }
+    public string Key { get; set; }
+    public bool Switch { get; set; }
+}
+
 public class RinceDCSGroupBinding
 {
     public string Id { get; set; }
@@ -53,6 +65,7 @@ public class RinceDCSGroupButton
     public string Name { get; set; }
     public List<string> Modifiers { get; set; } = new();
     public AxisFilter AxisFilter { get; set; }
+    public bool IsModifier { get { return Modifiers.Count > 0; } }
 }
 
 public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceDCSGroupAircraft>

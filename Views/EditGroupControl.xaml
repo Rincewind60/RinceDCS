@@ -47,10 +47,10 @@
                 Width="100"
                 VerticalAlignment="Center"/>
             <ComboBox
-                Name="BindingGroupsCombo" 
+                Name="GroupsCombo" 
                 ItemsSource="{x:Bind ViewModel.Groups}" 
                 SelectedItem="{x:Bind ViewModel.CurrentBindingGroup, Mode=TwoWay}"
-                SelectionChanged="BindingGroupsCombo_SelectionChanged"
+                SelectionChanged="GroupsCombo_SelectionChanged"
                 DisplayMemberPath="Name"
                 Margin="6,0,0,0"
                 MinWidth="180"

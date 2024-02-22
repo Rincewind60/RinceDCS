@@ -100,8 +100,7 @@ public class JoystickVMHelper
                                       from grpButton in gj.Buttons
                                       where gj.Joystick == stick.AttachedJoystick &&
                                             grpButton.Name == button.ButtonName &&
-                                            ((button.IsModifier == true && grpButton.Modifiers.Count > 0) ||
-                                            (button.IsModifier == false && grpButton.Modifiers.Count == 0))
+                                            button.IsModifier == grpButton.IsModifier
                                       select grp;
                 if (groupsWithButton.Count() > 0)
                 {
@@ -144,8 +143,7 @@ public class JoystickVMHelper
         foreach (DCSButton button in bindingButtons.Buttons.Values)
         {
             AssignedButtonKey key;
-            bool isModifer = button.Modifiers.Count > 0;
-            key = new(button.Name, isModifer);
+            key = new(button.Name, button.IsModifier);
             if (buttonsOnLayout.ContainsKey(key))
             {
                 AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);

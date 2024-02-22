@@ -215,7 +215,7 @@ public partial class GameViewModel : ObservableRecipient
         ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Update DCS", page, "Start Export", null, null, "Cancel");
         if (result == ContentDialogResult.Primary)
         {
-            DCSService.Default.UpdateDCSConfigFiles(CurrentInstance.SavedGameFolderPath, CurrentInstanceGroups, CurrentInstanceDCSData, page.ViewModel.GetSelectedAircraft());
+            DCSService.Default.UpdateDCSConfigFiles(CurrentInstance.SavedGamesPath, CurrentInstanceGroups, CurrentInstanceDCSData, page.ViewModel.GetSelectedAircraft());
             await DialogService.Default.OpenInfoDialog("Update DCS", "DCS Joystick configuration changes applied");
         }
     }
@@ -230,10 +230,10 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             LoadBindingDataForInstance(CurrentInstance);
-            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.BindingGroups, CurrentInstance.SavedGameFolderPath);
-            CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
+            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.Groups, CurrentInstance.SavedGamesPath);
+            CurrentInstance.Groups = groupsHelper.UpdatedGroups();
             CurrentInstanceDCSData = CurrentInstance.BindingsData;
-            CurrentInstanceGroups = CurrentInstance.BindingGroups;
+            CurrentInstanceGroups = CurrentInstance.Groups;
             SetCurrentAircraftForCurrentInstance();
         }
     }
@@ -391,7 +391,7 @@ public partial class GameViewModel : ObservableRecipient
     {
         foreach (InstanceData instance in instances.Skip(1).ExceptBy(CurrentFile.Instances.Select(i => i.GameExePath), j => j.GameExePath))
         {
-            RinceDCSInstance newInstance = new() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGameFolderPath = instance.SavedGameFolderPath };
+            RinceDCSInstance newInstance = new() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGamesPath = instance.SavedGamesPath };
             //            LoadBindingDataForInstance(newInstance);
             CurrentFile.Instances.Add(newInstance);
         }
@@ -407,19 +407,19 @@ public partial class GameViewModel : ObservableRecipient
                         instance = gameInstance,
                         newName = instanceData.Name,
                         gameExePath = instanceData.GameExePath,
-                        savedGameFolderPath = instanceData.SavedGameFolderPath
+                        SavedGamesPath = instanceData.SavedGamesPath
                     };
 
         foreach (var updated in query)
         {
             updated.instance.Name = updated.newName;
-            if (updated.instance.GameExePath != updated.gameExePath || updated.instance.SavedGameFolderPath != updated.savedGameFolderPath)
+            if (updated.instance.GameExePath != updated.gameExePath || updated.instance.SavedGamesPath != updated.SavedGamesPath)
             {
                 updated.instance.GameExePath = updated.gameExePath;
-                updated.instance.SavedGameFolderPath = updated.savedGameFolderPath;
+                updated.instance.SavedGamesPath = updated.SavedGamesPath;
                 LoadBindingDataForInstance(updated.instance);
-                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.BindingGroups, updated.instance.SavedGameFolderPath);
-                CurrentInstance.BindingGroups = groupsHelper.UpdatedGroups();
+                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.Groups, updated.instance.SavedGamesPath);
+                CurrentInstance.Groups = groupsHelper.UpdatedGroups();
             }
         }
     }
@@ -446,7 +446,7 @@ public partial class GameViewModel : ObservableRecipient
         DCSData data = DCSService.Default.GetBindingData(
             instance.Name,
             instance.GameExePath,
-            instance.SavedGameFolderPath,
+            instance.SavedGamesPath,
             AttachedJoysticks);
 
         instance.BindingsData = data;

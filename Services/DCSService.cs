@@ -4,11 +4,15 @@ using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using Windows.Media.AppBroadcasting;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RinceDCS.Services;
 
@@ -28,30 +32,95 @@ public class DCSService
     /// </summary>
     /// <param name="gameName"></param>
     /// <param name="gameExePath"></param>
-    /// <param name="savedGameFolderPath"></param>
+    /// <param name="savedGamesPath"></param>
     /// <param name="sticks"></param>
     /// <returns></returns>
-    public DCSData GetBindingData(string gameName, string gameExePath, string savedGameFolderPath, List<AttachedJoystick> sticks)
+    public DCSData GetBindingData(string gameName, string gameExePath, string savedGamesPath, List<AttachedJoystick> sticks)
     {
         ///TODO: If no diff.lua file exists for an aircraft/joystick combination then assume there should be (the default)
         DCSData data = new();
 
         BuildListOfJoysticks(data, sticks);
 
-        string htmlFilesFolder = savedGameFolderPath + "\\InputLayoutsTxt";
+        ReadDefaultModifiersLua(data, gameExePath);
+
+        string htmlFilesFolder = savedGamesPath + "\\InputLayoutsTxt";
         if (Directory.Exists(htmlFilesFolder))
         {
             BuildListOfAircraftFromHTMLFiles(data, htmlFilesFolder);
             BuildBindingsFromHTMLFiles(data, htmlFilesFolder);
         }
 
-        string savedGamesAircraftPath = savedGameFolderPath + "\\Config\\Input";
+        string savedGamesAircraftPath = savedGamesPath + "\\Config\\Input";
         if (Directory.Exists(savedGamesAircraftPath))
         {
+            ReadAircraftModifiersLua(data, savedGamesAircraftPath);
             BuildButtonBindingsFromSavedGame(data, savedGamesAircraftPath);
         }
 
         return data;
+    }
+
+    private void ReadDefaultModifiersLua(DCSData data, string gameExePath)
+    {
+        string modifierPath = Path.GetDirectoryName(Path.GetDirectoryName(gameExePath)) + "\\Config\\Input\\Aircrafts\\modifiers.lua";
+
+        Table table = Script.RunFile(modifierPath).Table;
+
+        for(int i = 0; i < table.Keys.Count(); i++)
+        {
+            DCSModifier newModifier = new();
+            newModifier.Name = table.Keys.ElementAt(i).String;
+            Table modiferTable = table.Values.ElementAt(i).Table;
+            for(int j = 0; j < modiferTable.Keys.Count(); j++)
+            {
+                string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
+                if(modifierPropertyName == "device")
+                {
+                    newModifier.Device = modiferTable.Values.ElementAt(j).ToString();
+                }
+                else if(modifierPropertyName == "key")
+                {
+                    newModifier.Key = modiferTable.Values.ElementAt(j).ToString();
+                }
+            }
+            data.Modifiers[newModifier.Name] = newModifier;
+        }
+    }
+
+    private void ReadAircraftModifiersLua(DCSData data, string savedGamesAircraftPath)
+    {
+        foreach (DCSAircraft aircraft in data.Aircraft.Values)
+        {
+            string modifierPath = savedGamesAircraftPath + "\\" + aircraft.Key.Name + "\\modifiers.lua";
+            if(File.Exists(modifierPath))
+            {
+                Table table = Script.RunFile(modifierPath).Table;
+                for(int i = 0; i < table.Keys.Count(); i++)
+                {
+                    string name = table.Keys.ElementAt(i).String;
+                    if(!data.Modifiers.ContainsKey(name))
+                    {
+                        DCSModifier newModifier = new();
+                        newModifier.Name = name;
+                        Table modiferTable = table.Values.ElementAt(i).Table;
+                        for(int j = 0; j < modiferTable.Keys.Count(); j++)
+                        {
+                            string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
+                            if(modifierPropertyName == "device")
+                            {
+                                newModifier.Device = modiferTable.Values.ElementAt(j).ToString();
+                            }
+                            else if(modifierPropertyName == "key")
+                            {
+                                newModifier.Key = modiferTable.Values.ElementAt(j).ToString();
+                            }
+                        }
+                        data.Modifiers[newModifier.Name] = newModifier;
+                    }
+                }
+            }
+        }
     }
 
     public string GetDCSSavedGamesPath(string gameFolderPath, string currentSavedGamesFolder)
@@ -96,10 +165,10 @@ public class DCSService
         return bindings;
     }
 
-    public void UpdateDCSConfigFiles(string savedGameFolderPath, RinceDCSGroups bindingGroups, DCSData data, List<string> aircraftNames)
+    public void UpdateDCSConfigFiles(string SavedGamesPath, RinceDCSGroups Groups, DCSData data, List<string> aircraftNames)
     {
         //  Find all RinceDCS buttons to be added
-        var rinceButtons = from grp in bindingGroups.Groups
+        var rinceButtons = from grp in Groups.Groups
                            from aircraft in grp.Aircraft
                            from gj in grp.Joysticks
                            from button in gj.Buttons
@@ -145,14 +214,14 @@ public class DCSService
 
         var updates = from update in rinceButtons.Concat(dcsRemoveButtons).Concat(dcsAddedButtons) select update;
 
-        BuildLuaFile(savedGameFolderPath, updates, aircraftNames);
+        BuildLuaFile(SavedGamesPath, updates, aircraftNames);
     }
 
-    private void BuildLuaFile(string savedGameFolderPath, IEnumerable<GameUpdateButton> updates, List<string> aircraftNames)
+    private void BuildLuaFile(string SavedGamesPath, IEnumerable<GameUpdateButton> updates, List<string> aircraftNames)
     {
-        string configFolder = savedGameFolderPath + "\\Config\\Input";
+        string configFolder = SavedGamesPath + "\\Config\\Input";
 
-        BackupAircraftConfigFiles(savedGameFolderPath, aircraftNames, configFolder);
+        BackupAircraftConfigFiles(SavedGamesPath, aircraftNames, configFolder);
 
         var ordedUpdates = updates.OrderBy(row => row.AircraftName)
                                   .ThenBy(row => row.Joystick.Name)
@@ -309,9 +378,9 @@ public class DCSService
         luaBuilder.AppendFooter();
     }
 
-    private static void BackupAircraftConfigFiles(string savedGameFolderPath, List<string> aircraftNames, string configFolder)
+    private static void BackupAircraftConfigFiles(string SavedGamesPath, List<string> aircraftNames, string configFolder)
     {
-        string backupFolder = savedGameFolderPath + "\\RinceDCS\\Backups\\Config_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "\\Input";
+        string backupFolder = SavedGamesPath + "\\RinceDCS\\Backups\\Config_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "\\Input";
 
         Directory.CreateDirectory(backupFolder);
 
@@ -837,13 +906,12 @@ public class DCSService
                 sb.AppendLine("\t\t\t\t\t},");
             }
             sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + buttonName + "\",");
-            List<string> modifiers = button.AddButton != null ? button.AddButton.Modifiers != null ? button.AddButton.Modifiers : null : null;
-            if(modifiers != null && modifiers.Count > 0)
+            if(button.AddButton != null && button.AddButton.IsModifier)
             {
                 sb.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
-                for(int index = 0; index < modifiers.Count; index++)
+                for (int index = 0; index < button.AddButton.Modifiers.Count; index++)
                 {
-                    sb.AppendLine("\t\t\t\t\t\t[" + (index + 1) + "] = \"" + modifiers[index] + "\",");
+                    sb.AppendLine("\t\t\t\t\t\t[" + (index + 1) + "] = \"" + button.AddButton.Modifiers[index] + "\",");
                 }
                 sb.AppendLine("\t\t\t\t\t},");
             }

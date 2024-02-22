@@ -49,7 +49,7 @@ namespace RinceDCS.Views
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                ManageJoystickControl ctrl = new(stick, rinceDCSInstance.BindingGroups, dcsData, currentAircraft);
+                ManageJoystickControl ctrl = new(stick, rinceDCSInstance.Groups, dcsData, currentAircraft);
                 ctrl.ViewModel.IsActive = true;
 
                 newItem.Content = ctrl;

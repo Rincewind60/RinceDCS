@@ -65,7 +65,7 @@ public sealed partial class EditGroupControl : UserControl
         */
     }
 
-    private void BindingGroupsCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void GroupsCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ViewModel.CurrentBindingGroupChanged();
 

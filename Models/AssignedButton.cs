@@ -16,6 +16,8 @@ public class AssignedButton
     public List<AssignedCommand> Commands { get; } = new();
     public AxisFilter AxisFilter { get; set; }
 
+    public bool IsModifier { get { return Modifiers.Count > 0; } }
+
     public string Command
     {
         get
@@ -59,7 +61,7 @@ public class AssignedButton
     {
         get
         {
-            string modifier = Modifiers.Count > 0 ? Modifiers[0] : "";
+            string modifier = IsModifier ? Modifiers[0] : "";
             for (int i = 1; i < Modifiers.Count; i++)
             {
                 modifier += "," + Modifiers[i];

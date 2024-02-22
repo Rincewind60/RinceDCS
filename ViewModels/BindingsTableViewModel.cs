@@ -231,7 +231,7 @@ public partial class BindingsTableViewModel : ObservableRecipient,
         {
             foreach(DCSButton button in binding.AircraftJoysticks[key].Buttons.Values)
             {
-                if(button.Modifiers.Count > 0)
+                if(button.IsModifier)
                 {
                     modifiers += "[";
                     for(int i = 0; i < button.Modifiers.Count; i++)

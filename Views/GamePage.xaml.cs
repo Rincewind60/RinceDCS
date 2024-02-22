@@ -54,7 +54,7 @@ namespace RinceDCS.Views
 
             WeakReferenceMessenger.Default.Register<ExportKneeboardMessage>(this, (r, m) =>
             {
-                JoystickUtil.ExportKneeboard(m.Stick.Image, m.AssignedButtons, m.AircraftName, m.Stick.AttachedJoystick.DCSName, ViewModel.CurrentInstance.SavedGameFolderPath, m.Stick.Font, m.Stick.FontSize);
+                JoystickUtil.ExportKneeboard(m.Stick.Image, m.AssignedButtons, m.AircraftName, m.Stick.AttachedJoystick.DCSName, ViewModel.CurrentInstance.SavedGamesPath, m.Stick.Font, m.Stick.FontSize);
             });
         }
 
@@ -127,7 +127,7 @@ namespace RinceDCS.Views
         private void GroupsButton_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditGroupsPage),
-                Tuple.Create(ViewModel.CurrentInstance.BindingGroups, ViewModel.CurrentInstanceDCSData));
+                Tuple.Create(ViewModel.CurrentInstance.Groups, ViewModel.CurrentInstanceDCSData));
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
@@ -139,10 +139,15 @@ namespace RinceDCS.Views
         {
             DetailsViewFrame.Navigate(typeof(ViewJoystickPage),
                 Tuple.Create(ViewModel.CurrentInstance.Name,
-                             ViewModel.CurrentInstance.SavedGameFolderPath,
+                             ViewModel.CurrentInstance.SavedGamesPath,
                              ViewModel.CurrentFile,
                              ViewModel.CurrentInstanceDCSData,
                              ViewModel.CurrentAircraft));
+        }
+
+        private void Modifiers_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

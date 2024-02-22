@@ -13,10 +13,10 @@ public partial class RinceDCSInstance : ObservableObject
     private string gameExePath;
 
     [ObservableProperty]
-    private string savedGameFolderPath;
+    private string savedGamesPath;
 
     [ObservableProperty]
-    private RinceDCSGroups bindingGroups;
+    private RinceDCSGroups groups;
 
     public ObservableCollection<RinceDCSAircraft> Aircraft { get; set; } = new();
 
