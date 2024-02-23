@@ -16,6 +16,8 @@ namespace RinceDCS.Views;
 /// </summary>
 public sealed partial class EditGroupsPage : Page
 {
+    public bool IsGroupSelected { get; set; } = false;
+
     public EditGroupsPage()
     {
         this.InitializeComponent();
@@ -47,5 +49,25 @@ public sealed partial class EditGroupsPage : Page
         EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.ToList(), data.Item1.AllGroups);
         newByAircraftItem.Content = aircraftCtrl;
         EditGroupTabs.TabItems.Add(newByAircraftItem);
+    }
+
+    private void UpdateGroup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+
+    }
+
+    private void MergeGroup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+
+    }
+
+    private void DeleteGroup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+
+    }
+
+    private void AddGroup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+
     }
 }

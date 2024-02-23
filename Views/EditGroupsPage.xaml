@@ -8,10 +8,56 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <TabView
+    <Grid Margin="4" Padding="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Orientation="Horizontal"
+            Margin="8,0,0,0">
+            <Button 
+                Name="UpdateGroup" 
+                Click="UpdateGroup_Click"
+                IsEnabled="{x:Bind IsGroupSelected}"
+                Margin="2,0,2,0">
+                <SymbolIcon Symbol="Edit"/>
+            </Button>
+            <Button 
+                Name="MergeGroup"
+                Click="MergeGroup_Click" 
+                IsEnabled="{x:Bind IsGroupSelected}"
+                Margin="2,0,2,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Merge"></TextBlock>
+                    <SymbolIcon Symbol="Copy"/>
+                </StackPanel>
+            </Button>
+            <Button 
+                Name="DeleteGroup" 
+                Click="DeleteGroup_Click" 
+                IsEnabled="{x:Bind IsGroupSelected}"
+                Margin="2,0,2,0">
+                <SymbolIcon Symbol="Delete"/>
+            </Button>
+            <Button 
+                Name="AddGroup" 
+                Click="AddGroup_Click" 
+                Margin="2,0,2,0">
+                <SymbolIcon Symbol="Add"/>
+            </Button>
+        </StackPanel>
+
+        <TabView
             Name="EditGroupTabs"
-            Grid.Row="3"
+            Grid.Row="1"
             Grid.Column="0"
             IsAddTabButtonVisible="False"/>
-
+    </Grid>
 </Page>

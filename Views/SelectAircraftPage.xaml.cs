@@ -68,14 +68,14 @@ namespace RinceDCS.Views
 
         private void SelectAircraft_Unchecked(object sender, RoutedEventArgs e)
         {
-            bool allUnchecked = true;
+            bool anyUnchecked = false;
             foreach (var item in SelectAircraft.Items)
             {
                 ListViewItem listViewItem = SelectAircraft.ContainerFromItem(item) as ListViewItem;
                 if (listViewItem != null)
                 {
                     CheckBox checkbox = listViewItem.FindDescendant<CheckBox>();
-                    allUnchecked &= !checkbox.IsChecked.Value;
+                    anyUnchecked |= !checkbox.IsChecked.Value;
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace RinceDCS.Views
                 }
             }
 
-            if (allUnchecked)
+            if (anyUnchecked)
             {
                 SelectAll.Unchecked -= SelectAll_Unchecked;
                 ViewModel.SelectAll = false;
@@ -95,7 +95,6 @@ namespace RinceDCS.Views
                 ViewModel.SelectAll = true;
                 SelectAll.Checked += SelectAll_Checked;
             }
-
         }
 
         private void SelectAll_Checked(object sender, RoutedEventArgs e)
