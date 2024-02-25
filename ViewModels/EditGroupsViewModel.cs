@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,12 @@ public partial class EditGroupsViewModel : ObservableObject
     private EditGroupsTableData groupsData;
 
     private RinceDCSGroups Groups;
+    private List<AttachedJoystick> Sticks;
 
-    public EditGroupsViewModel(RinceDCSGroups groups)
+    public EditGroupsViewModel(RinceDCSGroups groups, List<AttachedJoystick> sticks)
     {
         Groups = groups;
+        Sticks = sticks;
 
         BuildCategories();
     }
@@ -52,17 +55,17 @@ public partial class EditGroupsViewModel : ObservableObject
 
         EditGroupsTableData newGroupsData = new();
 
-        Dictionary<string, int> bindingHeadingIndex = new();
+        //Dictionary<AttachedJoystick, int> joystickHeadingIndex = new();
 
-        //CurrentBindingGroup.Bindings.Sort((x, y) => {
-        //    return x.Id.CompareTo(y.Id);
-        //});
+        AttachedJoystick[] sticks = new AttachedJoystick[Sticks.Count]; ;
+        Sticks.CopyTo(sticks, 0);
+        sticks = sticks.OrderBy(x => x.Name).ToArray();
 
-        //for (int i = 0; i < CurrentBindingGroup.Bindings.Count; i++)
-        //{
-        //    bindingHeadingIndex[CurrentBindingGroup.Bindings[i].Id] = i;
-        //    newGroupData.BindingHeadings.Add(CurrentBindingGroup.Bindings[i].Id);
-        //}
+        for (int i = 0; i < sticks.Count(); i++)
+        {
+            //joystickHeadingIndex[sticks[i]] = i;
+            newGroupsData.Headings.Add(sticks[i].Name);
+        }
 
         List<RinceDCSGroup> groupsToDisplay = new();
         if(CurrentCategory == "All")
@@ -78,21 +81,23 @@ public partial class EditGroupsViewModel : ObservableObject
         {
             dynamic dynGroup = new ExpandoObject();
             dynGroup.Name = grp.Name;
-            //IDictionary<String, Object> dynGroupMembers = (IDictionary<String, Object>)dynGroup;
-            //for (int j = 0; j < grp.JoystickBindings.Count; j++)
-            //{
-            //    string bindingName = "Binding" + j.ToString();
-            //    if (bindingHeadingIndex[boundAircraft.BindingId] == j)
-            //    {
-            //        dynAircraftMembers.TryAdd(bindingName, boundAircraft);
-            //        dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
-            //    }
-            //    else
-            //    {
-            //        dynAircraftMembers.TryAdd(bindingName, null);
-            //        dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Collapsed);
-            //    }
-            //}
+            IDictionary<String, Object> dynGroupMembers = (IDictionary<String, Object>)dynGroup;
+            for (int j = 0; j < sticks.Count(); j++)
+            {
+                string bindingName = "Stick" + j.ToString();
+
+                RinceDCSGroupJoystick grpStick = grp.Joysticks.Find(row => row.Joystick == sticks[j]);
+                if(grpStick.Buttons.Count > 0)
+                {
+                    dynGroupMembers.TryAdd(bindingName + "Buttons", grpStick.GetButtonsLabel());
+                    dynGroupMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
+                }
+                else
+                {
+                    dynGroupMembers.TryAdd(bindingName + "Buttons", null);
+                    dynGroupMembers.TryAdd(bindingName + "Visible", Visibility.Collapsed);
+                }
+            }
             newGroupsData.Groups.Add(dynGroup);
         }
 

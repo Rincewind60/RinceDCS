@@ -58,6 +58,18 @@ public class RinceDCSGroupJoystick
 {
     public AttachedJoystick Joystick { get; set; }
     public List<RinceDCSGroupButton> Buttons { get; set; }= new();
+
+    public string GetButtonsLabel()
+    {
+        string label = "";
+
+        foreach(var button in Buttons)
+        {
+            label += button.Name + " "; 
+        }
+
+        return label;
+    }
 }
 
 public class RinceDCSGroupButton

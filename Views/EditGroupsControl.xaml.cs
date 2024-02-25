@@ -25,11 +25,11 @@ namespace RinceDCS.Views;
 
 public sealed partial class EditGroupsControl : UserControl
 {
-    public EditGroupsControl(RinceDCSGroups groups)
+    public EditGroupsControl(RinceDCSGroups groups, List<AttachedJoystick> sticks)
     {
         this.InitializeComponent();
 
-        EditGroupsViewModel vm = new(groups);
+        EditGroupsViewModel vm = new(groups, sticks);
 
         DataContext = vm;
     }
@@ -52,30 +52,29 @@ public sealed partial class EditGroupsControl : UserControl
             Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("Name"), Mode = BindingMode.OneWay }
         });
 
-        //int bindingIndex = 0;
-        //foreach (RinceDCSGroupBinding binding in ViewModel.CurrentBindingGroup.Bindings)
-        //{
-        //    DataGridTemplateColumn column = new() { Header = binding.Id };
+        int bindingIndex = 0;
+        foreach (string stickName in ViewModel.GroupsData.Headings)
+        {
+            DataGridTemplateColumn column = new() { Header = stickName };
 
-        //    string bindingName = "Binding" + bindingIndex.ToString();
-        //    string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
-        //            "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
-        //            "<StackPanel " +
-        //                "Orientation=\"Horizontal\" " +
-        //                "Visibility=\"{Binding " + bindingName + "Visible}\">" +
-        //                "<CheckBox " +
-        //                    "Margin=\"12,0,12,0\" " +
-        //                    "Content=\"{Binding " + bindingName + ".CommandName}\" " +
-        //                    "IsChecked=\"{Binding " + bindingName + ".IsActive, Mode=TwoWay}\">" +
-        //                "</CheckBox>" +
-        //            "</StackPanel>" +
-        //        "</DataTemplate>";
+            string bindingName = "Stick" + bindingIndex.ToString();
+            string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+                    "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
+                    "<StackPanel " +
+                        "Orientation=\"Horizontal\" " +
+                        "Visibility=\"{Binding " + bindingName + "Visible}\">" +
+                        "<TextBlock " +
+                            "Margin=\"12,0,12,0\" " +
+                            "Text=\"{Binding " + bindingName + "Buttons}\">" +
+                        "</TextBlock>" +
+                    "</StackPanel>" +
+                "</DataTemplate>";
 
-        //    DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
-        //    column.CellTemplate = cellTemplate;
+            DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
+            column.CellTemplate = cellTemplate;
 
-        //    aircraftDataGrid.Columns.Add(column);
-        //    bindingIndex++;
-        //}
+            groupsDataGrid.Columns.Add(column);
+            bindingIndex++;
+        }
     }
 }

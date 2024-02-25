@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
 using RinceDCS.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -28,11 +29,16 @@ public sealed partial class EditGroupsPage : Page
         base.OnNavigatedTo(e);
 
         Tuple<RinceDCSGroups, DCSData> data = e.Parameter as Tuple<RinceDCSGroups, DCSData>;
+        List<AttachedJoystick> sticks = new();
+        foreach(var joystick in data.Item2.Joysticks.Values)
+        {
+            sticks.Add(joystick.Joystick);
+        }
 
         TabViewItem newByGroupsItem = new TabViewItem();
         newByGroupsItem.Header = "All Groups";
         newByGroupsItem.IsClosable = false;
-        EditGroupsControl groupsCtrl = new(data.Item1);
+        EditGroupsControl groupsCtrl = new(data.Item1, sticks);
         newByGroupsItem.Content = groupsCtrl;
         EditGroupTabs.TabItems.Add(newByGroupsItem);
 
