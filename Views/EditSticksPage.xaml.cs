@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -26,9 +25,9 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class ViewJoystickPage : Page
+    public sealed partial class EditSticksPage : Page
     {
-        public ViewJoystickPage()
+        public EditSticksPage()
         {
             this.InitializeComponent();
         }
@@ -37,26 +36,24 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft>;
+            Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData, RinceDCSAircraft>;
 
-            string instanceName = data.Item1;
-            string savedGamesFolder = data.Item2;
-            RinceDCSFile rinceDCSFile = data.Item3;
-            DCSData dcsData = data.Item4;
-            RinceDCSAircraft currentAircraft = data.Item5;
+            List<RinceDCSJoystick> joysticks = data.Item1;
+            RinceDCSInstance rinceDCSInstance = data.Item2;
+            DCSData dcsData = data.Item3;
+            RinceDCSAircraft currentAircraft = data.Item4;
 
-
-            foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
+            foreach (RinceDCSJoystick stick in joysticks)
             {
                 TabViewItem newItem = new TabViewItem();
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                ViewJoystickControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
+                EditStickControl ctrl = new(stick, rinceDCSInstance.Groups, dcsData, currentAircraft);
                 ctrl.ViewModel.IsActive = true;
 
                 newItem.Content = ctrl;
-                ViewJoysticks.TabItems.Add(newItem);
+                ManageJoysticks.TabItems.Add(newItem);
             }
         }
 
@@ -64,9 +61,9 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedFrom(e);
 
-            foreach(TabViewItem item in ViewJoysticks.TabItems)
+            foreach (TabViewItem item in ManageJoysticks.TabItems)
             {
-                ViewJoystickControl ctrl = item.Content as ViewJoystickControl;
+                ViewStickControl ctrl = item.Content as ViewStickControl;
                 if (ctrl != null)
                 {
                     ctrl.ViewModel.IsActive = false;

@@ -45,23 +45,23 @@
     <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="NLog.config" />
     <None Remove="Views\AboutPage.xaml" />
-    <None Remove="Views\BindingsTablePage.xaml" />
     <None Remove="Views\EditGroupAircraftControl.xaml" />
     <None Remove="Views\EditGroupControl.xaml" />
     <None Remove="Views\EditGroupsControl.xaml" />
     <None Remove="Views\EditGroupsPage.xaml" />
-    <None Remove="Views\EditJoystickLayoutControl.xaml" />
-    <None Remove="Views\EditJoystickLayoutPage.xaml" />
+    <None Remove="Views\EditLayoutControl.xaml" />
+    <None Remove="Views\EditLayoutsPage.xaml" />
+    <None Remove="Views\EditStickControl.xaml" />
+    <None Remove="Views\EditSticksPage.xaml" />
     <None Remove="Views\GameInstancesPage.xaml" />
     <None Remove="Views\GamePage.xaml" />
     <None Remove="Views\HelpPage.xaml" />
     <None Remove="Views\JoystickSettingsPage.xaml" />
-    <None Remove="Views\ManageJoystickControl.xaml" />
-    <None Remove="Views\ManageJoystickPage.xaml" />
     <None Remove="Views\PrintPage.xaml" />
     <None Remove="Views\SelectAircraftPage.xaml" />
-    <None Remove="Views\ViewJoystickControl.xaml" />
-    <None Remove="Views\ViewJoystickPage.xaml" />
+    <None Remove="Views\ViewActionsPage.xaml" />
+    <None Remove="Views\ViewStickControl.xaml" />
+    <None Remove="Views\ViewSticksPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -179,7 +179,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Page Update="Views\ManageJoystickControl.xaml">
+    <Page Update="Views\EditStickControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\SelectAircraftPage.xaml">
@@ -197,10 +197,10 @@
     <Page Update="Views\EditGroupsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\EditJoystickLayoutControl.xaml">
+    <Page Update="Views\EditLayoutControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\ViewJoystickControl.xaml">
+    <Page Update="Views\ViewStickControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -215,17 +215,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ViewJoystickPage.xaml">
+    <Page Update="Views\ViewSticksPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ManageJoystickPage.xaml">
+    <Page Update="Views\EditSticksPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\EditJoystickLayoutPage.xaml">
+    <Page Update="Views\EditLayoutsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -238,7 +238,7 @@
     <Page Update="Views\AboutPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\BindingsTablePage.xaml">
+    <Page Update="Views\ViewActionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\GameInstancesPage.xaml">

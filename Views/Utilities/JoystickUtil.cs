@@ -182,7 +182,7 @@ public class JoystickUtil
                         format.Alignment = StringAlignment.Far;
                     }
                     RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(button.JoystickButton.Width), (float)(fontSize+4));
-                    gfx.DrawString(button.Command, font, brush, rect, format);
+                    gfx.DrawString(button.Action, font, brush, rect, format);
                 }
             }
 

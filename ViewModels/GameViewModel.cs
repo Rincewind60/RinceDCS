@@ -443,7 +443,7 @@ public partial class GameViewModel : ObservableRecipient
     {
         if(instance.BindingsData != null) { return; }
 
-        DCSData data = DCSService.Default.GetBindingData(
+        DCSData data = DCSService.Default.GetControlsData(
             instance.Name,
             instance.GameExePath,
             instance.SavedGamesPath,

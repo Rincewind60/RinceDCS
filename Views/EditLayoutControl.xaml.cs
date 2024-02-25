@@ -30,11 +30,11 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace RinceDCS.Views
 {
-    public sealed partial class EditJoystickLayoutControl : UserControl
+    public sealed partial class EditLayoutsControl : UserControl
     {
         private bool isDrawing = false;
 
-        public EditJoystickLayoutControl(RinceDCSJoystick joystick)
+        public EditLayoutsControl(RinceDCSJoystick joystick)
         {
             this.InitializeComponent();
 

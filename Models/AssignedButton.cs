@@ -13,21 +13,21 @@ public class AssignedButton
     public bool IsAxisButton { get; set; }
     public RinceDCSJoystickButton JoystickButton { get; }
     public List<string> Modifiers { get; } = new();
-    public List<AssignedCommand> Commands { get; } = new();
+    public List<AssignedAction> Actions { get; } = new();
     public AxisFilter AxisFilter { get; set; }
 
     public bool IsModifier { get { return Modifiers.Count > 0; } }
 
-    public string Command
+    public string Action
     {
         get
         {
-            string command = Commands[0].CommandName;
-            for (int i = 1; i < Commands.Count; i++)
+            string action = Actions[0].ActionName;
+            for (int i = 1; i < Actions.Count; i++)
             {
-                command += "|" + Commands[i].CommandName;
+                action += "|" + Actions[i].ActionName;
             }
-            return command;
+            return action;
         }
     }
 
@@ -35,10 +35,10 @@ public class AssignedButton
     {
         get
         {
-            string category = Commands[0].CategoryName;
-            for (int i = 1; i < Commands.Count; i++)
+            string category = Actions[0].CategoryName;
+            for (int i = 1; i < Actions.Count; i++)
             {
-                category += "|" + Commands[i].CategoryName;
+                category += "|" + Actions[i].CategoryName;
             }
             return category;
         }
@@ -48,10 +48,10 @@ public class AssignedButton
     {
         get
         {
-            string id = Commands[0].BindID;
-            for (int i = 1; i < Commands.Count; i++)
+            string id = Actions[0].ActionId;
+            for (int i = 1; i < Actions.Count; i++)
             {
-                id += "|" + Commands[i].BindID;
+                id += "|" + Actions[i].ActionId;
             }
             return id;
         }
@@ -70,7 +70,7 @@ public class AssignedButton
         }
     }
 
-    public bool IsValid { get { return Commands.Count == 1; } }
+    public bool IsValid { get { return Actions.Count == 1; } }
 
     public AssignedButton(RinceDCSJoystickButton joyButton)
     {
@@ -78,16 +78,16 @@ public class AssignedButton
     }
 }
 
-public class AssignedCommand
+public class AssignedAction
 {
-    public string BindID { get; }
-    public string CommandName { get; }
+    public string ActionId { get; }
+    public string ActionName { get; }
     public string CategoryName { get; }
 
-    public AssignedCommand(string bindID, string commandName, string categoryName)
+    public AssignedAction(string actionId, string actionName, string categoryName)
     {
-        BindID = bindID;
-        CommandName = commandName;
+        ActionId = actionId;
+        ActionName = actionName;
         CategoryName = categoryName;
     }
 }

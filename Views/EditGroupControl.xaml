@@ -49,7 +49,7 @@
             <ComboBox
                 Name="GroupsCombo" 
                 ItemsSource="{x:Bind ViewModel.Groups}" 
-                SelectedItem="{x:Bind ViewModel.CurrentBindingGroup, Mode=TwoWay}"
+                SelectedItem="{x:Bind ViewModel.CurrentActionGroup, Mode=TwoWay}"
                 SelectionChanged="GroupsCombo_SelectionChanged"
                 DisplayMemberPath="Name"
                 Margin="6,0,0,0"

@@ -60,6 +60,38 @@ namespace RinceDCS.Views
 
         public GameViewModel ViewModel => (GameViewModel)DataContext;
 
+        private void ViewSticks_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToViewSticksPage();
+        }
+
+        private void ViewActions_Click(object sender, RoutedEventArgs e)
+        {
+            DetailsViewFrame.Navigate(typeof(ViewActionsPage),
+                Tuple.Create(ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
+        }
+
+        private void Help_Click(object sender, RoutedEventArgs e)
+        {
+            var helpWindow = WindowHelper.CreateWindow();
+            helpWindow.Title = "Rince DCS - Help";
+            HelpPage helpPage = new();
+            helpPage.RequestedTheme = this.ActualTheme;
+            helpWindow.Content = helpPage;
+            helpWindow.Activate();
+        }
+
+        private async void About_Click(object sender, RoutedEventArgs e)
+        {
+            AboutPage about = new();
+            await DialogService.Default.OpenInfoPageDialog("About", about);
+        }
+
+        private void InstancesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewModel.CurrentInstanceChanged();
+        }
+
         private async void UpdateInstances_Click(object sender, RoutedEventArgs e)
         {
             GameInstancesPage page = new(ViewModel.CurrentFile.Instances.ToList());
@@ -77,67 +109,35 @@ namespace RinceDCS.Views
             }
         }
 
-        private async void About_Click(object sender, RoutedEventArgs e)
-        {
-            AboutPage about = new();
-            await DialogService.Default.OpenInfoPageDialog("About", about);
-        }
-
-        private void InstancesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ViewModel.CurrentInstanceChanged();
-        }
-
         private void AircraftCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewModel.CurrentAircraftChanged();
             if(ViewModel.JoystickMode == DetailsDisplayMode.View)
             {
-                NavigateToViewPage();
+                NavigateToViewSticksPage();
             }
         }
 
-        private void Help_Click(object sender, RoutedEventArgs e)
+        private void EditSticks_Click(object sender, RoutedEventArgs e)
         {
-            var helpWindow = WindowHelper.CreateWindow();
-            helpWindow.Title = "Rince DCS - Help";
-            HelpPage helpPage = new();
-            helpPage.RequestedTheme = this.ActualTheme;
-            helpWindow.Content = helpPage;
-            helpWindow.Activate();
-        }
-
-        private void ViewButton_Click(object sender, RoutedEventArgs e)
-        {
-            NavigateToViewPage();
-        }
-
-        private void BindingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            DetailsViewFrame.Navigate(typeof(BindingsTablePage), 
-                Tuple.Create(ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
-        }
-
-        private void ManageButton_Click(object sender, RoutedEventArgs e)
-        {
-            DetailsViewFrame.Navigate(typeof(ManageJoystickPage),
+            DetailsViewFrame.Navigate(typeof(EditSticksPage),
                 Tuple.Create(ViewModel.CurrentFile.Joysticks.ToList(), ViewModel.CurrentInstance, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
         }
 
-        private void GroupsButton_Click(object sender, RoutedEventArgs e)
+        private void EditGroups_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditGroupsPage),
                 Tuple.Create(ViewModel.CurrentInstance.Groups, ViewModel.CurrentInstanceDCSData));
         }
 
-        private void EditButton_Click(object sender, RoutedEventArgs e)
+        private void EditLayouts_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(EditJoystickLayoutPage), ViewModel.CurrentFile);
+            DetailsViewFrame.Navigate(typeof(EditLayoutsPage), ViewModel.CurrentFile);
         }
 
-        private void NavigateToViewPage()
+        private void NavigateToViewSticksPage()
         {
-            DetailsViewFrame.Navigate(typeof(ViewJoystickPage),
+            DetailsViewFrame.Navigate(typeof(ViewSticksPage),
                 Tuple.Create(ViewModel.CurrentInstance.Name,
                              ViewModel.CurrentInstance.SavedGamesPath,
                              ViewModel.CurrentFile,
@@ -145,7 +145,7 @@ namespace RinceDCS.Views
                              ViewModel.CurrentAircraft));
         }
 
-        private void Modifiers_Click(object sender, RoutedEventArgs e)
+        private void EditModifiers_Click(object sender, RoutedEventArgs e)
         {
 
         }

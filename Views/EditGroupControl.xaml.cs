@@ -67,7 +67,7 @@ public sealed partial class EditGroupControl : UserControl
 
     private void GroupsCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        ViewModel.CurrentBindingGroupChanged();
+        ViewModel.CurrentActionGroupChanged();
 
         aircraftDataGrid.Columns.Clear();
 
@@ -80,11 +80,11 @@ public sealed partial class EditGroupControl : UserControl
         });
 
         int bindingIndex = 0;
-        foreach (RinceDCSGroupBinding binding in ViewModel.CurrentBindingGroup.Bindings)
+        foreach (RinceDCSGroupAction action in ViewModel.CurrentActionGroup.Actions)
         {
-            DataGridTemplateColumn column = new() { Header = binding.Id };
+            DataGridTemplateColumn column = new() { Header = action.Id };
 
-            string bindingName = "Binding" + bindingIndex.ToString();
+            string bindingName = "Action" + bindingIndex.ToString();
             string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
                     "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
                     "<StackPanel " +

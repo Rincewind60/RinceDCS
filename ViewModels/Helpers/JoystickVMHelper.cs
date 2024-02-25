@@ -47,19 +47,19 @@ public class JoystickVMHelper
         BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Plane", aircraftName);
         BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Joystick", stick.AttachedJoystick.Name);
 
-        foreach (DCSBinding binding in dcsAircraft.Bindings.Values)
+        foreach (DCSAction action in dcsAircraft.Actions.Values)
         {
-            DCSAircraftBinding aircraftBinding = binding.Aircraft[aircraftKey];
-            string commandName = aircraftBinding.Command;
+            DCSAircraftAction aircraftBinding = action.Aircraft[aircraftKey];
+            string commandName = aircraftBinding.Action;
             string categoryName = aircraftBinding.Category;
 
             DCSAircraftJoystickKey key = new(aircraftKey.Name, stick.AttachedJoystick.JoystickGuid);
 
-            if (binding.AircraftJoysticks.ContainsKey(key))
+            if (action.AircraftJoysticks.ContainsKey(key))
             {
-                DCSAircraftJoystickBinding bindingButtons = binding.AircraftJoysticks[key];
+                DCSAircraftJoystickAction bindingButtons = action.AircraftJoysticks[key];
 
-                BuildAssignedButtons(binding.IsAxis, stick, assignedButtons, buttonsOnLayout, binding.Key.Id, commandName, categoryName, bindingButtons);
+                BuildAssignedButtons(action.IsAxis, stick, assignedButtons, buttonsOnLayout, action.Key.Id, commandName, categoryName, bindingButtons);
             }
         }
 
@@ -125,7 +125,7 @@ public class JoystickVMHelper
         if (buttonsOnLayout.ContainsKey(key))
         {
             AssignedButton vwButton = new(buttonsOnLayout[key]);
-            vwButton.Commands.Add(new("", commandName, ""));
+            vwButton.Actions.Add(new("", commandName, ""));
             assignedButtons.Add(vwButton);
         }
     }
@@ -138,7 +138,7 @@ public class JoystickVMHelper
         string bindingId,
         string commandName,
         string categoryName,
-        DCSAircraftJoystickBinding bindingButtons)
+        DCSAircraftJoystickAction bindingButtons)
     {
         foreach (DCSButton button in bindingButtons.Buttons.Values)
         {
@@ -147,7 +147,7 @@ public class JoystickVMHelper
             if (buttonsOnLayout.ContainsKey(key))
             {
                 AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
-                vwButton.Commands.Add(new(bindingId, commandName, categoryName));
+                vwButton.Actions.Add(new(bindingId, commandName, categoryName));
                 AddButtonConfiguration(IsAxis, button, vwButton);
             }
         }

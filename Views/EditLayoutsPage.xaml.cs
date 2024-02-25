@@ -26,9 +26,9 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class EditJoystickLayoutPage : Page
+    public sealed partial class EditLayoutsPage : Page
     {
-        public EditJoystickLayoutPage()
+        public EditLayoutsPage()
         {
             this.InitializeComponent();
         }
@@ -45,7 +45,7 @@ namespace RinceDCS.Views
                 newItem.Header = joystick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                EditJoystickLayoutControl ctrl = new(joystick);
+                EditLayoutsControl ctrl = new(joystick);
 
                 newItem.Content = ctrl;
                 EditJoystickLayouts.TabItems.Add(newItem);

@@ -32,9 +32,9 @@ public class GroupsVMHelper
         BuildCache();
     }
 
-    private record BindingWithButtons
+    private record ActionWithButtons
         (
-        string BindingId,
+        string ActionId,
         string Group,
         bool IsAxis,
         Guid StickId,
@@ -61,17 +61,17 @@ public class GroupsVMHelper
         RinceDCSGroup Grp
         );
 
-    private record NewGroupBinding
+    private record NewGroupAction
         (
         string Group,
-        string BindingId,
+        string ActionId,
         RinceDCSGroup Grp
         );
 
     private record NewGroupAircraft
         (
         RinceDCSGroup Grp,
-        string BindingId,
+        string ActionId,
         string Group,
         string AircraftName,
         string AircraftCommand,
@@ -90,14 +90,14 @@ public class GroupsVMHelper
 
     public RinceDCSGroups UpdatedGroups()
     {
-        IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons = GetAllBindingsWithButtons();
+        IOrderedEnumerable<ActionWithButtons> allActionsWithButtons = GetAllActionsWithButtons();
 
         CreateNewModifiers();
-        CreateNewGroups(allBindingsWithButtons);
+        CreateNewGroups(allActionsWithButtons);
         CreateNewGroupJoysticks();
-        CreateNewGroupBindings(allBindingsWithButtons);
-        CreateNewGroupAircraft(allBindingsWithButtons);
-        CreateNewGroupJoystickButtons(allBindingsWithButtons);
+        CreateNewGroupActions(allActionsWithButtons);
+        CreateNewGroupAircraft(allActionsWithButtons);
+        CreateNewGroupJoystickButtons(allActionsWithButtons);
         AddMissingAircraftFromHTMLFiles();
 
         if (Settings.Default.CreateGroupsCSVFile)
@@ -131,11 +131,11 @@ public class GroupsVMHelper
     }
 
     /// <summary>
-    /// The DCSData built from the config files only contains data for bindings with assigned buttons.
+    /// The DCSData built from the config files only contains data for actions with assigned buttons.
     /// This means some diff.lua files dont even exist if no buttons have been assigned to them and
-    /// some bindings for an aircraft dont appear as there are no buttons.
+    /// some actions for an aircraft dont appear as there are no buttons.
     /// 
-    /// We want these aircraft attached to any groups that their bindings belong to, wether they have
+    /// We want these aircraft attached to any groups that their actions belong to, wether they have
     /// a diff.lua file or not as well as a button or not.
     /// </summary>
     private void AddMissingAircraftFromHTMLFiles()
@@ -149,22 +149,22 @@ public class GroupsVMHelper
                 string aircraftStickHtmlPath = htmlFilesFolder + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
                 if (File.Exists(aircraftStickHtmlPath))
                 {
-                    List<DCSHtmlFileRecord> htmlBindings = DCSService.Default.ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
+                    List<DCSHtmlFileRecord> htmlActions = DCSService.Default.ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
 
                     var query = from grp in Groups.Groups
-                                from grpBinding in grp.Bindings
-                                join htmlBinding in htmlBindings on grpBinding.Id equals htmlBinding.Id
+                                from grpAction in grp.Actions
+                                join htmlAction in htmlActions on grpAction.Id equals htmlAction.Id
                                 where !grp.Aircraft.Any(a => a.AircraftName == aircraft.Key.Name)
-                                select new { grp, grpBinding, htmlBinding };
+                                select new { grp, grpAction, htmlAction };
                     foreach(var newAircraft in query)
                     {
                         RinceDCSGroupAircraft grpAircraft = new()
                         {
 
                             AircraftName = aircraft.Key.Name,
-                            BindingId = newAircraft.grpBinding.Id,
-                            Category = newAircraft.htmlBinding.Category,
-                            Command = newAircraft.htmlBinding.Name,
+                            ActionId = newAircraft.grpAction.Id,
+                            Category = newAircraft.htmlAction.Category,
+                            Action = newAircraft.htmlAction.Name,
                             IsActive = true
 
                         };
@@ -176,21 +176,21 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupJoystickButtons(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroupJoystickButtons(IOrderedEnumerable<ActionWithButtons> allActionsWithButtons)
     {
         //  Add Buttons to Group Joystick
-        var buttons = (from binding in allBindingsWithButtons
+        var buttons = (from action in allActionsWithButtons
                        from grp in Groups.AllGroups.Values
                        from grpStick in grp.Joysticks
-                       where binding.Group == grp.Name &&
-                             binding.StickId == grpStick.Joystick.JoystickGuid
+                       where action.Group == grp.Name &&
+                             action.StickId == grpStick.Joystick.JoystickGuid
                        select new NewGroupSitckButton
                        (
-                           binding.Group,
-                           binding.StickId,
-                           binding.ButtonName,
-                           binding.Modifiers,
-                           binding.AxisFilter,
+                           action.Group,
+                           action.StickId,
+                           action.ButtonName,
+                           action.Modifiers,
+                           action.AxisFilter,
                            grpStick
                        )).OrderBy(row => row.Group)
                          .ThenBy(row => row.StickId)
@@ -240,20 +240,20 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupAircraft(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroupAircraft(IOrderedEnumerable<ActionWithButtons> allActionsWithButtons)
     {
-        //  Find all Aircraft not part of a group that are a part of a binding in the group and add them to group
-        var aircraftWithNoGroup = (from binding in allBindingsWithButtons
-                                   join grp in Groups.AllGroups.Values on binding.Group equals grp.Name
-                                   where !grp.AircraftNames.Contains(binding.AircraftName)
+        //  Find all Aircraft not part of a group that are a part of a action in the group and add them to group
+        var aircraftWithNoGroup = (from action in allActionsWithButtons
+                                   join grp in Groups.AllGroups.Values on action.Group equals grp.Name
+                                   where !grp.AircraftNames.Contains(action.AircraftName)
                                    select new NewGroupAircraft
                                    (
                                        grp,
-                                       binding.BindingId,
-                                       binding.Group,
-                                       binding.AircraftName,
-                                       binding.AircraftCommand,
-                                       binding.AircraftCategory
+                                       action.ActionId,
+                                       action.Group,
+                                       action.AircraftName,
+                                       action.AircraftCommand,
+                                       action.AircraftCategory
                                    )).Distinct();
 
         CsvDump.AddRow();
@@ -262,13 +262,13 @@ public class GroupsVMHelper
         {
             CsvDump.AddRow();
             CsvDump["Group"] = a.Group;
-            CsvDump["Binding"] = a.BindingId;
+            CsvDump["Action Id"] = a.ActionId;
             CsvDump["Aircraft"] = a.AircraftName;
             CsvDump["Aircraft Command"] = a.AircraftCommand;
             CsvDump["Aircraft Category"] = a.AircraftCategory;
 
             //  Create new Group Aircraft
-            RinceDCSGroupAircraft grpAircraft = new() { AircraftName = a.AircraftName, BindingId = a.BindingId, Command = a.AircraftCommand, Category = a.AircraftCategory, IsActive = true };
+            RinceDCSGroupAircraft grpAircraft = new() { AircraftName = a.AircraftName, ActionId = a.ActionId, Action = a.AircraftCommand, Category = a.AircraftCategory, IsActive = true };
 
             //  Add to group
             a.Grp.AircraftNames.Add(grpAircraft.AircraftName);
@@ -282,33 +282,31 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroupBindings(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroupActions(IOrderedEnumerable<ActionWithButtons> allActionsWithButtons)
     {
-        //  Find all bindings not part of a group and add to group 
-        var bindingsWithNoGroup = (from binding in allBindingsWithButtons
-                                   join grp in Groups.AllGroups.Values on binding.Group equals grp.Name
-                                   //where !Groups.AllBindings.ContainsKey(binding.BindingId)
-                                   where !Groups.AllBindings.Contains(binding.BindingId)
-                                   select new NewGroupBinding
+        //  Find all actions not part of a group and add to group 
+        var actionsWithNoGroup = (from action in allActionsWithButtons
+                                   join grp in Groups.AllGroups.Values on action.Group equals grp.Name
+                                   where !Groups.AllActions.Contains(action.ActionId)
+                                   select new NewGroupAction
                                    (
-                                       binding.Group,
-                                       binding.BindingId,
+                                       action.Group,
+                                       action.ActionId,
                                        grp
                                    )).Distinct();
 
         CsvDump.AddRow();
-        CsvDump["Group"] = "#### Bindings to add to Groups ####";
-        foreach (var a in bindingsWithNoGroup)
+        CsvDump["Group"] = "#### Actions to add to Groups ####";
+        foreach (var a in actionsWithNoGroup)
         {
             CsvDump.AddRow();
             CsvDump["Group"] = a.Group;
-            CsvDump["Binding"] = a.BindingId;
+            CsvDump["Action"] = a.ActionId;
 
-            //  Create New Binding
-            RinceDCSGroupBinding newBinding = new() { Id = a.BindingId, Command = a.Group };
-            //Groups.AllBindings[newBinding.Id] = newBinding;
-            Groups.AllBindings.Add(newBinding.Id);
-            a.Grp.Bindings.Add(newBinding);
+            //  Create New Action
+            RinceDCSGroupAction newAction = new() { Id = a.ActionId, Action = a.Group };
+            Groups.AllActions.Add(newAction.Id);
+            a.Grp.Actions.Add(newAction);
         }
     }
 
@@ -343,18 +341,17 @@ public class GroupsVMHelper
         }
     }
 
-    private void CreateNewGroups(IOrderedEnumerable<BindingWithButtons> allBindingsWithButtons)
+    private void CreateNewGroups(IOrderedEnumerable<ActionWithButtons> allActionsWithButtons)
     {
-        //  Find all bindings not part of a group and for which no group exists with their Command Name
-        var groupsToCreate = (from bindingWithNoGroup in allBindingsWithButtons
-                              where !Groups.AllGroups.ContainsKey(bindingWithNoGroup.Group) &&
-                                    //!Groups.AllBindings.ContainsKey(bindingWithNoGroup.BindingId)
-                                    !Groups.AllBindings.Contains(bindingWithNoGroup.BindingId)
+        //  Find all actions not part of a group and for which no group exists with their Command Name
+        var groupsToCreate = (from actionWithNoGroup in allActionsWithButtons
+                              where !Groups.AllGroups.ContainsKey(actionWithNoGroup.Group) &&
+                                    !Groups.AllActions.Contains(actionWithNoGroup.ActionId)
                               select new NewGroup
                               (
-                                  bindingWithNoGroup.Group, 
-                                  bindingWithNoGroup.AircraftCategory, 
-                                  bindingWithNoGroup.IsAxis
+                                  actionWithNoGroup.Group, 
+                                  actionWithNoGroup.AircraftCategory, 
+                                  actionWithNoGroup.IsAxis
                               )).Distinct()
                                 .OrderBy(row => row.Group)
                                 .ThenByDescending(row => row.Category);
@@ -380,26 +377,26 @@ public class GroupsVMHelper
         }
     }
 
-    private IOrderedEnumerable<BindingWithButtons> GetAllBindingsWithButtons()
+    private IOrderedEnumerable<ActionWithButtons> GetAllActionsWithButtons()
     {
-        //  Find all bindings in game that have a button assigned to them
-        var allBindingsWithButtons = (from binding in Data.Bindings.Values
-                                      from aircraftStickBinding in binding.AircraftJoysticks.Values
-                                      from button in aircraftStickBinding.Buttons.Values
-                                      from aircraft in binding.Aircraft.Values
-                                      where aircraftStickBinding.AircraftKey == aircraft.Key
-                                      select new BindingWithButtons(
-                                        binding.Key.Id,
-                                        binding.Command,
-                                        binding.IsAxis,
-                                        aircraftStickBinding.JoystickKey.Id,
-                                        aircraftStickBinding.AircraftKey.Name,
-                                        aircraft.Command,
+        //  Find all actions in game that have a button assigned to them
+        var allActionsWithButtons = (from action in Data.Actions.Values
+                                      from aircraftStickAction in action.AircraftJoysticks.Values
+                                      from button in aircraftStickAction.Buttons.Values
+                                      from aircraft in action.Aircraft.Values
+                                      where aircraftStickAction.AircraftKey == aircraft.Key
+                                      select new ActionWithButtons(
+                                        action.Key.Id,
+                                        action.Name,
+                                        action.IsAxis,
+                                        aircraftStickAction.JoystickKey.Id,
+                                        aircraftStickAction.AircraftKey.Name,
+                                        aircraft.Action,
                                         aircraft.Category,
                                         button.Name,
                                         button.Modifiers,
                                         button.AxisFilter
-                                      )).OrderBy(row => row.BindingId)
+                                      )).OrderBy(row => row.ActionId)
                                         .ThenBy(row => row.Group)
                                         .ThenByDescending(row => row.AircraftCategory)
                                         .ThenBy(row => row.StickId)
@@ -408,12 +405,12 @@ public class GroupsVMHelper
                                         .ThenBy(row => row.AxisFilter);
 
         CsvDump.AddRow();
-        CsvDump["Group"] = "#### All Bindings with Buttons ####";
-        foreach (var b in allBindingsWithButtons)
+        CsvDump["Group"] = "#### All Actions with Buttons ####";
+        foreach (var b in allActionsWithButtons)
         {
             CsvDump.AddRow();
             CsvDump["Group"] = b.Group;
-            CsvDump["Binding"] = b.BindingId;
+            CsvDump["Action Id"] = b.ActionId;
             CsvDump["Is Axis"] = b.IsAxis;
             CsvDump["Stick"] = b.StickId;
             CsvDump["Aircraft"] = b.AircraftName;
@@ -424,25 +421,25 @@ public class GroupsVMHelper
             CsvDump["Filter"] = b.AxisFilter != null;
         }
 
-        return allBindingsWithButtons;
+        return allActionsWithButtons;
     }
 
     private void BuildCache()
     {
         Groups.AllGroups.Clear();
-        Groups.AllBindings.Clear();
+        Groups.AllActions.Clear();
         Groups.AllAircraftNames.Clear();
 
         foreach (RinceDCSGroup grp in Groups.Groups)
         {
             Groups.AllGroups[grp.Name] = grp;
         }
-        var bindings = (from grp in Groups.Groups
-                        from binding in grp.Bindings
-                        select binding.Id).Distinct();
-        foreach (string bindingId in bindings)
+        var actions = (from grp in Groups.Groups
+                        from action in grp.Actions
+                        select action.Id).Distinct();
+        foreach (string actiongId in actions)
         {
-            Groups.AllBindings.Add(bindingId);
+            Groups.AllActions.Add(actiongId);
         }
         var aircraft = (from grp in Groups.Groups
                         from craft in grp.AircraftNames

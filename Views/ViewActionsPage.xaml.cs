@@ -31,12 +31,12 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class BindingsTablePage : Page
+    public sealed partial class ViewActionsPage : Page
     {
-        public BindingsTablePage()
+        public ViewActionsPage()
         {
             this.InitializeComponent();
-            BindingsTableViewModel vm = new();
+            ViewActionsViewModel vm = new();
             this.DataContext = vm;
 
             WeakReferenceMessenger.Default.Register<BindingsDataUpdatedMessage>(this, (r, m) =>
@@ -45,7 +45,7 @@ namespace RinceDCS.Views
             });
         }
 
-        public BindingsTableViewModel ViewModel => (BindingsTableViewModel)DataContext;
+        public ViewActionsViewModel ViewModel => (ViewActionsViewModel)DataContext;
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -64,7 +64,7 @@ namespace RinceDCS.Views
             ViewModel.IsActive = false;
         }
 
-        private void dataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
+        private void actionsDataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
         {
             string sortColumn = e.Column.Tag.ToString();
             if(e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
@@ -78,7 +78,7 @@ namespace RinceDCS.Views
                 e.Column.SortDirection= DataGridSortDirection.Descending;
             }
 
-            foreach(var col in dataGrid.Columns)
+            foreach(var col in actionsDataGrid.Columns)
             {
                 if(col.Tag.ToString() != sortColumn)
                 {
@@ -89,19 +89,19 @@ namespace RinceDCS.Views
 
         private void BindingsDataUpdated()
         {
-            dataGrid.Columns.Clear();
+            actionsDataGrid.Columns.Clear();
 
             if (ViewModel.CurrentCategory == null) return;
 
-            dataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
+            actionsDataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
             {
-                Header = "Command",
-                Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("CommandName"), Mode = BindingMode.OneWay },
-                Tag = "CommandName"
+                Header = "Action",
+                Binding = new Microsoft.UI.Xaml.Data.Binding { Path = new PropertyPath("ActionName"), Mode = BindingMode.OneWay },
+                Tag = "ActionName"
             });
 
             int joystickIndex = 0;
-            foreach (string joystickName in ViewModel.CommandData.JoystickHeadings)
+            foreach (string joystickName in ViewModel.ActionData.JoystickHeadings)
             {
                 string bindingName = "Joystick" + joystickIndex.ToString();
 
@@ -122,7 +122,7 @@ namespace RinceDCS.Views
                 DataTemplate cellTemplate = XamlReader.Load(Xaml) as DataTemplate;
                 column.CellTemplate = cellTemplate;
 
-                dataGrid.Columns.Add(column);
+                actionsDataGrid.Columns.Add(column);
                 joystickIndex++;
             }
         }

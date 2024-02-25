@@ -12,8 +12,8 @@ using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public partial class ViewJoystickViewModel : ObservableRecipient,
-                                             IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
+public partial class ViewStickViewModel : ObservableRecipient,
+                                           IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
 {
     [ObservableProperty]
     public ObservableCollection<AssignedButton> assignedButtons;
@@ -32,7 +32,7 @@ public partial class ViewJoystickViewModel : ObservableRecipient,
 
     public ScaleVMHelper ScaleHelper { get { return ScaleVMHelper.Default; } }
 
-    public ViewJoystickViewModel(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData data, RinceDCSAircraft currentAircraft)
+    public ViewStickViewModel(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData data, RinceDCSAircraft currentAircraft)
     {
         Stick = stick;
         AttachedStick = Stick.AttachedJoystick;

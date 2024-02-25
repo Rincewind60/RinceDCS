@@ -13,7 +13,7 @@ namespace RinceDCS.ViewModels;
 
 public class EditGroupTableData
 {
-    public List<string> BindingHeadings { get; set; } = new();
+    public List<string> ActionHeadings { get; set; } = new();
     public List<dynamic> Aircraft { get; set; } = new();
 }
 
@@ -23,8 +23,8 @@ public partial class EditGroupViewModel : ObservableObject
     public List<RinceDCSGroup> groups;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsGroupSelected))]
-    private RinceDCSGroup currentBindingGroup;
-    public bool IsGroupSelected { get { return CurrentBindingGroup != null; } }
+    private RinceDCSGroup currentActionGroup;
+    public bool IsGroupSelected { get { return CurrentActionGroup != null; } }
     [ObservableProperty]
     private EditGroupTableData groupData;
 
@@ -36,7 +36,7 @@ public partial class EditGroupViewModel : ObservableObject
         });
     }
 
-    public void CurrentBindingGroupChanged()
+    public void CurrentActionGroupChanged()
     {
         GroupData = null;
 
@@ -44,29 +44,29 @@ public partial class EditGroupViewModel : ObservableObject
 
         EditGroupTableData newGroupData = new();
 
-        Dictionary<string, int> bindingHeadingIndex = new();
+        Dictionary<string, int> actionHeadingIndex = new();
 
-        CurrentBindingGroup.Bindings.Sort((x, y) => {
+        CurrentActionGroup.Actions.Sort((x, y) => {
             return x.Id.CompareTo(y.Id);
         });
 
-        for (int i = 0; i < CurrentBindingGroup.Bindings.Count; i++)
+        for (int i = 0; i < CurrentActionGroup.Actions.Count; i++)
         {
-            bindingHeadingIndex[CurrentBindingGroup.Bindings[i].Id] = i;
-            newGroupData.BindingHeadings.Add(CurrentBindingGroup.Bindings[i].Id);
+            actionHeadingIndex[CurrentActionGroup.Actions[i].Id] = i;
+            newGroupData.ActionHeadings.Add(CurrentActionGroup.Actions[i].Id);
         }
 
-        foreach (RinceDCSGroupAircraft boundAircraft in CurrentBindingGroup.Aircraft)
+        foreach (RinceDCSGroupAircraft actionAircraft in CurrentActionGroup.Aircraft)
         {
             dynamic dynAircraft = new ExpandoObject();
-            dynAircraft.AircraftName = boundAircraft.AircraftName;
+            dynAircraft.AircraftName = actionAircraft.AircraftName;
             IDictionary<String, Object> dynAircraftMembers = (IDictionary<String, Object>)dynAircraft;
-            for (int j = 0; j < CurrentBindingGroup.Bindings.Count; j++)
+            for (int j = 0; j < CurrentActionGroup.Actions.Count; j++)
             {
-                string bindingName = "Binding" + j.ToString();
-                if (bindingHeadingIndex[boundAircraft.BindingId] == j)
+                string bindingName = "Action" + j.ToString();
+                if (actionHeadingIndex[actionAircraft.ActionId] == j)
                 {
-                    dynAircraftMembers.TryAdd(bindingName, boundAircraft);
+                    dynAircraftMembers.TryAdd(bindingName, actionAircraft);
                     dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
                 }
                 else
@@ -80,8 +80,8 @@ public partial class EditGroupViewModel : ObservableObject
 
         GroupData = newGroupData;
 
-        var query = from stickBinding in currentBindingGroup.Joysticks
-                    from button in stickBinding.Buttons
-                    select Tuple.Create(stickBinding.Joystick, button);
+        var query = from stickActiong in CurrentActionGroup.Joysticks
+                    from button in stickActiong.Buttons
+                    select Tuple.Create(stickActiong.Joystick, button);
     }
 }
