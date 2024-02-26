@@ -46,7 +46,7 @@ public class JoystickUtil
     {
         using (PrintDocument printDoc = new())
         {
-            PrintPage pp = new(printDoc);
+            PrintDialog pp = new(printDoc);
             Microsoft.UI.Xaml.Controls.ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Print Joystick", pp, "Print", null, null, "Cancel");
 
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
@@ -84,7 +84,7 @@ public class JoystickUtil
     {
         using (PrintDocument printDoc = new())
         {
-            PrintPage pp = new(printDoc);
+            PrintDialog pp = new(printDoc);
             Microsoft.UI.Xaml.Controls.ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Print Assigned Buttons", pp, "Print", null, null, "Cancel");
 
             if(result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)

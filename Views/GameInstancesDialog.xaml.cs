@@ -22,9 +22,9 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class GameInstancesPage : Page
+    public sealed partial class GameInstancesDialog : Page
     {
-        public GameInstancesPage(List<RinceDCSInstance> instances)
+        public GameInstancesDialog(List<RinceDCSInstance> instances)
         {
             this.InitializeComponent();
 

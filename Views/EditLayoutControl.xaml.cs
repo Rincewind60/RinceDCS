@@ -125,7 +125,7 @@ namespace RinceDCS.Views
 
         private async void Settings_Click(object sender, RoutedEventArgs e)
         {
-            JoystickSettingsPage page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
+            JoystickSettingsDialog page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
             string stickName = ViewModel.Stick.AttachedJoystick.Name;
             ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
             if (result == ContentDialogResult.Primary)

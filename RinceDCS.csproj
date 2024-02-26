@@ -44,21 +44,22 @@
     <None Remove="Help\ViewJoysticks.png" />
     <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="NLog.config" />
-    <None Remove="Views\AboutPage.xaml" />
+    <None Remove="Views\AboutDialog.xaml" />
     <None Remove="Views\EditGroupAircraftControl.xaml" />
     <None Remove="Views\EditGroupControl.xaml" />
     <None Remove="Views\EditGroupsControl.xaml" />
     <None Remove="Views\EditGroupsPage.xaml" />
     <None Remove="Views\EditLayoutControl.xaml" />
     <None Remove="Views\EditLayoutsPage.xaml" />
+    <None Remove="Views\EditModifiersPage.xaml" />
     <None Remove="Views\EditStickControl.xaml" />
     <None Remove="Views\EditSticksPage.xaml" />
-    <None Remove="Views\GameInstancesPage.xaml" />
+    <None Remove="Views\GameInstancesDialog.xaml" />
     <None Remove="Views\GamePage.xaml" />
     <None Remove="Views\HelpPage.xaml" />
-    <None Remove="Views\JoystickSettingsPage.xaml" />
-    <None Remove="Views\PrintPage.xaml" />
-    <None Remove="Views\SelectAircraftPage.xaml" />
+    <None Remove="Views\JoystickSettingsDialog.xaml" />
+    <None Remove="Views\PrintDialog.xaml" />
+    <None Remove="Views\SelectAircraftDialog.xaml" />
     <None Remove="Views\ViewActionsPage.xaml" />
     <None Remove="Views\ViewStickControl.xaml" />
     <None Remove="Views\ViewSticksPage.xaml" />
@@ -179,10 +180,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\EditModifiersPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\EditStickControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\SelectAircraftPage.xaml">
+    <Page Update="Views\SelectAircraftDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\EditGroupsControl.xaml">
@@ -205,12 +209,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\JoystickSettingsPage.xaml">
+    <Page Update="Views\JoystickSettingsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\PrintPage.xaml">
+    <Page Update="Views\PrintDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -235,13 +239,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\AboutPage.xaml">
+    <Page Update="Views\AboutDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\ViewActionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\GameInstancesPage.xaml">
+    <Page Update="Views\GameInstancesDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\GamePage.xaml">

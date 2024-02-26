@@ -211,7 +211,7 @@ public partial class GameViewModel : ObservableRecipient
     private async Task UpdateDCSAsync()
     {
         List<string> aircraftNames = (from aircraft in CurrentInstance.Aircraft select aircraft.Name).ToList();
-        SelectAircraftPage page = new(aircraftNames);
+        SelectAircraftDialog page = new(aircraftNames);
         ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Update DCS", page, "Start Export", null, null, "Cancel");
         if (result == ContentDialogResult.Primary)
         {

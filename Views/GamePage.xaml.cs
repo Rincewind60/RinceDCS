@@ -83,7 +83,7 @@ namespace RinceDCS.Views
 
         private async void About_Click(object sender, RoutedEventArgs e)
         {
-            AboutPage about = new();
+            AboutDialog about = new();
             await DialogService.Default.OpenInfoPageDialog("About", about);
         }
 
@@ -94,7 +94,7 @@ namespace RinceDCS.Views
 
         private async void UpdateInstances_Click(object sender, RoutedEventArgs e)
         {
-            GameInstancesPage page = new(ViewModel.CurrentFile.Instances.ToList());
+            GameInstancesDialog page = new(ViewModel.CurrentFile.Instances.ToList());
             Binding SaveButtonBinding = new Binding
             {
                 Source = page.ViewModel,
@@ -145,9 +145,14 @@ namespace RinceDCS.Views
                              ViewModel.CurrentAircraft));
         }
 
-        private void EditModifiers_Click(object sender, RoutedEventArgs e)
+        private async void EditModifiers_Click(object sender, RoutedEventArgs e)
         {
-
+            EditModifiersPage page = new();
+            ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Edit Modifiers", page, "Save", null, null, null);
+            if(result == ContentDialogResult.Primary)
+            {
+                ///TODO: Handle Modifiers save
+            }
         }
     }
 }
