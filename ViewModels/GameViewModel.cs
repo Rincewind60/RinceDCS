@@ -23,11 +23,11 @@ namespace RinceDCS.ViewModels;
 public enum DetailsDisplayMode
 {
     None,
-    Bindings,
-    View,
-    Manage,
+    ViewActions,
+    ViewSticks,
+    EditSticks,
     EditGroups,
-    EditSticks
+    EditLayouts
 }
 
 public partial class GameViewModel : ObservableRecipient
@@ -100,7 +100,7 @@ public partial class GameViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private async void Open()
+    private async Task Open()
     {
         if(CurrentFile != null)
         {
@@ -176,7 +176,7 @@ public partial class GameViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private async void ExportImages()
+    private async Task ExportImages()
     {
         string exportFolder = await DialogService.Default.OpenPickFolder();
         JoystickVMHelper helper = new(CurrentInstanceDCSData);
@@ -230,9 +230,9 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             LoadBindingDataForInstance(CurrentInstance);
-            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.BindingsData, CurrentInstance.Groups, CurrentInstance.SavedGamesPath);
+            GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), CurrentInstance.ControlsData, CurrentInstance.Groups, CurrentInstance.SavedGamesPath);
             CurrentInstance.Groups = groupsHelper.UpdatedGroups();
-            CurrentInstanceDCSData = CurrentInstance.BindingsData;
+            CurrentInstanceDCSData = CurrentInstance.ControlsData;
             CurrentInstanceGroups = CurrentInstance.Groups;
             SetCurrentAircraftForCurrentInstance();
         }
@@ -418,7 +418,7 @@ public partial class GameViewModel : ObservableRecipient
                 updated.instance.GameExePath = updated.gameExePath;
                 updated.instance.SavedGamesPath = updated.SavedGamesPath;
                 LoadBindingDataForInstance(updated.instance);
-                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.BindingsData, updated.instance.Groups, updated.instance.SavedGamesPath);
+                GroupsVMHelper groupsHelper = new(CurrentFile.Joysticks.ToList(), updated.instance.ControlsData, updated.instance.Groups, updated.instance.SavedGamesPath);
                 CurrentInstance.Groups = groupsHelper.UpdatedGroups();
             }
         }
@@ -441,7 +441,7 @@ public partial class GameViewModel : ObservableRecipient
 
     private void LoadBindingDataForInstance(RinceDCSInstance instance)
     {
-        if(instance.BindingsData != null) { return; }
+        if(instance.ControlsData != null) { return; }
 
         DCSData data = DCSService.Default.GetControlsData(
             instance.Name,
@@ -449,7 +449,7 @@ public partial class GameViewModel : ObservableRecipient
             instance.SavedGamesPath,
             AttachedJoysticks);
 
-        instance.BindingsData = data;
+        instance.ControlsData = data;
 
         instance.Aircraft.Clear();
         foreach (var aircraft in data.Aircraft)

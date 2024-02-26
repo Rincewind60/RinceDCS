@@ -23,5 +23,5 @@ public partial class RinceDCSInstance : ObservableObject
     public string CurrentAircraftName { get; set; }
 
     [JsonIgnore]
-    public DCSData BindingsData;
+    public DCSData ControlsData;
 }

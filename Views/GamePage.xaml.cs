@@ -112,7 +112,7 @@ namespace RinceDCS.Views
         private void AircraftCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewModel.CurrentAircraftChanged();
-            if(ViewModel.JoystickMode == DetailsDisplayMode.View)
+            if(ViewModel.JoystickMode == DetailsDisplayMode.ViewSticks)
             {
                 NavigateToViewSticksPage();
             }
