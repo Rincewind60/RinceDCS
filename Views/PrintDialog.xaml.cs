@@ -28,9 +28,9 @@ namespace RinceDCS.Views
             string[] printerNames = new string[printers.Count];
             printers.CopyTo(printerNames, 0);
 
-            this.DataContext = new PrinterViewModel(printerNames.ToList(), printer);
+            this.DataContext = new PrinterVM(printerNames.ToList(), printer);
         }
 
-        public PrinterViewModel ViewModel => (PrinterViewModel)DataContext;
+        public PrinterVM ViewModel => (PrinterVM)DataContext;
     }
 }

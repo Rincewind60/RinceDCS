@@ -8,12 +8,25 @@
     xmlns:local="using:RinceDCS.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
-    <TabView
-            Name="ManageJoysticks"
-            Grid.Row="3"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <local:FilterToolbar
+            Grid.Row="0"
             Grid.Column="0"
+            AircraftVisible="Visible">
+        </local:FilterToolbar>
+        <TabView
+            Grid.Row="1"
+            Grid.Column="0"
+            Name="ManageJoysticks"
             IsAddTabButtonVisible="False"/>
+    </Grid>
 </Page>

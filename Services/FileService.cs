@@ -19,7 +19,7 @@ public class FileService
         get { return defaultInstance; }
     }
 
-    public async Task<RinceDCSFile> OpenGame(string path)
+    public async Task<RinceDCSFile> OpenRinceDCSFile(string path)
     {
         RinceDCSFile rinceDCSFile = null;
 
@@ -46,20 +46,20 @@ public class FileService
         return rinceDCSFile;
     }
 
-    public async Task SaveGame(RinceDCSFile rinceDCSFile)
+    public async Task SaveRinceDCSFile(RinceDCSFile rinceDCSFile)
     {
         string savePath = Settings.Default.LastSavePath;
         if(savePath == null)
         {
-            await SaveAsGame(rinceDCSFile);
+            await SaveAsRinceDCSFile(rinceDCSFile);
         }
         else
         {
-            await SaveGameToPath(rinceDCSFile, savePath);
+            await SaveRinceDCSFileToPath(rinceDCSFile, savePath);
         }
     }
 
-    public async Task SaveAsGame(RinceDCSFile rinceDCSFile)
+    public async Task SaveAsRinceDCSFile(RinceDCSFile rinceDCSFile)
     {
         string savePath = await DialogService.Default.OpenPickSaveFile("RinceDCS.json","DCS Tool",".json");
         if (savePath == null)
@@ -68,7 +68,7 @@ public class FileService
         }
         else
         {
-            await SaveGameToPath(rinceDCSFile, savePath);
+            await SaveRinceDCSFileToPath(rinceDCSFile, savePath);
         }
 
     }
@@ -117,7 +117,7 @@ public class FileService
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
     private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
 
-    private async Task SaveGameToPath(RinceDCSFile rinceDCSFile, string savePath)
+    private async Task SaveRinceDCSFileToPath(RinceDCSFile rinceDCSFile, string savePath)
     {
         //  Update Save Path setting so we remember where to save to/open from
         Settings.Default.LastSavePath = savePath;

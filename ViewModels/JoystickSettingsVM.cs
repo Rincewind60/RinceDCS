@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
-public partial class JoystickSettingsViewModel : ObservableObject
+public partial class JoystickSettingsVM : ObservableObject
 {
     [ObservableProperty]
     private int defaultHeight;
     [ObservableProperty]
     private int defaultWidth;
 
-    public JoystickSettingsViewModel(int defaultHeight, int defaultWidth)
+    public JoystickSettingsVM(int defaultHeight, int defaultWidth)
     {
         DefaultHeight = defaultHeight;
         DefaultWidth = defaultWidth;

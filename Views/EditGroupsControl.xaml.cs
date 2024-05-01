@@ -29,12 +29,12 @@ public sealed partial class EditGroupsControl : UserControl
     {
         this.InitializeComponent();
 
-        EditGroupsViewModel vm = new(groups, sticks);
+        EditGroupsVM vm = new(groups, sticks);
 
         DataContext = vm;
     }
 
-    public EditGroupsViewModel ViewModel => (EditGroupsViewModel)DataContext;
+    public EditGroupsVM ViewModel => (EditGroupsVM)DataContext;
 
     private void dataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
     {

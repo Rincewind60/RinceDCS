@@ -28,14 +28,14 @@ namespace RinceDCS.Views
 {
     public sealed partial class ViewStickControl : UserControl
     {
-        public ViewStickControl(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData dcsData, RinceDCSAircraft currentAircraft)
+        public ViewStickControl(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData dcsData)
         {
             this.InitializeComponent();
 
-            this.DataContext = new ViewStickViewModel(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
+            this.DataContext = new ViewStickVM(instanceName, savedGamesFolder, stick, dcsData);
         }
 
-        public ViewStickViewModel ViewModel => (ViewStickViewModel)DataContext;
+        public ViewStickVM ViewModel => (ViewStickVM)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -60,7 +60,7 @@ namespace RinceDCS.Views
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.ExportKneeboard(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.CurrentAircraftName, ViewModel.AttachedStick.DCSName, ViewModel.SavedGamesFolder, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            JoystickUtil.ExportKneeboard(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), FilterToolbarVM.Default.SelectedAircraft, ViewModel.AttachedStick.DCSName, ViewModel.SavedGamesFolder, ViewModel.Stick.Font, ViewModel.Stick.FontSize);
         }
 
         private async void ExportImage_Click(object sender, RoutedEventArgs e)

@@ -18,7 +18,7 @@ public class EditGroupAircraftData
     public RinceDCSGroupAircraft Aircraft { get; set; }
 }
 
-public partial class EditGroupAircraftViewModel : ObservableObject
+public partial class EditGroupAircraftVM : ObservableObject
 {
     [ObservableProperty]
     public List<string> aircraftNames;
@@ -31,7 +31,7 @@ public partial class EditGroupAircraftViewModel : ObservableObject
 
     private Dictionary<string, RinceDCSGroup> Groups;
 
-    public EditGroupAircraftViewModel(List<string> aircraftNames, Dictionary<string, RinceDCSGroup> groups)
+    public EditGroupAircraftVM(List<string> aircraftNames, Dictionary<string, RinceDCSGroup> groups)
     {
         AircraftNames = aircraftNames;
         AircraftNames.Sort((x, y) =>

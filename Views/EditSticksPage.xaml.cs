@@ -36,12 +36,11 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData, RinceDCSAircraft>;
+            Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData> data = e.Parameter as Tuple<List<RinceDCSJoystick>, RinceDCSInstance, DCSData>;
 
             List<RinceDCSJoystick> joysticks = data.Item1;
             RinceDCSInstance rinceDCSInstance = data.Item2;
             DCSData dcsData = data.Item3;
-            RinceDCSAircraft currentAircraft = data.Item4;
 
             foreach (RinceDCSJoystick stick in joysticks)
             {
@@ -49,7 +48,7 @@ namespace RinceDCS.Views
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                EditStickControl ctrl = new(stick, rinceDCSInstance.Groups, dcsData, currentAircraft);
+                EditStickControl ctrl = new(stick, rinceDCSInstance.Groups, dcsData);
                 ctrl.ViewModel.IsActive = true;
 
                 newItem.Content = ctrl;

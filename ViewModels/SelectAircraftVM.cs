@@ -19,14 +19,14 @@ public partial class SelectAircraft : ObservableObject
     private bool selected;
 }
 
-public partial class SelectAircraftViewModel : ObservableObject
+public partial class SelectAircraftVM : ObservableObject
 {
     public ObservableCollection<SelectAircraft> Aircraft = new();
 
     [ObservableProperty]
     private bool selectAll;
 
-    public SelectAircraftViewModel(List<string> aircraftNames)
+    public SelectAircraftVM(List<string> aircraftNames)
     {
         foreach(string name in aircraftNames)
         {

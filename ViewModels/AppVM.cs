@@ -30,7 +30,7 @@ public enum DetailsDisplayMode
     EditLayouts
 }
 
-public partial class GameViewModel : ObservableRecipient
+public partial class AppVM : ObservableRecipient
 {
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
@@ -49,19 +49,15 @@ public partial class GameViewModel : ObservableRecipient
     private RinceDCSGroups currentInstanceGroups;
 
     [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
-    private RinceDCSAircraft currentAircraft;
-
-    [ObservableProperty]
     private List<AttachedJoystick> attachedJoysticks;
 
     [ObservableProperty]
-    private bool isGameLoaded = false;
+    private bool isRinceDCSFileLoaded = false;
 
     [ObservableProperty]
     private DetailsDisplayMode? joystickMode;
 
-    public GameViewModel()
+    public AppVM()
     {
         IsActive = true;
 
@@ -93,10 +89,10 @@ public partial class GameViewModel : ObservableRecipient
         Settings.Default.LastSavePath = null;
         Settings.Default.Save();
 
-        RinceDCSFile newGame = new();
-        LoadJoysticks(newGame);
+        RinceDCSFile newFile = new();
+        LoadJoysticks(newFile);
 
-        SetCurrentGame(newGame);
+        SetCurrentRinceDCSFile(newFile);
     }
 
     [RelayCommand]
@@ -107,7 +103,7 @@ public partial class GameViewModel : ObservableRecipient
             bool? result = await DialogService.Default.OpenConfirmationDialog("Save RinceDCS File", "Do you want to save the existing file first?");
             if(result.HasValue && result.Value)
             {
-                await FileService.Default.SaveGame(CurrentFile);
+                await FileService.Default.SaveRinceDCSFile(CurrentFile);
             }
         }
 
@@ -120,20 +116,20 @@ public partial class GameViewModel : ObservableRecipient
 
     private void DoOpen(string path)
     {
-        RinceDCSFile openedGame = Task.Run(() => FileService.Default.OpenGame(path)).GetAwaiter().GetResult();
-        if (openedGame != null)
+        RinceDCSFile openedRinceDCSFile = Task.Run(() => FileService.Default.OpenRinceDCSFile(path)).GetAwaiter().GetResult();
+        if (openedRinceDCSFile != null)
         {
-            CheckForNewJoysticks(openedGame);
-            SetCurrentGame(openedGame);
+            CheckForNewJoysticks(openedRinceDCSFile);
+            SetCurrentRinceDCSFile(openedRinceDCSFile);
         }
     }
 
-    private void CheckForNewJoysticks(RinceDCSFile openedGame)
+    private void CheckForNewJoysticks(RinceDCSFile openedRinceDCSFile)
     {
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
             bool existingStick = false;
-            foreach (RinceDCSJoystick gameStick in openedGame.Joysticks)
+            foreach (RinceDCSJoystick gameStick in openedRinceDCSFile.Joysticks)
             {
                 if (stick == gameStick.AttachedJoystick)
                 {
@@ -147,26 +143,26 @@ public partial class GameViewModel : ObservableRecipient
 
                 AddJoystickButtons(newJoystick);
 
-                openedGame.Joysticks.Add(newJoystick);
+                openedRinceDCSFile.Joysticks.Add(newJoystick);
 
             }
         }
 
-        openedGame.Joysticks.Sort();
+        openedRinceDCSFile.Joysticks.Sort();
     }
 
     [RelayCommand]
     private void Save()
     {
         ApplyChangesToModels();
-        Task.Run(() => FileService.Default.SaveGame(CurrentFile)).Wait();
+        Task.Run(() => FileService.Default.SaveRinceDCSFile(CurrentFile)).Wait();
     }
 
      [RelayCommand]
     private void SaveAs()
     {
         ApplyChangesToModels();
-        Task.Run(() => FileService.Default.SaveAsGame(CurrentFile)).Wait();
+        Task.Run(() => FileService.Default.SaveAsRinceDCSFile(CurrentFile)).Wait();
     }
 
     [RelayCommand]
@@ -225,7 +221,6 @@ public partial class GameViewModel : ObservableRecipient
         if(CurrentInstance == null)
         {
             CurrentInstanceDCSData = null;
-            CurrentAircraft = null;
         }
         else
         {
@@ -234,15 +229,6 @@ public partial class GameViewModel : ObservableRecipient
             CurrentInstance.Groups = groupsHelper.UpdatedGroups();
             CurrentInstanceDCSData = CurrentInstance.ControlsData;
             CurrentInstanceGroups = CurrentInstance.Groups;
-            SetCurrentAircraftForCurrentInstance();
-        }
-    }
-
-    public void CurrentAircraftChanged()
-    {
-        if(CurrentInstance != null)
-        {
-            CurrentInstance.CurrentAircraftName = CurrentAircraft != null ? CurrentAircraft.Name : null;
         }
     }
 
@@ -317,18 +303,6 @@ public partial class GameViewModel : ObservableRecipient
         {
             CurrentFile.CurrentInstanceName = CurrentInstance.Name;
         }
-
-        foreach (RinceDCSInstance instance in CurrentFile.Instances)
-        {
-            if (instance == CurrentInstance)
-            {
-                instance.CurrentAircraftName = CurrentAircraft == null ? null : CurrentAircraft.Name;
-            }
-            else
-            {
-                instance.CurrentAircraftName = null;
-            }
-        }
     }
 
     /// <summary>
@@ -336,20 +310,25 @@ public partial class GameViewModel : ObservableRecipient
     /// 
     /// This means updating any ViewModel properties relating to the old RinceDCSFile object.
     /// </summary>
-    /// <param name="newGame"></param>
-    private void SetCurrentGame(RinceDCSFile newGame)
+    /// <param name="newFile"></param>
+    private void SetCurrentRinceDCSFile(RinceDCSFile newFile)
     {
-        IsGameLoaded = false;
+        IsRinceDCSFileLoaded = false;
 
-        CurrentFile = newGame;
+        CurrentFile = newFile;
 
-        SetCurrentInstanceForGame();
-        SetCurrentAircraftForCurrentInstance();
+        SetCurrentInstanceForRinceDCSFile();
+        BuildFilters();
 
-        IsGameLoaded = true;
+        IsRinceDCSFileLoaded = true;
     }
 
-    private void SetCurrentInstanceForGame()
+    private void BuildFilters()
+    {
+        FilterToolbarVM.Default.ResetFilters(CurrentInstance);
+    }
+
+    private void SetCurrentInstanceForRinceDCSFile()
     {
         var instanceQuery = from instance in CurrentFile.Instances
                             where instance.Name == CurrentFile.CurrentInstanceName
@@ -362,28 +341,6 @@ public partial class GameViewModel : ObservableRecipient
         else
         {
             CurrentInstance = instanceQuery.First();
-        }
-    }
-
-    private void SetCurrentAircraftForCurrentInstance()
-    {
-        if(CurrentInstance == null)
-        {
-            CurrentAircraft = null;
-            return;
-        }
-
-        var aircraftQuery = from aircraft in CurrentInstance.Aircraft
-                            where aircraft.Name == CurrentInstance.CurrentAircraftName
-                            select aircraft;
-
-        if (aircraftQuery.Count() == 0)
-        {
-            CurrentAircraft = null;
-        }
-        else
-        {
-            CurrentAircraft = aircraftQuery.First();
         }
     }
 
@@ -433,7 +390,6 @@ public partial class GameViewModel : ObservableRecipient
             {
                 CurrentInstance = null;
                 CurrentInstanceDCSData = null;
-                CurrentAircraft = null;
             }
             CurrentFile.Instances.Remove(instance);
         }

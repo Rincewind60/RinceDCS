@@ -114,13 +114,14 @@ public class GroupsVMHelper
         var query = from modifier in Data.Modifiers.Values
                     where !Groups.Modifiers.Any(row => row.Key == modifier.Key )
                     select modifier;
-        foreach( var modifier in query )
+        foreach(DCSModifier modifier in query )
         {
             RinceDCSGroupModifier newModifier = new()
             {
                 Name = modifier.Name,
                 Key = modifier.Key,
-                Device = modifier.Device
+                Device = modifier.Device,
+                IsCoreGame = modifier.IsCoreGame
             };
             Groups.Modifiers.Add(newModifier);
         }

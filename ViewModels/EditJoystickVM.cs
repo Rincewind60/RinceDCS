@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace RinceDCS.ViewModels;
 
-public partial class EditJoystickViewModel : ObservableObject
+public partial class EditJoystickVM : ObservableObject
 {
     [ObservableProperty]
     private RinceDCSJoystick stick;
@@ -23,7 +23,7 @@ public partial class EditJoystickViewModel : ObservableObject
 
     public ScaleVMHelper ScaleHelper { get; }
 
-    public EditJoystickViewModel(RinceDCSJoystick joystick, List<string> fonts)
+    public EditJoystickVM(RinceDCSJoystick joystick, List<string> fonts)
     {
         Stick = joystick;
         CurrentButton = null;

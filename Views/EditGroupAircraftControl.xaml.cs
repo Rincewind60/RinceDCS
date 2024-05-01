@@ -30,12 +30,12 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            EditGroupAircraftViewModel vm = new(aircraftNames, groups);
+            EditGroupAircraftVM vm = new(aircraftNames, groups);
 
             DataContext = vm;
         }
 
-        public EditGroupAircraftViewModel ViewModel => (EditGroupAircraftViewModel)DataContext;
+        public EditGroupAircraftVM ViewModel => (EditGroupAircraftVM)DataContext;
 
         private void dataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
         {

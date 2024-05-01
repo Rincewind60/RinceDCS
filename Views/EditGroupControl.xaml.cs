@@ -28,12 +28,12 @@ public sealed partial class EditGroupControl : UserControl
     {
         this.InitializeComponent();
 
-        EditGroupViewModel vm = new(groups.Groups);
+        EditGroupVM vm = new(groups.Groups);
 
         DataContext = vm;
     }
 
-    public EditGroupViewModel ViewModel => (EditGroupViewModel)DataContext;
+    public EditGroupVM ViewModel => (EditGroupVM)DataContext;
 
     public static Visibility IsBindingColumnVisible(string heading)
     {

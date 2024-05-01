@@ -27,7 +27,7 @@
 
     <Grid Margin="4" Padding="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="32"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="32"/>
@@ -37,26 +37,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel
+        <local:GroupsToolbar
             Grid.Row="0"
-            Grid.Column="0"
-            Orientation="Horizontal">
-            <TextBlock
-                Text="Binding Group:" 
-                Margin="12,0,0,0" 
-                Width="100"
-                VerticalAlignment="Center"/>
-            <ComboBox
-                Name="GroupsCombo" 
-                ItemsSource="{x:Bind ViewModel.Groups}" 
-                SelectedItem="{x:Bind ViewModel.CurrentActionGroup, Mode=TwoWay}"
-                SelectionChanged="GroupsCombo_SelectionChanged"
-                DisplayMemberPath="Name"
-                Margin="6,0,0,0"
-                MinWidth="180"
-                VerticalAlignment="Center">
-            </ComboBox>
-        </StackPanel>
+            Grid.Column="0">
+        </local:GroupsToolbar>
 
         <TextBlock
             Text="Aircraft:"

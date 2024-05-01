@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="RinceDCS.Views.GroupsToolbar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RinceDCS.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel
+        Orientation="Horizontal"
+        Margin="8,0,0,0">
+        <Button 
+            Name="UpdateGroup" 
+            Margin="2,0,2,0">
+            <SymbolIcon Symbol="Edit"/>
+        </Button>
+        <Button 
+            Name="MergeGroup"
+            Margin="2,0,2,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Merge"></TextBlock>
+                <SymbolIcon Symbol="Copy"/>
+            </StackPanel>
+        </Button>
+        <Button 
+            Name="DeleteGroup" 
+            Margin="2,0,2,0">
+            <SymbolIcon Symbol="Delete"/>
+        </Button>
+        <Button 
+            Name="AddGroup" 
+            Margin="2,0,2,0">
+            <SymbolIcon Symbol="Add"/>
+        </Button>
+    </StackPanel>
+</UserControl>

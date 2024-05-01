@@ -37,13 +37,13 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class GamePage : Page
+    public sealed partial class AppPage : Page
     {
-        public GamePage()
+        public AppPage()
         {
             this.InitializeComponent();
 
-            GameViewModel vm = new();
+            AppVM vm = new();
             this.DataContext = vm;
             vm.IsActive = true;
 
@@ -58,7 +58,7 @@ namespace RinceDCS.Views
             });
         }
 
-        public GameViewModel ViewModel => (GameViewModel)DataContext;
+        public AppVM ViewModel => (AppVM)DataContext;
 
         private void ViewSticks_Click(object sender, RoutedEventArgs e)
         {
@@ -67,8 +67,7 @@ namespace RinceDCS.Views
 
         private void ViewActions_Click(object sender, RoutedEventArgs e)
         {
-            DetailsViewFrame.Navigate(typeof(ViewActionsPage),
-                Tuple.Create(ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
+            DetailsViewFrame.Navigate(typeof(ViewActionsPage), ViewModel.CurrentInstanceDCSData);
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -109,19 +108,10 @@ namespace RinceDCS.Views
             }
         }
 
-        private void AircraftCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ViewModel.CurrentAircraftChanged();
-            if(ViewModel.JoystickMode == DetailsDisplayMode.ViewSticks)
-            {
-                NavigateToViewSticksPage();
-            }
-        }
-
         private void EditSticks_Click(object sender, RoutedEventArgs e)
         {
             DetailsViewFrame.Navigate(typeof(EditSticksPage),
-                Tuple.Create(ViewModel.CurrentFile.Joysticks.ToList(), ViewModel.CurrentInstance, ViewModel.CurrentInstanceDCSData, ViewModel.CurrentAircraft));
+                Tuple.Create(ViewModel.CurrentFile.Joysticks.ToList(), ViewModel.CurrentInstance, ViewModel.CurrentInstanceDCSData));
         }
 
         private void EditGroups_Click(object sender, RoutedEventArgs e)
@@ -141,17 +131,17 @@ namespace RinceDCS.Views
                 Tuple.Create(ViewModel.CurrentInstance.Name,
                              ViewModel.CurrentInstance.SavedGamesPath,
                              ViewModel.CurrentFile,
-                             ViewModel.CurrentInstanceDCSData,
-                             ViewModel.CurrentAircraft));
+                             ViewModel.CurrentInstanceDCSData));
         }
 
         private async void EditModifiers_Click(object sender, RoutedEventArgs e)
         {
-            EditModifiersPage page = new();
+            ModifiersDialog page = new(ViewModel.CurrentInstanceGroups.Modifiers, ViewModel.CurrentInstanceGroups.DefaultModifierName);
             ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Edit Modifiers", page, "Save", null, null, null);
             if(result == ContentDialogResult.Primary)
             {
-                ///TODO: Handle Modifiers save
+                ViewModel.CurrentInstanceGroups.Modifiers = page.ViewModel.GetUpdatedModifiers();
+                ViewModel.CurrentInstanceGroups.DefaultModifierName = page.ViewModel.GetUpdatedDefaultModifierName();
             }
         }
     }

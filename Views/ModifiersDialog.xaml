@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="RinceDCS.Views.ModifiersDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:local="using:RinceDCS.Views"
+    xmlns:utils="using:RinceDCS.Views.Utilities"
+    xmlns:viewModels="using:RinceDCS.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <utils:TrueToCollapsedConverter x:Key="TrueToCollapsedConverter"/>
+    </Page.Resources>
+
+    <StackPanel Orientation="Vertical">
+        <CommandBar IsOpen="False" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Add" Label="Add" Click="{x:Bind ViewModel.AddModifier}"/>
+        </CommandBar>
+        <controls:DataGrid
+            x:Name="modifiersDataGrid"
+            Margin="12"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Visible"
+            VerticalScrollBarVisibility="Visible"
+            AreRowDetailsFrozen="False"
+            AreRowGroupHeadersFrozen="True"
+            AutoGenerateColumns="False"
+            CanUserSortColumns="False"
+            CanUserReorderColumns="False"
+            CanUserResizeColumns="False"
+            ColumnHeaderHeight="32"
+            MaxColumnWidth="600"
+            GridLinesVisibility="All"
+            HeadersVisibility="Column"
+            IsReadOnly="False"
+            SelectionMode="Single"
+            RowGroupHeaderPropertyNameAlternative="Range"
+            ItemsSource="{x:Bind ViewModel.Modifiers, Mode=OneWay}">
+            <controls:DataGrid.Columns>
+                <controls:DataGridCheckBoxColumn
+                    Header="Is Default"
+                    Binding="{Binding IsDefault, Mode=TwoWay}">
+                </controls:DataGridCheckBoxColumn>
+                <controls:DataGridTextColumn
+                    Header="Name"
+                    Binding="{Binding Name, Mode=OneWay}">
+                </controls:DataGridTextColumn>
+                <controls:DataGridTemplateColumn
+                    Header="Bind">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="viewModels:ModifierData">
+                            <Button
+                                Name="Bind"
+                                Command="{x:Bind BindToButtonCommand}"
+                                HorizontalAlignment="Center"
+                                Margin="2"
+                                Visibility="{x:Bind IsCoreGame, Converter={StaticResource TrueToCollapsedConverter}}">
+                                <SymbolIcon Symbol="MapPin"/>
+                            </Button>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn
+                    Header="Delete">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="viewModels:ModifierData">
+                            <Button
+                                Name="Delete"
+                                Command="{x:Bind DeleteCommand}"
+                                HorizontalAlignment="Center"
+                                Margin="2"
+                                Visibility="{x:Bind IsCoreGame, Converter={StaticResource TrueToCollapsedConverter}}">
+                                <SymbolIcon Symbol="Delete"/>
+                            </Button>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTextColumn
+                    Header="Device"
+                    Binding="{Binding Device, Mode=OneWay}">
+                </controls:DataGridTextColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </StackPanel>
+</Page>

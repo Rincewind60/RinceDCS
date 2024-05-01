@@ -37,14 +37,12 @@ namespace RinceDCS.Views
         {
             base.OnNavigatedTo(e);
 
-            Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft> data = e.Parameter as Tuple<string, string, RinceDCSFile, DCSData, RinceDCSAircraft>;
+            Tuple<string, string, RinceDCSFile, DCSData> data = e.Parameter as Tuple<string, string, RinceDCSFile, DCSData>;
 
             string instanceName = data.Item1;
             string savedGamesFolder = data.Item2;
             RinceDCSFile rinceDCSFile = data.Item3;
             DCSData dcsData = data.Item4;
-            RinceDCSAircraft currentAircraft = data.Item5;
-
 
             foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
@@ -52,7 +50,7 @@ namespace RinceDCS.Views
                 newItem.Header = stick.AttachedJoystick.Name;
                 newItem.IsClosable = false;
 
-                ViewStickControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData, currentAircraft);
+                ViewStickControl ctrl = new(instanceName, savedGamesFolder, stick, dcsData);
                 ctrl.ViewModel.IsActive = true;
 
                 newItem.Content = ctrl;

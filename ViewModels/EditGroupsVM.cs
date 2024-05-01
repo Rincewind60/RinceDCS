@@ -20,7 +20,7 @@ public class EditGroupsTableData
 }
 
 
-public partial class EditGroupsViewModel : ObservableObject
+public partial class EditGroupsVM : ObservableObject
 {
     public ObservableCollection<string> Categories { get; set; } = new();
     [ObservableProperty]
@@ -31,7 +31,7 @@ public partial class EditGroupsViewModel : ObservableObject
     private RinceDCSGroups Groups;
     private List<AttachedJoystick> Sticks;
 
-    public EditGroupsViewModel(RinceDCSGroups groups, List<AttachedJoystick> sticks)
+    public EditGroupsVM(RinceDCSGroups groups, List<AttachedJoystick> sticks)
     {
         Groups = groups;
         Sticks = sticks;

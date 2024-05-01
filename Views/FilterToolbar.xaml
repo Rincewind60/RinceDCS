@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="RinceDCS.Views.FilterToolbar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RinceDCS.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+        <TextBlock 
+            Text="Aircraft:"
+            Margin="12,0,4,0"
+            VerticalAlignment="Center"
+            Visibility="{x:Bind AircraftVisible, Mode=OneWay}"/>
+        <ComboBox
+            Name="AircraftCombo" 
+            MinWidth="180"
+            VerticalAlignment="Center"
+            IsTextSearchEnabled="True"
+            Visibility="{x:Bind AircraftVisible, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.Aircraft}"
+            SelectedItem="{x:Bind ViewModel.SelectedAircraft, Mode=TwoWay}">
+        </ComboBox>
+        <TextBlock
+            Text="Category:" 
+            Margin="12,0,4,0" 
+            VerticalAlignment="Center"
+            Visibility="{x:Bind CategoriesVisible, Mode=OneWay}"/>
+        <ComboBox
+            Name="CategoriesCombo" 
+            MinWidth="180"
+            VerticalAlignment="Center"
+            IsTextSearchEnabled="True"
+            Visibility="{x:Bind CategoriesVisible, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.Categories}"
+            SelectedItem="{x:Bind ViewModel.SelectedCategory}">
+        </ComboBox>
+        <TextBlock
+            Text="Group:" 
+            Margin="12,0,4,0" 
+            VerticalAlignment="Center"
+            Visibility="{x:Bind GroupsVisible, Mode=OneWay}"/>
+        <ComboBox
+            Name="GroupsCombo" 
+            MinWidth="180"
+            VerticalAlignment="Center"
+            IsTextSearchEnabled="True"
+            Visibility="{x:Bind GroupsVisible, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.Groups}"
+            SelectedItem="{x:Bind ViewModel.SelectedGroup}">
+        </ComboBox>
+        <ToggleButton
+            Name="WithButtons" 
+            Content="With Buttons" 
+            Margin="12,0,0,0"
+            Visibility="{x:Bind ShowActionsWithButtonsVisible, Mode=OneWay}"
+            IsChecked="{x:Bind ViewModel.ShowActionsWithButtons, Mode=TwoWay}"/>
+    </StackPanel>
+</UserControl>

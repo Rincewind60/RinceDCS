@@ -45,12 +45,12 @@ namespace RinceDCS.Views
                 fontNames.Add(font.Name);
             }
 
-            this.DataContext = new EditJoystickViewModel(joystick, fontNames);
+            this.DataContext = new EditJoystickVM(joystick, fontNames);
 
             ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.FontColor));
         }
 
-        public EditJoystickViewModel ViewModel => (EditJoystickViewModel)DataContext;
+        public EditJoystickVM ViewModel => (EditJoystickVM)DataContext;
 
         private void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {

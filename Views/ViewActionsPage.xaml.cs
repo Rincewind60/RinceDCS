@@ -36,7 +36,7 @@ namespace RinceDCS.Views
         public ViewActionsPage()
         {
             this.InitializeComponent();
-            ViewActionsViewModel vm = new();
+            ViewActionsVM vm = new();
             this.DataContext = vm;
 
             WeakReferenceMessenger.Default.Register<BindingsDataUpdatedMessage>(this, (r, m) =>
@@ -45,15 +45,15 @@ namespace RinceDCS.Views
             });
         }
 
-        public ViewActionsViewModel ViewModel => (ViewActionsViewModel)DataContext;
+        public ViewActionsVM ViewModel => (ViewActionsVM)DataContext;
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            Tuple<DCSData,RinceDCSAircraft> data = e.Parameter as Tuple<DCSData, RinceDCSAircraft>;
+            DCSData data = e.Parameter as DCSData;
 
-            ViewModel.Initialize(data.Item1, data.Item2);
+            ViewModel.Initialize(data);
             ViewModel.IsActive = true;
         }
 
@@ -91,7 +91,7 @@ namespace RinceDCS.Views
         {
             actionsDataGrid.Columns.Clear();
 
-            if (ViewModel.CurrentCategory == null) return;
+            if (FilterToolbarVM.Default.SelectedCategory == null) return;
 
             actionsDataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
             {

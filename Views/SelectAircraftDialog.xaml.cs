@@ -30,10 +30,10 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            this.DataContext = new SelectAircraftViewModel(aircraftNames);
+            this.DataContext = new SelectAircraftVM(aircraftNames);
         }
 
-        public SelectAircraftViewModel ViewModel => (SelectAircraftViewModel)DataContext;
+        public SelectAircraftVM ViewModel => (SelectAircraftVM)DataContext;
 
         private void SelectAircraft_Checked(object sender, RoutedEventArgs e)
         {

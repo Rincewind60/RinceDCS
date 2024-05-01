@@ -34,14 +34,13 @@ public partial class InstanceData : ObservableObject
         get { return !string.IsNullOrWhiteSpace(GameExePath); }
     }
 
-
     public bool IsValid
     {
         get { return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(GameExePath) && !string.IsNullOrWhiteSpace(SavedGamesPath); }
     }
 }
 
-public partial class GameInstancesViewModel : ObservableObject
+public partial class GameInstancesVM : ObservableObject
 {
     public ObservableCollection<InstanceData> Instances;
 
@@ -50,7 +49,7 @@ public partial class GameInstancesViewModel : ObservableObject
 
     private readonly int NumberOfHeadingInstances = 1;
 
-    public GameInstancesViewModel(List<RinceDCSInstance> instances)
+    public GameInstancesVM(List<RinceDCSInstance> instances)
     {
         Instances = new();
         Instances.Add(new InstanceData() { Name = "Name", GameExePath = "Game Executable Path", SavedGamesPath = "Saved Games Folder Path", IsHeading = true });

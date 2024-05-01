@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using RinceDCS.Services;
 using RinceDCS.Utilities;
+using RinceDCS.ViewModels;
 using RinceDCS.ViewModels.Helpers;
 using System;
 using System.Collections.Generic;

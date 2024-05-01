@@ -36,10 +36,10 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            this.DataContext = new HelpViewModel();
+            this.DataContext = new HelpVM();
         }
 
-        public HelpViewModel ViewModel => (HelpViewModel)DataContext;
+        public HelpVM ViewModel => (HelpVM)DataContext;
 
         private void MarkdownText_LinkClicked(object sender, LinkClickedEventArgs e)
         {

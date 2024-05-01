@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using RinceDCS.Models;
+using RinceDCS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,11 +23,19 @@ namespace RinceDCS.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class EditModifiersPage : Page
+    public sealed partial class ModifiersDialog : Page
     {
-        public EditModifiersPage()
+        public ModifiersDialog(List<RinceDCSGroupModifier> modifiers, string defaultModifierName)
         {
             this.InitializeComponent();
+            this.DataContext = new ModifiersVM(modifiers, defaultModifierName);
+        }
+
+        public ModifiersVM ViewModel => (ModifiersVM)DataContext;
+
+        private void SelectButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

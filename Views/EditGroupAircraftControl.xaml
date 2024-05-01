@@ -13,32 +13,17 @@
 
     <Grid Margin="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel
+        <local:GroupsToolbar
             Grid.Row="0"
-            Grid.Column="0"
-            Orientation="Horizontal">
-            <TextBlock
-                Text="Aircraft:" 
-                Margin="12,0,0,0" 
-                Width="100"
-                VerticalAlignment="Center"/>
-            <ComboBox
-                Name="AircraftCombo" 
-                ItemsSource="{x:Bind ViewModel.AircraftNames}" 
-                SelectedItem="{x:Bind ViewModel.CurrentAircraft, Mode=TwoWay}"
-                SelectionChanged="AircraftCombo_SelectionChanged"
-                Margin="6,0,0,0"
-                MinWidth="180"
-                VerticalAlignment="Center">
-            </ComboBox>
-        </StackPanel>
+            Grid.Column="0">
+        </local:GroupsToolbar>
 
         <controls:DataGrid
             Grid.Row="1"

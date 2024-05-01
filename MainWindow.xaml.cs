@@ -36,7 +36,7 @@ namespace RinceDCS
 
         public void StartApp()
         {
-            MainFrame.Navigate(typeof(GamePage));
+            MainFrame.Navigate(typeof(AppPage));
         }
     }
 }

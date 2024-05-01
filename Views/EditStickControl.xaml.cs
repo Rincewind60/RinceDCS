@@ -28,14 +28,14 @@ namespace RinceDCS.Views
 {
     public sealed partial class EditStickControl : UserControl
     {
-        public EditStickControl(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData dcsData, RinceDCSAircraft currentAircraft)
+        public EditStickControl(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData dcsData)
         {
             this.InitializeComponent();
 
-            this.DataContext = new ManageJoystickViewModel(stick, groups, dcsData, currentAircraft);
+            this.DataContext = new ManageJoystickVM(stick, groups, dcsData);
         }
 
-        public ManageJoystickViewModel ViewModel => (ManageJoystickViewModel)DataContext;
+        public ManageJoystickVM ViewModel => (ManageJoystickVM)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {

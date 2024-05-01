@@ -34,54 +34,45 @@ public partial class ActionCategory : ObservableObject, IComparable<ActionCatego
     }
 }
 
-public partial class ViewActionsViewModel : ObservableRecipient,
-                                            IRecipient<PropertyChangedMessage<RinceDCSAircraft>>
+public partial class ViewActionsVM : ObservableRecipient,
+                                     IRecipient<PropertyChangedMessage<string>>
 {
-    public ObservableCollection<ActionCategory> Categories { get; set; }
-    [ObservableProperty]
-    private ActionCategory currentCategory;
-    [ObservableProperty]
-    private bool showActionsWithButtons;
     [ObservableProperty]
     private ActionTableData filteredActionData;
     [ObservableProperty]
     private ActionTableData actionData;
-
-    private DCSAircraftKey CurrentAircraftKey { get; set; }
     private DCSData ActionsData { get; set; }
-
     string SortColumn { get; set; }
     bool IsSortedAscending { get; set; }
 
-    public ViewActionsViewModel()
+    public ViewActionsVM()
     {
-        Categories = new();
-        ShowActionsWithButtons = false;
         SortColumn = null;
     }
 
-    public void Initialize(DCSData data, RinceDCSAircraft currentAircraft)
+    public void Initialize(DCSData data)
     {
         ActionsData = data;
-        CurrentAircraftKey = currentAircraft == null ? null : new(currentAircraft.Name);
         ReBuildActions();
     }
 
-    public void Receive(PropertyChangedMessage<RinceDCSAircraft> message)
+    public void Receive(PropertyChangedMessage<string> message)
     {
-        CurrentAircraftKey = message.NewValue == null ? null : new(message.NewValue.Name);
-        ReBuildActions();
-    }
-
-    public void CurrentCategoryChanged()
-    {
-        FilterSortActions();
-    }
-
-    [RelayCommand]
-    private void ActionsWithButtonsChanged()
-    {
-        FilterSortActions();
+        if (message.Sender is FilterToolbarVM)
+        {
+            if (message.PropertyName == "SelectedAircraft")
+            {
+                ReBuildActions();
+            }
+            else if (message.PropertyName == "SelectedCategory")
+            {
+                FilterSortActions();
+            }
+            else if(message.PropertyName == "WithButtons")
+            {
+                FilterSortActions();
+            }
+        }
     }
 
     public void UpdateSortColumn(string column, bool isAscending)
@@ -93,7 +84,7 @@ public partial class ViewActionsViewModel : ObservableRecipient,
 
     private void FilterSortActions()
     {
-        if (CurrentCategory == null) return;
+        if (FilterToolbarVM.Default.SelectedCategory == null) return;
 
         FilteredActionData = new();
 
@@ -101,9 +92,9 @@ public partial class ViewActionsViewModel : ObservableRecipient,
 
         foreach(dynamic dynAction in ActionData.Actions)
         {
-            if (CurrentCategory.CategoryName == "All" || dynAction.CategoryName == CurrentCategory.CategoryName)
+            if (FilterToolbarVM.Default.SelectedCategory == "All" || dynAction.CategoryName == FilterToolbarVM.Default.SelectedCategory)
             {
-                if (ShowActionsWithButtons)
+                if (FilterToolbarVM.Default.ShowActionsWithButtons)
                 {
                     IDictionary<String, Object> dynActionMembers = (IDictionary<String, Object>)dynAction;
                     for (int j = 0; j < ActionData.JoystickHeadings.Count; j++)
@@ -140,10 +131,8 @@ public partial class ViewActionsViewModel : ObservableRecipient,
     {
         ActionData = null;
         FilteredActionData = null;
-        Categories.Clear();
-        CurrentCategory = null;
 
-        if (CurrentAircraftKey == null) return;
+        if (FilterToolbarVM.Default.SelectedAircraft == null || FilterToolbarVM.Default.SelectedAircraft == "All") return;
 
         ActionTableData newActionData = new();
 
@@ -161,9 +150,10 @@ public partial class ViewActionsViewModel : ObservableRecipient,
 
         List<ActionCategory> newCategories = new();
 
-        foreach(DCSAction action in ActionsData.Aircraft[CurrentAircraftKey].Actions.Values)
+        DCSAircraftKey key = new(FilterToolbarVM.Default.SelectedAircraft);
+        foreach(DCSAction action in ActionsData.Aircraft[key].Actions.Values)
         {
-            DCSAircraftAction dcsAircraftAction = action.Aircraft[CurrentAircraftKey];
+            DCSAircraftAction dcsAircraftAction = action.Aircraft[key];
             ActionCategory category = AddCategory(newCategories, dcsAircraftAction);
 
             dynamic dynAction = new ExpandoObject();
@@ -192,14 +182,6 @@ public partial class ViewActionsViewModel : ObservableRecipient,
         }
         ActionData = newActionData;
 
-        newCategories.Sort();
-        Categories.Add(new ActionCategory() { CategoryName = "All" });
-        foreach (ActionCategory category in newCategories)
-        {
-            Categories.Add(category);
-        }
-        CurrentCategory = Categories[0];
-
         WeakReferenceMessenger.Default.Send(new BindingsDataUpdatedMessage());
 
         FilterSortActions();
@@ -225,7 +207,7 @@ public partial class ViewActionsViewModel : ObservableRecipient,
     {
         string buttons = "";
         string modifiers = "";
-        DCSAircraftJoystickKey key = new(CurrentAircraftKey.Name, joystickKey.Id);
+        DCSAircraftJoystickKey key = new(FilterToolbarVM.Default.SelectedAircraft, joystickKey.Id);
 
         if (action.AircraftJoysticks.ContainsKey(key))
         {

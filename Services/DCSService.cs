@@ -85,6 +85,7 @@ public class DCSService
                     newModifier.Key = modiferTable.Values.ElementAt(j).String;
                 }
             }
+            newModifier.IsCoreGame = true;
             data.Modifiers[newModifier.Name] = newModifier;
         }
     }
@@ -117,6 +118,7 @@ public class DCSService
                                 newModifier.Key = modiferTable.Values.ElementAt(j).String;
                             }
                         }
+                        newModifier.IsCoreGame = false;
                         data.Modifiers[newModifier.Name] = newModifier;
                     }
                 }

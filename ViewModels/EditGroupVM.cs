@@ -17,7 +17,7 @@ public class EditGroupTableData
     public List<dynamic> Aircraft { get; set; } = new();
 }
 
-public partial class EditGroupViewModel : ObservableObject
+public partial class EditGroupVM : ObservableObject
 {
     [ObservableProperty]
     public List<RinceDCSGroup> groups;
@@ -28,7 +28,7 @@ public partial class EditGroupViewModel : ObservableObject
     [ObservableProperty]
     private EditGroupTableData groupData;
 
-    public EditGroupViewModel(List<RinceDCSGroup> groups)
+    public EditGroupVM(List<RinceDCSGroup> groups)
     {
         Groups = groups;
         Groups.Sort((x, y) => {

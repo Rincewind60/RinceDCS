@@ -46,6 +46,7 @@ public class RinceDCSGroupModifier
     public string Device { get; set; }
     public string Key { get; set; }
     public bool Switch { get; set; }
+    public bool IsCoreGame { get; set; }
 }
 
 public class RinceDCSGroupAction

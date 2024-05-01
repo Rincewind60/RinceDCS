@@ -18,9 +18,7 @@ public partial class RinceDCSInstance : ObservableObject
     [ObservableProperty]
     private RinceDCSGroups groups;
 
-    public ObservableCollection<RinceDCSAircraft> Aircraft { get; set; } = new();
-
-    public string CurrentAircraftName { get; set; }
+    public ObservableCollection<RinceDCSAircraft> Aircraft { get; set; } = [];
 
     [JsonIgnore]
     public DCSData ControlsData;

@@ -7,12 +7,12 @@ using System.IO;
 
 namespace RinceDCS.ViewModels;
 
-public partial class HelpViewModel : ObservableRecipient
+public partial class HelpVM : ObservableRecipient
 {
     [ObservableProperty]
     private string markDownText;
 
-    public HelpViewModel()
+    public HelpVM()
     {
         LinkToPage("Introduction.md");
     }

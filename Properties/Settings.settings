@@ -14,5 +14,17 @@
     <Setting Name="KnownFolderTypeSavedGames" Type="System.Guid" Scope="User">
       <Value Profile="(Default)">4c5c32ff-bb9d-43b0-b5b4-2d72e54eaaa4</Value>
     </Setting>
+    <Setting Name="SelectedAircraft" Type="System.String" Scope="User">
+      <Value Profile="(Default)">All</Value>
+    </Setting>
+    <Setting Name="SelectedCategory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">All</Value>
+    </Setting>
+    <Setting Name="SelectedGroup" Type="System.String" Scope="User">
+      <Value Profile="(Default)">All</Value>
+    </Setting>
+    <Setting Name="ShowActionsWithButtons" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

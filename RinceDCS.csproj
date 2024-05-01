@@ -45,19 +45,21 @@
     <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="NLog.config" />
     <None Remove="Views\AboutDialog.xaml" />
+    <None Remove="Views\AppPage.xaml" />
     <None Remove="Views\EditGroupAircraftControl.xaml" />
     <None Remove="Views\EditGroupControl.xaml" />
     <None Remove="Views\EditGroupsControl.xaml" />
     <None Remove="Views\EditGroupsPage.xaml" />
     <None Remove="Views\EditLayoutControl.xaml" />
     <None Remove="Views\EditLayoutsPage.xaml" />
-    <None Remove="Views\EditModifiersPage.xaml" />
     <None Remove="Views\EditStickControl.xaml" />
     <None Remove="Views\EditSticksPage.xaml" />
+    <None Remove="Views\FilterToolbar.xaml" />
     <None Remove="Views\GameInstancesDialog.xaml" />
-    <None Remove="Views\GamePage.xaml" />
+    <None Remove="Views\GroupsToolbar.xaml" />
     <None Remove="Views\HelpPage.xaml" />
     <None Remove="Views\JoystickSettingsDialog.xaml" />
+    <None Remove="Views\ModifiersDialog.xaml" />
     <None Remove="Views\PrintDialog.xaml" />
     <None Remove="Views\SelectAircraftDialog.xaml" />
     <None Remove="Views\ViewActionsPage.xaml" />
@@ -147,16 +149,16 @@
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Markdown" Version="7.1.2" />
     <PackageReference Include="CsvExport" Version="2.0.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.58" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
     <PackageReference Include="MoonSharp" Version="2.0.0" />
-    <PackageReference Include="NLog" Version="5.2.8" />
+    <PackageReference Include="NLog" Version="5.3.1" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -180,7 +182,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Page Update="Views\EditModifiersPage.xaml">
+    <Page Update="Views\GroupsToolbar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\FilterToolbar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ModifiersDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\EditStickControl.xaml">
@@ -248,7 +256,7 @@
     <Page Update="Views\GameInstancesDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\GamePage.xaml">
+    <Page Update="Views\AppPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

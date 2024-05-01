@@ -28,10 +28,10 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            this.DataContext = new GameInstancesViewModel(instances);
+            this.DataContext = new GameInstancesVM(instances);
         }
 
-        public GameInstancesViewModel ViewModel => (GameInstancesViewModel)DataContext;
+        public GameInstancesVM ViewModel => (GameInstancesVM)DataContext;
 
         private async void SelectGameExePath_Click(object sender, RoutedEventArgs e)
         {

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public partial class PrinterViewModel : ObservableObject
+public partial class PrinterVM : ObservableObject
 {
     [ObservableProperty]
     private ObservableCollection<string> printers;
@@ -13,7 +13,7 @@ public partial class PrinterViewModel : ObservableObject
     [ObservableProperty]
     private string printer;
 
-    public PrinterViewModel(List<string> printers, string printer)
+    public PrinterVM(List<string> printers, string printer)
     {
         Printers = new(printers);
         Printer = (from pr in Printers
