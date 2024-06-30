@@ -148,17 +148,17 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Markdown" Version="7.1.2" />
-    <PackageReference Include="CsvExport" Version="2.0.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
+    <PackageReference Include="CsvExport" Version="2.0.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
     <PackageReference Include="MoonSharp" Version="2.0.0" />
-    <PackageReference Include="NLog" Version="5.3.1" />
+    <PackageReference Include="NLog" Version="5.3.2" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 

@@ -230,6 +230,7 @@ public partial class AppVM : ObservableRecipient
             CurrentInstanceDCSData = CurrentInstance.ControlsData;
             CurrentInstanceGroups = CurrentInstance.Groups;
         }
+        FilterToolbarVM.Default.ResetFilters(CurrentInstance);
     }
 
     partial void OnJoystickModeChanged(DetailsDisplayMode? oldValue, DetailsDisplayMode? newValue)
@@ -314,18 +315,9 @@ public partial class AppVM : ObservableRecipient
     private void SetCurrentRinceDCSFile(RinceDCSFile newFile)
     {
         IsRinceDCSFileLoaded = false;
-
         CurrentFile = newFile;
-
         SetCurrentInstanceForRinceDCSFile();
-        BuildFilters();
-
         IsRinceDCSFileLoaded = true;
-    }
-
-    private void BuildFilters()
-    {
-        FilterToolbarVM.Default.ResetFilters(CurrentInstance);
     }
 
     private void SetCurrentInstanceForRinceDCSFile()
