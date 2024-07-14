@@ -12,24 +12,23 @@
 
     <Grid Margin="4" Padding="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
         <local:GroupsToolbar
             Grid.Row="0"
             Grid.Column="0">
         </local:GroupsToolbar>
-
         <controls:DataGrid
             Grid.Row="1"
             Grid.Column="0"
             x:Name="groupsDataGrid"
             Margin="12,8,0,0"
-            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" 
+            HorizontalAlignment="Stretch"
             HorizontalScrollBarVisibility="Visible"
             VerticalScrollBarVisibility="Visible"
             AreRowDetailsFrozen="False"

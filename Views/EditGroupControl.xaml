@@ -27,84 +27,92 @@
 
     <Grid Margin="4" Padding="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="32"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:GroupsToolbar
+        <StackPanel
             Grid.Row="0"
-            Grid.Column="0">
-        </local:GroupsToolbar>
+            Grid.Column="0"
+            Orientation="Horizontal">
+            <TextBlock Text="Group:" Margin="12,4,0,0"/>
+            <TextBox Text="{x:Bind ViewModel.CurrentGroup.Name, Mode=OneWay}" IsEnabled="False" Margin="12,0,0,0"/>
+            <TextBlock Text="Category:" Margin="12,4,0,0"/>
+            <TextBox Text="{x:Bind ViewModel.CurrentGroup.Category, Mode=OneWay}" IsEnabled="False" Margin="12,0,0,0"/>
+            <CheckBox IsChecked="{x:Bind ViewModel.CurrentGroup.IsAxis, Mode=OneWay}" IsEnabled="False" MinWidth="0" Margin="12,0,0,0"/>
+            <TextBlock Text="Is Axis" Margin="0,4,0,0"/>
+            <Border BorderBrush="Gray" BorderThickness="2" Width="1" Height="32" Margin="12,0,4,0"/>
+            <local:GroupsToolbar/>
+        </StackPanel>
 
-        <TextBlock
-            Text="Aircraft:"
+        <StackPanel
             Grid.Row="1"
             Grid.Column="0"
-            Margin="12,4,0,0"/>
+            Orientation="Horizontal"
+            Margin="12,4,0,0">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Aircraft:"/>
+                <controls:DataGrid
+                    x:Name="aircraftDataGrid"
+                    VerticalAlignment="Stretch" 
+                    VerticalScrollBarVisibility="Visible"
+                    AreRowDetailsFrozen="False"
+                    AreRowGroupHeadersFrozen="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
+                    CanUserReorderColumns="True"
+                    CanUserResizeColumns="True"
+                    ColumnHeaderHeight="32"
+                    MaxColumnWidth="400"
+                    FrozenColumnCount="0"
+                    GridLinesVisibility="All"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    SelectionMode="Single"
+                    RowGroupHeaderPropertyNameAlternative="Range"
+                    ItemsSource="{x:Bind ViewModel.Aircraft, Mode=OneWay}">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn 
+                            Header="Aircraft" 
+                            Binding="{Binding AircraftName}"
+                            IsReadOnly="True"/>
+                        <controls:DataGridTemplateColumn Header="Active" Width="SizeToHeader">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" MinWidth="40"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                            <controls:DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" MinWidth="40"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellEditingTemplate>
+                        </controls:DataGridTemplateColumn>
+                        <controls:DataGridTextColumn 
+                            Header="Category" 
+                            Binding="{Binding Category, Mode=OneWay}"
+                            IsReadOnly="True"/>
+                        <controls:DataGridTextColumn 
+                            Header="Action" 
+                            Binding="{Binding Action, Mode=OneWay}"
+                            IsReadOnly="True"/>
 
-        <controls:DataGrid
-            Grid.Row="2"
-            Grid.Column="0"
-            x:Name="aircraftDataGrid"
-            Margin="12,0,0,0"
-            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-            HorizontalScrollBarVisibility="Visible"
-            VerticalScrollBarVisibility="Visible"
-            AreRowDetailsFrozen="False"
-            AreRowGroupHeadersFrozen="True"
-            AutoGenerateColumns="False"
-            CanUserSortColumns="True"
-            CanUserReorderColumns="True"
-            CanUserResizeColumns="True"
-            ColumnHeaderHeight="32"
-            MaxColumnWidth="400"
-            FrozenColumnCount="0"
-            GridLinesVisibility="All"
-            HeadersVisibility="Column"
-            IsReadOnly="True"
-            SelectionMode="Single"
-            RowGroupHeaderPropertyNameAlternative="Range"
-            ItemsSource="{x:Bind ViewModel.GroupData.Aircraft, Mode=OneWay}"
-            Sorting="dataGrid_Sorting">
-        </controls:DataGrid>
 
-        <TextBlock
-            Text="Assigned Buttons:"
-            Grid.Row="3"
-            Grid.Column="0"
-            Margin="12,4,0,0"/>
-
-        <controls:DataGrid
-            Grid.Row="2"
-            Grid.Column="0"
-            x:Name="buttonsDataGrid"
-            Margin="12,0,0,0"
-            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-            HorizontalScrollBarVisibility="Visible"
-            VerticalScrollBarVisibility="Visible"
-            AreRowDetailsFrozen="False"
-            AreRowGroupHeadersFrozen="True"
-            AutoGenerateColumns="False"
-            CanUserSortColumns="True"
-            CanUserReorderColumns="True"
-            CanUserResizeColumns="True"
-            ColumnHeaderHeight="32"
-            ColumnHeaderStyle="{StaticResource MyDataGridColumnHeaderStyle}"
-            MaxColumnWidth="400"
-            FrozenColumnCount="0"
-            GridLinesVisibility="All"
-            HeadersVisibility="Column"
-            IsReadOnly="True"
-            SelectionMode="Single"
-            RowGroupHeaderPropertyNameAlternative="Range"
-            ItemsSource="{x:Bind ViewModel.GroupData.Aircraft, Mode=OneWay}">
-        </controls:DataGrid>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="12,0,0,0">
+                <TextBlock Text="Assigned Buttons:"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 
 </UserControl>

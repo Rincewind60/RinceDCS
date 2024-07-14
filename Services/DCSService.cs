@@ -172,6 +172,8 @@ public class DCSService
     {
         BackupDCSFiles(savedGamesPath, aircraftNames);
 
+        CreateMissingAircraftFolders(savedGamesPath, aircraftNames);
+
         BuildModifiersFiles(savedGamesPath, groups, aircraftNames);
 
         //  Find all RinceDCS buttons to be added
@@ -223,6 +225,23 @@ public class DCSService
         BuildLuaFiles(savedGamesPath, updates, aircraftNames);
     }
 
+    private void CreateMissingAircraftFolders(string savedGamesPath, List<string> aircraftNames)
+    {
+        string configFolder = savedGamesPath + "\\Config\\Input";
+
+        string TestFolder = "S:\\RinceConfigBackup\\Input";
+
+        foreach (string aircraft in aircraftNames)
+        {
+            string configPath = TestFolder + "\\" + aircraft;
+            if(!Directory.Exists(configPath))
+            {
+                Directory.CreateDirectory(configPath);
+                Directory.CreateDirectory(configPath + "\\joystick");
+            }
+        }
+    }
+
     private void BuildModifiersFiles(string savedGamesPath, RinceDCSGroups groups, List<string> aircraftNames)
     {
         StringBuilder sb = new();
@@ -240,7 +259,7 @@ public class DCSService
         string luaString = sb.ToString();
         string configFolder = savedGamesPath + "\\Config\\Input";
 
-        string TestFolder = "S:\\RinceConfigBackup\\Input\\";
+        string TestFolder = "S:\\RinceConfigBackup\\Input";
 
         foreach (string aircraft in aircraftNames)
         {
@@ -437,10 +456,13 @@ public class DCSService
 
             Directory.CreateDirectory(toJoystickFolder);
 
-            foreach (string filePath in Directory.GetFiles(fromJoystickFolder))
+            if (Directory.Exists(fromJoystickFolder))
             {
-                string fileName = Path.GetFileName(filePath);
-                File.Copy(fromJoystickFolder + "\\" + fileName, toJoystickFolder + "\\" + fileName, true);
+                foreach (string filePath in Directory.GetFiles(fromJoystickFolder))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    File.Copy(fromJoystickFolder + "\\" + fileName, toJoystickFolder + "\\" + fileName, true);
+                }
             }
         }
     }

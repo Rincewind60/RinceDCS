@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using RinceDCS.Models;
 using System;
@@ -8,80 +10,66 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using RinceDCS.ViewModels.Messages;
+using System.Collections.ObjectModel;
 
 namespace RinceDCS.ViewModels;
 
-public class EditGroupTableData
-{
-    public List<string> ActionHeadings { get; set; } = new();
-    public List<dynamic> Aircraft { get; set; } = new();
-}
-
-public partial class EditGroupVM : ObservableObject
+public partial class EditGroupVM : ObservableRecipient,
+                                   IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    public List<RinceDCSGroup> groups;
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsGroupSelected))]
-    private RinceDCSGroup currentActionGroup;
-    public bool IsGroupSelected { get { return CurrentActionGroup != null; } }
-    [ObservableProperty]
-    private EditGroupTableData groupData;
+    private RinceDCSGroup currentGroup;
+    public ObservableCollection<RinceDCSGroupAircraft> Aircraft = [];
 
-    public EditGroupVM(List<RinceDCSGroup> groups)
+    private RinceDCSGroups Groups;
+    private List<AttachedJoystick> Sticks;
+
+    public EditGroupVM(RinceDCSGroups groups, List<AttachedJoystick> sticks)
     {
         Groups = groups;
-        Groups.Sort((x, y) => {
-            return x.Name.CompareTo(y.Name);
-        });
+        Sticks = sticks;
+
+        ReBuildData();
     }
 
-    public void CurrentActionGroupChanged()
+    public void Receive(PropertyChangedMessage<string> message)
     {
-        GroupData = null;
-
-        if (!IsGroupSelected) return;
-
-        EditGroupTableData newGroupData = new();
-
-        Dictionary<string, int> actionHeadingIndex = new();
-
-        CurrentActionGroup.Actions.Sort((x, y) => {
-            return x.Id.CompareTo(y.Id);
-        });
-
-        for (int i = 0; i < CurrentActionGroup.Actions.Count; i++)
+        if (message.Sender is FilterToolbarVM)
         {
-            actionHeadingIndex[CurrentActionGroup.Actions[i].Id] = i;
-            newGroupData.ActionHeadings.Add(CurrentActionGroup.Actions[i].Id);
-        }
-
-        foreach (RinceDCSGroupAircraft actionAircraft in CurrentActionGroup.Aircraft)
-        {
-            dynamic dynAircraft = new ExpandoObject();
-            dynAircraft.AircraftName = actionAircraft.AircraftName;
-            IDictionary<String, Object> dynAircraftMembers = (IDictionary<String, Object>)dynAircraft;
-            for (int j = 0; j < CurrentActionGroup.Actions.Count; j++)
+            if (message.PropertyName == "SelectedAircraft" || message.PropertyName == "SelectedCategory" || message.PropertyName == "SelectedGroup")
             {
-                string bindingName = "Action" + j.ToString();
-                if (actionHeadingIndex[actionAircraft.ActionId] == j)
-                {
-                    dynAircraftMembers.TryAdd(bindingName, actionAircraft);
-                    dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Visible);
-                }
-                else
-                {
-                    dynAircraftMembers.TryAdd(bindingName, null);
-                    dynAircraftMembers.TryAdd(bindingName + "Visible", Visibility.Collapsed);
-                }
+                ReBuildData();
             }
-            newGroupData.Aircraft.Add(dynAircraft);
+        }
+    }
+
+    public void ReBuildData()
+    {
+        Aircraft.Clear();
+        CurrentGroup = null;
+
+        if (FilterToolbarVM.Default.SelectedGroup == null || FilterToolbarVM.Default.SelectedGroup == "All")
+        {
+            return;
         }
 
-        GroupData = newGroupData;
+        CurrentGroup = Groups.AllGroups[FilterToolbarVM.Default.SelectedGroup];
 
-        var query = from stickActiong in CurrentActionGroup.Joysticks
-                    from button in stickActiong.Buttons
-                    select Tuple.Create(stickActiong.Joystick, button);
+        List<RinceDCSGroupAircraft> aircraftToDisplay = new(CurrentGroup.Aircraft);
+
+        if (FilterToolbarVM.Default.SelectedAircraft != "All")
+        {
+            aircraftToDisplay = (from aircraft in aircraftToDisplay where aircraft.AircraftName == FilterToolbarVM.Default.SelectedAircraft select aircraft).ToList();
+        }
+        if (FilterToolbarVM.Default.SelectedCategory != "All")
+        {
+            aircraftToDisplay = (from aircraft in aircraftToDisplay where aircraft.Category == FilterToolbarVM.Default.SelectedCategory select aircraft).ToList();
+        }
+
+        foreach (RinceDCSGroupAircraft aircraft in aircraftToDisplay)
+        {
+            Aircraft.Add(aircraft);
+        }
     }
 }

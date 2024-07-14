@@ -23,15 +23,17 @@
         <local:FilterToolbar
             Grid.Row="0"
             Grid.Column="0"
+            AircraftVisible="Visible"
             CategoriesVisible="Visible"
-            ShowActionsWithButtonsVisible="Visible">
+            WithButtonsVisible="Visible">
         </local:FilterToolbar>
         <controls:DataGrid
             Grid.Row="1"
             Grid.Column="0"
             x:Name="actionsDataGrid"
             Margin="12"
-            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" 
+            HorizontalAlignment="Stretch"
             HorizontalScrollBarVisibility="Visible"
             VerticalScrollBarVisibility="Visible"
             AreRowDetailsFrozen="False"
@@ -48,7 +50,7 @@
             IsReadOnly="True"
             SelectionMode="Single"
             RowGroupHeaderPropertyNameAlternative="Range"
-            ItemsSource="{x:Bind ViewModel.FilteredActionData.Actions, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.FilteredActionTableData.Actions, Mode=OneWay}"
             Sorting="actionsDataGrid_Sorting">
         </controls:DataGrid>
     </Grid>

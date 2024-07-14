@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using RinceDCS.Models;
 using System;
@@ -18,7 +20,8 @@ public class EditGroupAircraftData
     public RinceDCSGroupAircraft Aircraft { get; set; }
 }
 
-public partial class EditGroupAircraftVM : ObservableObject
+public partial class EditGroupAircraftVM : ObservableRecipient,
+                                           IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
     public List<string> aircraftNames;
@@ -39,6 +42,25 @@ public partial class EditGroupAircraftVM : ObservableObject
             return x.CompareTo(y);
         });
         Groups = groups;
+    }
+
+    public void Receive(PropertyChangedMessage<string> message)
+    {
+        if (message.Sender is FilterToolbarVM)
+        {
+            if (message.PropertyName == "SelectedAircraft")
+            {
+
+            }
+            else if (message.PropertyName == "SelectedCategory")
+            {
+
+            }
+            else if (message.PropertyName == "SelectedGroup")
+            {
+
+            }
+        }
     }
 
     public void CurrentAircraftChanged()

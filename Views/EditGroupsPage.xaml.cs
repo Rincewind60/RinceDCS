@@ -36,25 +36,42 @@ public sealed partial class EditGroupsPage : Page
         }
 
         TabViewItem newByGroupsItem = new TabViewItem();
-        newByGroupsItem.Header = "All Groups";
+        newByGroupsItem.Header = "Groups";
         newByGroupsItem.IsClosable = false;
         EditGroupsControl groupsCtrl = new(data.Item1, sticks);
+        groupsCtrl.ViewModel.IsActive = true;
         newByGroupsItem.Content = groupsCtrl;
         EditGroupTabs.TabItems.Add(newByGroupsItem);
 
         TabViewItem newByGroupItem = new TabViewItem();
-        newByGroupItem.Header = "By Group";
+        newByGroupItem.Header = "Group";
         newByGroupItem.IsClosable = false;
-        EditGroupControl groupCtrl = new(data.Item1);
+        EditGroupControl groupCtrl = new(data.Item1, sticks);
+        groupCtrl.ViewModel.IsActive = true;
         newByGroupItem.Content = groupCtrl;
         EditGroupTabs.TabItems.Add(newByGroupItem);
 
-        TabViewItem newByAircraftItem = new TabViewItem();
-        newByAircraftItem.Header = "By Aircraft";
-        newByAircraftItem.IsClosable = false;
-        EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.ToList(), data.Item1.AllGroups);
-        newByAircraftItem.Content = aircraftCtrl;
-        EditGroupTabs.TabItems.Add(newByAircraftItem);
+        //TabViewItem newByAircraftItem = new TabViewItem();
+        //newByAircraftItem.Header = "By Aircraft";
+        //newByAircraftItem.IsClosable = false;
+        //EditGroupAircraftControl aircraftCtrl = new(data.Item1.AllAircraftNames.ToList(), data.Item1.AllGroups);
+        //aircraftCtrl.ViewModel.IsActive = true;
+        //newByAircraftItem.Content = aircraftCtrl;
+        //EditGroupTabs.TabItems.Add(newByAircraftItem);
+    }
+
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e);
+
+        foreach (TabViewItem item in EditGroupTabs.TabItems)
+        {
+            ViewStickControl ctrl = item.Content as ViewStickControl;
+            if (ctrl != null)
+            {
+                ctrl.ViewModel.IsActive = false;
+            }
+        }
     }
 
     private void UpdateGroup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

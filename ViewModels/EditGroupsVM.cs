@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
@@ -20,11 +22,9 @@ public class EditGroupsTableData
 }
 
 
-public partial class EditGroupsVM : ObservableObject
+public partial class EditGroupsVM : ObservableRecipient,
+                                    IRecipient<PropertyChangedMessage<string>>
 {
-    public ObservableCollection<string> Categories { get; set; } = new();
-    [ObservableProperty]
-    private string currentCategory;
     [ObservableProperty]
     private EditGroupsTableData groupsData;
 
@@ -36,26 +36,25 @@ public partial class EditGroupsVM : ObservableObject
         Groups = groups;
         Sticks = sticks;
 
-        BuildCategories();
+        ReBuildData();
     }
 
-    private void BuildCategories()
+    public void Receive(PropertyChangedMessage<string> message)
     {
-        Categories.Add("All");
-        foreach (string category in (from grp in Groups.Groups where !string.IsNullOrEmpty(grp.Category) select grp.Category).Distinct().Order())
+        if (message.Sender is FilterToolbarVM)
         {
-            Categories.Add(category);
+            if(message.PropertyName == "SelectedAircraft" || message.PropertyName == "SelectedCategory" || message.PropertyName == "SelectedGroup")
+            {
+                ReBuildData();
+            }
         }
-        CurrentCategory = Categories[0];
     }
 
-    public void CurrentCategoryChanged()
+    public void ReBuildData()
     {
         GroupsData = null;
 
         EditGroupsTableData newGroupsData = new();
-
-        //Dictionary<AttachedJoystick, int> joystickHeadingIndex = new();
 
         AttachedJoystick[] sticks = new AttachedJoystick[Sticks.Count]; ;
         Sticks.CopyTo(sticks, 0);
@@ -63,18 +62,22 @@ public partial class EditGroupsVM : ObservableObject
 
         for (int i = 0; i < sticks.Count(); i++)
         {
-            //joystickHeadingIndex[sticks[i]] = i;
             newGroupsData.Headings.Add(sticks[i].Name);
         }
 
-        List<RinceDCSGroup> groupsToDisplay = new();
-        if(CurrentCategory == "All")
+        List<RinceDCSGroup> groupsToDisplay = new(Groups.Groups);
+
+        if(FilterToolbarVM.Default.SelectedAircraft != "All")
         {
-            groupsToDisplay.AddRange(Groups.Groups);
+            groupsToDisplay = (from grp in groupsToDisplay where grp.AircraftNames.Contains(FilterToolbarVM.Default.SelectedAircraft) select grp).OrderBy(row => row.Name).ToList();
         }
-        else
+        if (FilterToolbarVM.Default.SelectedCategory != "All")
         {
-            groupsToDisplay = (from grp in Groups.Groups where grp.Category == CurrentCategory select grp).OrderBy(row => row.Name).ToList();
+            groupsToDisplay = (from grp in groupsToDisplay where grp.Category == FilterToolbarVM.Default.SelectedCategory select grp).OrderBy(row => row.Name).ToList();
+        }
+        if (FilterToolbarVM.Default.SelectedGroup != "All")
+        {
+            groupsToDisplay = (from grp in groupsToDisplay where grp.Name == FilterToolbarVM.Default.SelectedGroup select grp).OrderBy(row => row.Name).ToList();
         }
 
         foreach (RinceDCSGroup grp in groupsToDisplay)

@@ -32,6 +32,8 @@ public sealed partial class EditGroupsControl : UserControl
         EditGroupsVM vm = new(groups, sticks);
 
         DataContext = vm;
+
+        UpdateDataGrid();
     }
 
     public EditGroupsVM ViewModel => (EditGroupsVM)DataContext;
@@ -40,12 +42,11 @@ public sealed partial class EditGroupsControl : UserControl
     {
     }
 
-    private void CategoriesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void UpdateDataGrid()
     {
-        ViewModel.CurrentCategoryChanged();
+        ViewModel.ReBuildData();
 
         groupsDataGrid.Columns.Clear();
-
         groupsDataGrid.Columns.Add(new CommunityToolkit.WinUI.UI.Controls.DataGridTextColumn()
         {
             Header = "Group",

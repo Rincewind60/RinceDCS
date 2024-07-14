@@ -35,7 +35,7 @@
             IsTextSearchEnabled="True"
             Visibility="{x:Bind CategoriesVisible, Mode=OneWay}"
             ItemsSource="{x:Bind ViewModel.Categories}"
-            SelectedItem="{x:Bind ViewModel.SelectedCategory}">
+            SelectedItem="{x:Bind ViewModel.SelectedCategory, Mode=TwoWay}">
         </ComboBox>
         <TextBlock
             Text="Group:" 
@@ -49,13 +49,13 @@
             IsTextSearchEnabled="True"
             Visibility="{x:Bind GroupsVisible, Mode=OneWay}"
             ItemsSource="{x:Bind ViewModel.Groups}"
-            SelectedItem="{x:Bind ViewModel.SelectedGroup}">
+            SelectedItem="{x:Bind ViewModel.SelectedGroup, Mode=TwoWay}">
         </ComboBox>
         <ToggleButton
             Name="WithButtons" 
             Content="With Buttons" 
             Margin="12,0,0,0"
-            Visibility="{x:Bind ShowActionsWithButtonsVisible, Mode=OneWay}"
-            IsChecked="{x:Bind ViewModel.ShowActionsWithButtons, Mode=TwoWay}"/>
+            Visibility="{x:Bind WithButtonsVisible, Mode=OneWay}"
+            IsChecked="{x:Bind ViewModel.WithButtons, Mode=TwoWay}"/>
     </StackPanel>
 </UserControl>

@@ -37,7 +37,7 @@ public partial class FilterToolbarVM : ObservableRecipient
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private bool showActionsWithButtons;
+    private bool withButtons;
 
     public FilterToolbarVM()
     {
@@ -53,7 +53,7 @@ public partial class FilterToolbarVM : ObservableRecipient
         SelectedAircraft = Aircraft.Where(a => a == Settings.Default.SelectedAircraft).FirstOrDefault("All");
         SelectedCategory = Categories.Where(a => a == Settings.Default.SelectedCategory).FirstOrDefault("All");
         SelectedGroup = Groups.Where(a => a == Settings.Default.SelectedGroup).FirstOrDefault("All");
-        ShowActionsWithButtons = Settings.Default.ShowActionsWithButtons;
+        WithButtons = Settings.Default.WithButtons;
     }
 
     partial void OnSelectedAircraftChanged(string value)
@@ -74,9 +74,9 @@ public partial class FilterToolbarVM : ObservableRecipient
         Settings.Default.Save();
     }
 
-    partial void OnShowActionsWithButtonsChanged(bool value)
+    partial void OnWithButtonsChanged(bool value)
     {
-        Settings.Default.ShowActionsWithButtons = value;
+        Settings.Default.WithButtons = value;
         Settings.Default.Save();
     }
 }

@@ -33,7 +33,7 @@ namespace RinceDCS.Views
     /// <usage>
     /// Add FilterControl to a Page or userControl.
     /// 
-    /// Set which filter controls are visible by using the Visibility properties: AircraftVisible, CategoriesVisible, GroupsVisible, ShowActionsWithButtons.
+    /// Set which filter controls are visible by using the Visibility properties: AircraftVisible, CategoriesVisible, GroupsVisible, ShowWithButtons.
     /// 
     /// To respond to a change in a Filter your class should watch the Property Changed notifications raised by the FilterViewModel.
     /// </usage>
@@ -42,12 +42,12 @@ namespace RinceDCS.Views
         public Visibility AircraftVisible { get { return (Visibility)GetValue(AircraftVisibleProperty); } set { SetValue(AircraftVisibleProperty, value); } }
         public Visibility CategoriesVisible { get { return (Visibility)GetValue(CategoriesVisibleProperty); } set { SetValue(CategoriesVisibleProperty, value); } }
         public Visibility GroupsVisible { get { return (Visibility)GetValue(GroupsVisibleProperty); } set { SetValue(GroupsVisibleProperty, value); } }
-        public Visibility ShowActionsWithButtonsVisible { get { return (Visibility)GetValue(ShowActionsWithButtonsVisibleProperty); } set { SetValue(ShowActionsWithButtonsVisibleProperty, value); } }
+        public Visibility WithButtonsVisible { get { return (Visibility)GetValue(WithButtonsVisibleProperty); } set { SetValue(WithButtonsVisibleProperty, value); } }
 
         public static readonly DependencyProperty AircraftVisibleProperty = DependencyProperty.Register("AircraftVisible", typeof(Visibility), typeof(FilterToolbar), new PropertyMetadata(Visibility.Collapsed));
         public static readonly DependencyProperty CategoriesVisibleProperty = DependencyProperty.Register("CategoriesVisible", typeof(Visibility), typeof(FilterToolbar), new PropertyMetadata(Visibility.Collapsed));
         public static readonly DependencyProperty GroupsVisibleProperty = DependencyProperty.Register("GroupsVisible", typeof(Visibility), typeof(FilterToolbar), new PropertyMetadata(Visibility.Collapsed));
-        public static readonly DependencyProperty ShowActionsWithButtonsVisibleProperty = DependencyProperty.Register("ShowActionsWithVisibleButtons", typeof(Visibility), typeof(FilterToolbar), new PropertyMetadata(Visibility.Collapsed));
+        public static readonly DependencyProperty WithButtonsVisibleProperty = DependencyProperty.Register("WithButtonsVisible", typeof(Visibility), typeof(FilterToolbar), new PropertyMetadata(Visibility.Collapsed));
 
         public FilterToolbar()
         {

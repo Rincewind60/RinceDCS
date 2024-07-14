@@ -437,7 +437,7 @@ public class GroupsVMHelper
         }
         var actions = (from grp in Groups.Groups
                         from action in grp.Actions
-                        select action.Id).Distinct();
+                       select action.Id).Distinct();
         foreach (string actiongId in actions)
         {
             Groups.AllActions.Add(actiongId);

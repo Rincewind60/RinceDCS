@@ -41,7 +41,7 @@ namespace RinceDCS.Views
 
             WeakReferenceMessenger.Default.Register<BindingsDataUpdatedMessage>(this, (r, m) =>
             {
-                BindingsDataUpdated();
+                RebuildColumns();
             });
         }
 
@@ -87,7 +87,7 @@ namespace RinceDCS.Views
             }
         }
 
-        private void BindingsDataUpdated()
+        private void RebuildColumns()
         {
             actionsDataGrid.Columns.Clear();
 
@@ -101,7 +101,7 @@ namespace RinceDCS.Views
             });
 
             int joystickIndex = 0;
-            foreach (string joystickName in ViewModel.ActionData.JoystickHeadings)
+            foreach (string joystickName in ViewModel.ActionTableData.JoystickHeadings)
             {
                 string bindingName = "Joystick" + joystickIndex.ToString();
 

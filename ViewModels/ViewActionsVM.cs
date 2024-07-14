@@ -35,13 +35,14 @@ public partial class ActionCategory : ObservableObject, IComparable<ActionCatego
 }
 
 public partial class ViewActionsVM : ObservableRecipient,
-                                     IRecipient<PropertyChangedMessage<string>>
+                                     IRecipient<PropertyChangedMessage<string>>,
+                                     IRecipient<PropertyChangedMessage<bool>>
 {
     [ObservableProperty]
-    private ActionTableData filteredActionData;
+    private ActionTableData filteredActionTableData;
     [ObservableProperty]
-    private ActionTableData actionData;
-    private DCSData ActionsData { get; set; }
+    private ActionTableData actionTableData;
+    private DCSData DCSData { get; set; }
     string SortColumn { get; set; }
     bool IsSortedAscending { get; set; }
 
@@ -52,7 +53,7 @@ public partial class ViewActionsVM : ObservableRecipient,
 
     public void Initialize(DCSData data)
     {
-        ActionsData = data;
+        DCSData = data;
         ReBuildActions();
     }
 
@@ -66,11 +67,18 @@ public partial class ViewActionsVM : ObservableRecipient,
             }
             else if (message.PropertyName == "SelectedCategory")
             {
-                FilterSortActions();
+                FilterAndSortActions();
             }
-            else if(message.PropertyName == "WithButtons")
+        }
+    }
+
+    public void Receive(PropertyChangedMessage<bool> message)
+    {
+        if (message.Sender is FilterToolbarVM)
+        {
+            if (message.PropertyName == "WithButtons")
             {
-                FilterSortActions();
+                FilterAndSortActions();
             }
         }
     }
@@ -79,67 +87,20 @@ public partial class ViewActionsVM : ObservableRecipient,
     {
         SortColumn = column;
         IsSortedAscending = isAscending;
-        FilterSortActions();
+        FilterAndSortActions();
     }
-
-    private void FilterSortActions()
-    {
-        if (FilterToolbarVM.Default.SelectedCategory == null) return;
-
-        FilteredActionData = new();
-
-        FilteredActionData.JoystickHeadings.AddRange(ActionData.JoystickHeadings);
-
-        foreach(dynamic dynAction in ActionData.Actions)
-        {
-            if (FilterToolbarVM.Default.SelectedCategory == "All" || dynAction.CategoryName == FilterToolbarVM.Default.SelectedCategory)
-            {
-                if (FilterToolbarVM.Default.ShowActionsWithButtons)
-                {
-                    IDictionary<String, Object> dynActionMembers = (IDictionary<String, Object>)dynAction;
-                    for (int j = 0; j < ActionData.JoystickHeadings.Count; j++)
-                    {
-                        string bindingName = "Joystick" + j.ToString() + "Buttons";
-                        if (dynActionMembers[bindingName] != null)
-                        {
-                            FilteredActionData.Actions.Add(dynAction);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    FilteredActionData.Actions.Add(dynAction);
-                }
-            }
-        }
-
-        if(!string.IsNullOrWhiteSpace(SortColumn))
-        {
-            if(IsSortedAscending)
-            {
-                FilteredActionData.Actions.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)x)[SortColumn], (string)((IDictionary<string, object>)y)[SortColumn]));
-            }
-            else
-            {
-                FilteredActionData.Actions.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)y)[SortColumn], (string)((IDictionary<string, object>)x)[SortColumn]));
-            }
-        }
-    }
-
+   
     private void ReBuildActions()
     {
-        ActionData = null;
-        FilteredActionData = null;
-
-        if (FilterToolbarVM.Default.SelectedAircraft == null || FilterToolbarVM.Default.SelectedAircraft == "All") return;
+        ActionTableData = null;
+        FilteredActionTableData = null;
 
         ActionTableData newActionData = new();
 
         Dictionary<string, int> joystickHeadingIndex = new();
 
-        DCSJoystick[] sticks = new DCSJoystick[ActionsData.Joysticks.Count]; ;
-        ActionsData.Joysticks.Values.CopyTo(sticks,0);
+        DCSJoystick[] sticks = new DCSJoystick[DCSData.Joysticks.Count]; ;
+        DCSData.Joysticks.Values.CopyTo(sticks,0);
         sticks = sticks.OrderBy(x => x.Joystick.Name).ToArray();
 
         for (int i = 0; i < sticks.Count(); i++)
@@ -148,10 +109,18 @@ public partial class ViewActionsVM : ObservableRecipient,
             newActionData.JoystickHeadings.Add(sticks[i].Joystick.Name);
         }
 
+        if (FilterToolbarVM.Default.SelectedAircraft == null || FilterToolbarVM.Default.SelectedAircraft == "All")
+        {
+            ActionTableData = newActionData;
+            FilterAndSortActions();
+            WeakReferenceMessenger.Default.Send(new BindingsDataUpdatedMessage());
+            return;
+        }
+
         List<ActionCategory> newCategories = new();
 
         DCSAircraftKey key = new(FilterToolbarVM.Default.SelectedAircraft);
-        foreach(DCSAction action in ActionsData.Aircraft[key].Actions.Values)
+        foreach(DCSAction action in DCSData.Aircraft[key].Actions.Values)
         {
             DCSAircraftAction dcsAircraftAction = action.Aircraft[key];
             ActionCategory category = AddCategory(newCategories, dcsAircraftAction);
@@ -180,11 +149,9 @@ public partial class ViewActionsVM : ObservableRecipient,
 
             newActionData.Actions.Add(dynAction);
         }
-        ActionData = newActionData;
-
+        ActionTableData = newActionData;
+        FilterAndSortActions();
         WeakReferenceMessenger.Default.Send(new BindingsDataUpdatedMessage());
-
-        FilterSortActions();
     }
 
     private ActionCategory AddCategory(List<ActionCategory> newCategories, DCSAircraftAction dcsAircraftAction)
@@ -229,4 +196,49 @@ public partial class ViewActionsVM : ObservableRecipient,
 
         return modifiers + buttons;
     }
+
+    private void FilterAndSortActions()
+    {
+        FilteredActionTableData = new();
+        FilteredActionTableData.JoystickHeadings.AddRange(ActionTableData.JoystickHeadings);
+
+        if (FilterToolbarVM.Default.SelectedCategory == null || FilterToolbarVM.Default.SelectedAircraft == null || FilterToolbarVM.Default.SelectedAircraft == "All") return;
+
+        foreach (dynamic dynAction in ActionTableData.Actions)
+        {
+            if (FilterToolbarVM.Default.SelectedCategory == "All" || dynAction.CategoryName == FilterToolbarVM.Default.SelectedCategory)
+            {
+                if (FilterToolbarVM.Default.WithButtons)
+                {
+                    IDictionary<String, Object> dynActionMembers = (IDictionary<String, Object>)dynAction;
+                    for (int j = 0; j < ActionTableData.JoystickHeadings.Count; j++)
+                    {
+                        string bindingName = "Joystick" + j.ToString() + "Buttons";
+                        if (dynActionMembers[bindingName] != null)
+                        {
+                            FilteredActionTableData.Actions.Add(dynAction);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    FilteredActionTableData.Actions.Add(dynAction);
+                }
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(SortColumn))
+        {
+            if (IsSortedAscending)
+            {
+                FilteredActionTableData.Actions.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)x)[SortColumn], (string)((IDictionary<string, object>)y)[SortColumn]));
+            }
+            else
+            {
+                FilteredActionTableData.Actions.Sort((x, y) => String.Compare((string)((IDictionary<string, object>)y)[SortColumn], (string)((IDictionary<string, object>)x)[SortColumn]));
+            }
+        }
+    }
+
 }

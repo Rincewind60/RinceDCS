@@ -23,7 +23,7 @@
     <Setting Name="SelectedGroup" Type="System.String" Scope="User">
       <Value Profile="(Default)">All</Value>
     </Setting>
-    <Setting Name="ShowActionsWithButtons" Type="System.Boolean" Scope="User">
+    <Setting Name="WithButtons" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
