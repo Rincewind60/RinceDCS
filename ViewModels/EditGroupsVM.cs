@@ -1,17 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging.Messages;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
 using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
@@ -43,7 +40,7 @@ public partial class EditGroupsVM : ObservableRecipient,
     {
         if (message.Sender is FilterToolbarVM)
         {
-            if(message.PropertyName == "SelectedAircraft" || message.PropertyName == "SelectedCategory" || message.PropertyName == "SelectedGroup")
+            if (message.PropertyName == "SelectedAircraft" || message.PropertyName == "SelectedCategory" || message.PropertyName == "SelectedGroup")
             {
                 ReBuildData();
             }
@@ -67,7 +64,7 @@ public partial class EditGroupsVM : ObservableRecipient,
 
         List<RinceDCSGroup> groupsToDisplay = new(Groups.Groups);
 
-        if(FilterToolbarVM.Default.SelectedAircraft != "All")
+        if (FilterToolbarVM.Default.SelectedAircraft != "All")
         {
             groupsToDisplay = (from grp in groupsToDisplay where grp.AircraftNames.Contains(FilterToolbarVM.Default.SelectedAircraft) select grp).OrderBy(row => row.Name).ToList();
         }
@@ -90,7 +87,7 @@ public partial class EditGroupsVM : ObservableRecipient,
                 string bindingName = "Stick" + j.ToString();
 
                 RinceDCSGroupJoystick grpStick = grp.Joysticks.Find(row => row.Joystick == sticks[j]);
-                if(grpStick.Buttons.Count > 0)
+                if (grpStick.Buttons.Count > 0)
                 {
                     dynGroupMembers.TryAdd(bindingName + "Buttons", grpStick.GetButtonsLabel());
                     dynGroupMembers.TryAdd(bindingName + "Visible", Visibility.Visible);

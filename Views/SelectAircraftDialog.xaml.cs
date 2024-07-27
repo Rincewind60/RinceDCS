@@ -1,20 +1,10 @@
+// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -38,10 +28,10 @@ namespace RinceDCS.Views
         private void SelectAircraft_Checked(object sender, RoutedEventArgs e)
         {
             bool allChecked = true;
-            foreach(var item in SelectAircraft.Items)
+            foreach (var item in SelectAircraft.Items)
             {
                 ListViewItem listViewItem = SelectAircraft.ContainerFromItem(item) as ListViewItem;
-                if(listViewItem != null)
+                if (listViewItem != null)
                 {
                     CheckBox checkbox = listViewItem.FindDescendant<CheckBox>();
                     allChecked &= checkbox.IsChecked.Value;
@@ -52,7 +42,7 @@ namespace RinceDCS.Views
                 }
             }
 
-            if(allChecked)
+            if (allChecked)
             {
                 SelectAll.Checked -= SelectAll_Checked;
                 ViewModel.SelectAll = true;

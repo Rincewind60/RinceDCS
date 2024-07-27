@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RinceDCS.Models;
 using RinceDCS.Services;
@@ -27,7 +28,7 @@ public partial class EditJoystickVM : ObservableObject
     {
         Stick = joystick;
         CurrentButton = null;
-        foreach(string font in fonts)
+        foreach (string font in fonts)
         {
             FontNames.Add(font);
         }
@@ -37,7 +38,7 @@ public partial class EditJoystickVM : ObservableObject
     [RelayCommand]
     private void AlignButtonLeft()
     {
-        if(CurrentButton == null) return;
+        if (CurrentButton == null) return;
 
         CurrentButton.Alignment = "Left";
     }
@@ -45,7 +46,7 @@ public partial class EditJoystickVM : ObservableObject
     [RelayCommand]
     private void AlignButtonCenter()
     {
-        if(CurrentButton == null) return;
+        if (CurrentButton == null) return;
 
         CurrentButton.Alignment = "Center";
     }
@@ -53,7 +54,7 @@ public partial class EditJoystickVM : ObservableObject
     [RelayCommand]
     private void AlignButtonRight()
     {
-        if(CurrentButton == null) return;
+        if (CurrentButton == null) return;
 
         CurrentButton.Alignment = "Right";
     }
@@ -71,8 +72,8 @@ public partial class EditJoystickVM : ObservableObject
 
     partial void OnCurrentButtonChanged(RinceDCSJoystickButton oldValue, RinceDCSJoystickButton newValue)
     {
-        if(oldValue != null) oldValue.IsSelected = false;
-        if(newValue != null) newValue.IsSelected = true;
+        if (oldValue != null) oldValue.IsSelected = false;
+        if (newValue != null) newValue.IsSelected = true;
     }
 
     public void PlaceButtonOnJoystick(RinceDCSJoystickButton button, int x, int y)

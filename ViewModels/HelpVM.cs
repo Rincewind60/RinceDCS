@@ -1,8 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using RinceDCS.Services;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Drawing;
 using System.IO;
 
 namespace RinceDCS.ViewModels;

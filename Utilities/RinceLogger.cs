@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
 namespace RinceDCS.Utilities;
 

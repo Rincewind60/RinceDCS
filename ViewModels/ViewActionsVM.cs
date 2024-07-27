@@ -1,18 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
-using CommunityToolkit.WinUI.UI;
-using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Markup;
 using RinceDCS.Models;
 using RinceDCS.ViewModels.Messages;
-using SharpDX.DirectInput;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 
@@ -89,7 +84,7 @@ public partial class ViewActionsVM : ObservableRecipient,
         IsSortedAscending = isAscending;
         FilterAndSortActions();
     }
-   
+
     private void ReBuildActions()
     {
         ActionTableData = null;
@@ -100,7 +95,7 @@ public partial class ViewActionsVM : ObservableRecipient,
         Dictionary<string, int> joystickHeadingIndex = new();
 
         DCSJoystick[] sticks = new DCSJoystick[DCSData.Joysticks.Count]; ;
-        DCSData.Joysticks.Values.CopyTo(sticks,0);
+        DCSData.Joysticks.Values.CopyTo(sticks, 0);
         sticks = sticks.OrderBy(x => x.Joystick.Name).ToArray();
 
         for (int i = 0; i < sticks.Count(); i++)
@@ -120,7 +115,7 @@ public partial class ViewActionsVM : ObservableRecipient,
         List<ActionCategory> newCategories = new();
 
         DCSAircraftKey key = new(FilterToolbarVM.Default.SelectedAircraft);
-        foreach(DCSAction action in DCSData.Aircraft[key].Actions.Values)
+        foreach (DCSAction action in DCSData.Aircraft[key].Actions.Values)
         {
             DCSAircraftAction dcsAircraftAction = action.Aircraft[key];
             ActionCategory category = AddCategory(newCategories, dcsAircraftAction);
@@ -161,7 +156,7 @@ public partial class ViewActionsVM : ObservableRecipient,
         string categoryName = string.IsNullOrWhiteSpace(dcsAircraftAction.Category) ? "Uknown" : dcsAircraftAction.Category;
 
         category = newCategories.Find(cat => cat.CategoryName == categoryName);
-        if(category == null)
+        if (category == null)
         {
             category = new() { CategoryName = categoryName };
             newCategories.Add(category);
@@ -178,12 +173,12 @@ public partial class ViewActionsVM : ObservableRecipient,
 
         if (action.AircraftJoysticks.ContainsKey(key))
         {
-            foreach(DCSButton button in action.AircraftJoysticks[key].Buttons.Values)
+            foreach (DCSButton button in action.AircraftJoysticks[key].Buttons.Values)
             {
-                if(button.IsModifier)
+                if (button.IsModifier)
                 {
                     modifiers += "[";
-                    for(int i = 0; i < button.Modifiers.Count; i++)
+                    for (int i = 0; i < button.Modifiers.Count; i++)
                     {
                         modifiers += button.Modifiers[i] + (button.Modifiers.Count > 1 && i < (button.Modifiers.Count - 1) ? "," : "");
                     }

@@ -1,4 +1,6 @@
-﻿using Microsoft.UI;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
@@ -8,7 +10,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using Windows.UI.Text;
 
 namespace RinceDCS.Views.Utilities;
 

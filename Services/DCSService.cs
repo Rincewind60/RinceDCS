@@ -1,19 +1,15 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using HtmlAgilityPack;
-using Microsoft.VisualBasic;
 using MoonSharp.Interpreter;
 using RinceDCS.Models;
 using RinceDCS.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
-using Windows.Media.AppBroadcasting;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RinceDCS.Services;
 
@@ -68,19 +64,19 @@ public class DCSService
 
         Table table = Script.RunFile(modifierPath).Table;
 
-        for(int i = 0; i < table.Keys.Count(); i++)
+        for (int i = 0; i < table.Keys.Count(); i++)
         {
             DCSModifier newModifier = new();
             newModifier.Name = table.Keys.ElementAt(i).String;
             Table modiferTable = table.Values.ElementAt(i).Table;
-            for(int j = 0; j < modiferTable.Keys.Count(); j++)
+            for (int j = 0; j < modiferTable.Keys.Count(); j++)
             {
                 string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
-                if(modifierPropertyName == "device")
+                if (modifierPropertyName == "device")
                 {
                     newModifier.Device = modiferTable.Values.ElementAt(j).String;
                 }
-                else if(modifierPropertyName == "key")
+                else if (modifierPropertyName == "key")
                 {
                     newModifier.Key = modiferTable.Values.ElementAt(j).String;
                 }
@@ -95,25 +91,25 @@ public class DCSService
         foreach (DCSAircraft aircraft in data.Aircraft.Values)
         {
             string modifierPath = savedGamesAircraftPath + "\\" + aircraft.Key.Name + "\\modifiers.lua";
-            if(File.Exists(modifierPath))
+            if (File.Exists(modifierPath))
             {
                 Table table = Script.RunFile(modifierPath).Table;
-                for(int i = 0; i < table.Keys.Count(); i++)
+                for (int i = 0; i < table.Keys.Count(); i++)
                 {
                     string name = table.Keys.ElementAt(i).String;
-                    if(!data.Modifiers.ContainsKey(name))
+                    if (!data.Modifiers.ContainsKey(name))
                     {
                         DCSModifier newModifier = new();
                         newModifier.Name = name;
                         Table modiferTable = table.Values.ElementAt(i).Table;
-                        for(int j = 0; j < modiferTable.Keys.Count(); j++)
+                        for (int j = 0; j < modiferTable.Keys.Count(); j++)
                         {
                             string modifierPropertyName = modiferTable.Keys.ElementAt(j).String;
-                            if(modifierPropertyName == "device")
+                            if (modifierPropertyName == "device")
                             {
                                 newModifier.Device = modiferTable.Values.ElementAt(j).String;
                             }
-                            else if(modifierPropertyName == "key")
+                            else if (modifierPropertyName == "key")
                             {
                                 newModifier.Key = modiferTable.Values.ElementAt(j).String;
                             }
@@ -234,7 +230,7 @@ public class DCSService
         foreach (string aircraft in aircraftNames)
         {
             string configPath = TestFolder + "\\" + aircraft;
-            if(!Directory.Exists(configPath))
+            if (!Directory.Exists(configPath))
             {
                 Directory.CreateDirectory(configPath);
                 Directory.CreateDirectory(configPath + "\\joystick");
@@ -246,7 +242,7 @@ public class DCSService
     {
         StringBuilder sb = new();
         sb.AppendLine("local modifiers = {");
-        foreach(RinceDCSGroupModifier modifier in groups.Modifiers)
+        foreach (RinceDCSGroupModifier modifier in groups.Modifiers)
         {
             sb.AppendLine("\t[\"" + modifier.Name + "\"] = {");
             sb.AppendLine("\t\t[\"device\"] = \"" + modifier.Device + "\",");
@@ -494,7 +490,7 @@ public class DCSService
                 string aircraftStickHtmlPath = htmlFolderPath + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
                 if (File.Exists(aircraftStickHtmlPath))
                 {
-                    List<DCSHtmlFileRecord>  htmlActions = ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
+                    List<DCSHtmlFileRecord> htmlActions = ReadAircraftStickHtmlFile(aircraftStickHtmlPath);
                     BuildHTMLActions(data, aircraft, stick, htmlActions);
                 }
             }
@@ -503,7 +499,7 @@ public class DCSService
 
     private void BuildHTMLActions(DCSData data, DCSAircraft aircraft, DCSJoystick stck, List<DCSHtmlFileRecord> htmlActionss)
     {
-        foreach(DCSHtmlFileRecord row in htmlActionss)
+        foreach (DCSHtmlFileRecord row in htmlActionss)
         {
             DCSActionKey actionKey = new(row.Id);
             DCSAction action;
@@ -951,7 +947,7 @@ public class DCSService
         {
             string buttonName = button.AddButton != null ? button.AddButton.Name : button.RemoveButton.Name;
             AxisFilter filter = button.AddButton != null ? button.AddButton.AxisFilter : button.RemoveButton.AxisFilter;
-            
+
             sb.AppendLine("\t\t\t\t[" + (buttonIndex + 1).ToString() + "] = {");
             if (filter != null)
             {
@@ -973,7 +969,7 @@ public class DCSService
                 sb.AppendLine("\t\t\t\t\t},");
             }
             sb.AppendLine("\t\t\t\t\t[\"key\"] = \"" + buttonName + "\",");
-            if(button.AddButton != null && button.AddButton.IsModifier)
+            if (button.AddButton != null && button.AddButton.IsModifier)
             {
                 sb.AppendLine("\t\t\t\t\t[\"reformers\"] = {");
                 for (int index = 0; index < button.AddButton.Modifiers.Count; index++)

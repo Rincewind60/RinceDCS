@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using Microsoft.UI.Xaml;
 
 namespace RinceDCS.Utilities;
 

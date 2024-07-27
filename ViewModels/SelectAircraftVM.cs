@@ -1,13 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
@@ -28,7 +25,7 @@ public partial class SelectAircraftVM : ObservableObject
 
     public SelectAircraftVM(List<string> aircraftNames)
     {
-        foreach(string name in aircraftNames)
+        foreach (string name in aircraftNames)
         {
             Aircraft.Add(new SelectAircraft() { Name = name, Selected = true });
         }
@@ -38,7 +35,7 @@ public partial class SelectAircraftVM : ObservableObject
     [RelayCommand]
     public void SelectAllChecked()
     {
-        foreach(SelectAircraft aircraft in Aircraft)
+        foreach (SelectAircraft aircraft in Aircraft)
         {
             aircraft.Selected = true;
         }

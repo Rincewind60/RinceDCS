@@ -1,4 +1,6 @@
-﻿using RinceDCS.Models;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using RinceDCS.Models;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ public class JoystickService
 
     //  Used to help build list of available joystick axes, an array of built in enum values, used to quiry DirectInput.
     private static List<JoystickOffset> JoystickAxisOffsets = new() { JoystickOffset.X, JoystickOffset.Y, JoystickOffset.Z, JoystickOffset.RotationX, JoystickOffset.RotationY, JoystickOffset.RotationZ, JoystickOffset.Sliders0, JoystickOffset.Sliders1 };
-    private static string[] DCSjoystickAxisLabels = { "JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"};
+    private static string[] DCSjoystickAxisLabels = { "JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2" };
 
     public static JoystickService Default
     {
@@ -47,7 +49,7 @@ public class JoystickService
             }
         }
 
-        sticks.Sort((x, y) => String.Compare(x.Name, y.Name) );
+        sticks.Sort((x, y) => String.Compare(x.Name, y.Name));
 
         return sticks;
     }
@@ -62,14 +64,14 @@ public class JoystickService
         joystick.Acquire();
         JoystickState state = joystick.GetCurrentState();
 
-         info.Buttons = new List<string>();
+        info.Buttons = new List<string>();
         for (int i = 1; i < (joystick.Capabilities.ButtonCount + 1); i++)
         {
             info.Buttons.Add("JOY_BTN" + i.ToString());
         }
 
         info.POVs = new List<string>();
-        for(int i = 1; i < (joystick.Capabilities.PovCount + 1); i++)
+        for (int i = 1; i < (joystick.Capabilities.PovCount + 1); i++)
         {
             info.POVs.Add("JOY_BTN_POV" + i.ToString() + "_U");
             info.POVs.Add("JOY_BTN_POV" + i.ToString() + "_UR");
@@ -99,9 +101,9 @@ public class JoystickService
 
     private DeviceInstance GetDevice(DirectInput input, Guid joystickGuid)
     {
-        foreach(DeviceInstance device in input.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly))
+        foreach (DeviceInstance device in input.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly))
         {
-            if(device.InstanceGuid == joystickGuid )
+            if (device.InstanceGuid == joystickGuid)
                 return device;
         }
 

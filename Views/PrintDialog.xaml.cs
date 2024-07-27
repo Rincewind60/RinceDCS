@@ -1,10 +1,7 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
 using Microsoft.UI.Xaml.Controls;
 using RinceDCS.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
 

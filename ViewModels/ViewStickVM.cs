@@ -1,14 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using RinceDCS.Models;
-using RinceDCS.Services;
 using RinceDCS.ViewModels.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
@@ -44,7 +42,7 @@ public partial class ViewStickVM : ObservableRecipient,
 
     public void Receive(PropertyChangedMessage<string> message)
     {
-        if(message.Sender is FilterToolbarVM && message.PropertyName == "SelectedAircraft")
+        if (message.Sender is FilterToolbarVM && message.PropertyName == "SelectedAircraft")
         {
             ReBuildViewButtons();
         }
@@ -54,12 +52,12 @@ public partial class ViewStickVM : ObservableRecipient,
     {
         AssignedButtons.Clear();
 
-        if(FilterToolbarVM.Default.SelectedAircraft != "All")
+        if (FilterToolbarVM.Default.SelectedAircraft != "All")
         {
             JoystickVMHelper helper = new(BindingsData);
             Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
             List<AssignedButton> buttons = helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, FilterToolbarVM.Default.SelectedAircraft);
-            foreach(AssignedButton button in buttons)
+            foreach (AssignedButton button in buttons)
             {
                 AssignedButtons.Add(button);
             }

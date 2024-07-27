@@ -1,13 +1,9 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using RinceDCS.Models;
-using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels.Helpers;
 
@@ -82,7 +78,7 @@ public class JoystickVMHelper
                                                grp.AircraftNames.Contains(aircraftName)
                                          select grp).OrderBy(row => row.Name).ToList();
 
-        foreach(RinceDCSJoystickButton button in buttonsOnLayout.Values)
+        foreach (RinceDCSJoystickButton button in buttonsOnLayout.Values)
         {
             if (button.ButtonName != "Game" && button.ButtonName != "Plane" && button.ButtonName != "Joystick")
             {
@@ -96,12 +92,12 @@ public class JoystickVMHelper
                     newButton = new(button, axisGroups);
                 }
                 var groupsWithButton = from grp in groups.Groups
-                                      from gj in grp.Joysticks
-                                      from grpButton in gj.Buttons
-                                      where gj.Joystick == stick.AttachedJoystick &&
-                                            grpButton.Name == button.ButtonName &&
-                                            button.IsModifier == grpButton.IsModifier
-                                      select grp;
+                                       from gj in grp.Joysticks
+                                       from grpButton in gj.Buttons
+                                       where gj.Joystick == stick.AttachedJoystick &&
+                                             grpButton.Name == button.ButtonName &&
+                                             button.IsModifier == grpButton.IsModifier
+                                       select grp;
                 if (groupsWithButton.Count() > 0)
                 {
                     newButton.Group = groupsWithButton.First();
@@ -116,8 +112,8 @@ public class JoystickVMHelper
     private void BuildAppButtons(
         RinceDCSJoystick stick,
         List<AssignedButton> assignedButtons,
-        Dictionary< AssignedButtonKey, RinceDCSJoystickButton > buttonsOnLayout,
-        string buttonName, 
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout,
+        string buttonName,
         string commandName
         )
     {
@@ -165,16 +161,17 @@ public class JoystickVMHelper
 
     private AssignedButton GetAssignedButtons(List<AssignedButton> assignedButtons, RinceDCSJoystickButton gameJoystickButton)
     {
-        foreach(AssignedButton button in assignedButtons)
+        foreach (AssignedButton button in assignedButtons)
         {
-            if(button.JoystickButton.ButtonName == gameJoystickButton.ButtonName &&
-                button.JoystickButton.IsModifier == gameJoystickButton.IsModifier) {
+            if (button.JoystickButton.ButtonName == gameJoystickButton.ButtonName &&
+                button.JoystickButton.IsModifier == gameJoystickButton.IsModifier)
+            {
                 return button;
             }
         }
 
         AssignedButton assigned = new(gameJoystickButton);
-        assignedButtons.Add(assigned); 
+        assignedButtons.Add(assigned);
         return assigned;
     }
 }

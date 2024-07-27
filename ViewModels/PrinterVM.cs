@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,7 +19,7 @@ public partial class PrinterVM : ObservableObject
     {
         Printers = new(printers);
         Printer = (from pr in Printers
-                  where pr == printer
-                  select pr).First();
+                   where pr == printer
+                   select pr).First();
     }
 }

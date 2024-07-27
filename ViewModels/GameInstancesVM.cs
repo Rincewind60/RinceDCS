@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using RinceDCS.Models;
@@ -53,7 +54,7 @@ public partial class GameInstancesVM : ObservableObject
     {
         Instances = new();
         Instances.Add(new InstanceData() { Name = "Name", GameExePath = "Game Executable Path", SavedGamesPath = "Saved Games Folder Path", IsHeading = true });
-        foreach(RinceDCSInstance instance in instances)
+        foreach (RinceDCSInstance instance in instances)
         {
             InstanceData instanceData = new InstanceData() { Name = instance.Name, GameExePath = instance.GameExePath, SavedGamesPath = instance.SavedGamesPath, IsHeading = false };
             Instances.Add(instanceData);
@@ -110,7 +111,7 @@ public partial class GameInstancesVM : ObservableObject
 
     private void ValidateInstances()
     {
-        if(Instances.Count == NumberOfHeadingInstances)
+        if (Instances.Count == NumberOfHeadingInstances)
         {
             IsValid = false;
             return;
@@ -118,9 +119,9 @@ public partial class GameInstancesVM : ObservableObject
 
         bool valid = true;
 
-        for(var i = NumberOfHeadingInstances; i < Instances.Count; i++)
+        for (var i = NumberOfHeadingInstances; i < Instances.Count; i++)
         {
-            if(Instances[i].IsValid == false) {  valid = false; break; }
+            if (Instances[i].IsValid == false) { valid = false; break; }
         }
 
         IsValid = valid;

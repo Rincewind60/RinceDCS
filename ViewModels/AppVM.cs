@@ -1,10 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml;
 using RinceDCS.Models;
 using RinceDCS.Properties;
 using RinceDCS.Services;
@@ -73,7 +72,7 @@ public partial class AppVM : ObservableRecipient
         });
 
         string savedPath = Settings.Default.LastSavePath;
-        if(!string.IsNullOrWhiteSpace(savedPath))
+        if (!string.IsNullOrWhiteSpace(savedPath))
         {
             DoOpen(savedPath);
         }
@@ -98,17 +97,17 @@ public partial class AppVM : ObservableRecipient
     [RelayCommand]
     private async Task Open()
     {
-        if(CurrentFile != null)
+        if (CurrentFile != null)
         {
             bool? result = await DialogService.Default.OpenConfirmationDialog("Save RinceDCS File", "Do you want to save the existing file first?");
-            if(result.HasValue && result.Value)
+            if (result.HasValue && result.Value)
             {
                 await FileService.Default.SaveRinceDCSFile(CurrentFile);
             }
         }
 
         string path = await DialogService.Default.OpenPickFile(".json");
-        if(!string.IsNullOrWhiteSpace(path))
+        if (!string.IsNullOrWhiteSpace(path))
         {
             DoOpen(path);
         }
@@ -158,7 +157,7 @@ public partial class AppVM : ObservableRecipient
         Task.Run(() => FileService.Default.SaveRinceDCSFile(CurrentFile)).Wait();
     }
 
-     [RelayCommand]
+    [RelayCommand]
     private void SaveAs()
     {
         ApplyChangesToModels();
@@ -176,10 +175,10 @@ public partial class AppVM : ObservableRecipient
     {
         string exportFolder = await DialogService.Default.OpenPickFolder();
         JoystickVMHelper helper = new(CurrentInstanceDCSData);
-        foreach(RinceDCSJoystick stick in CurrentFile.Joysticks)
+        foreach (RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
             Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
-            foreach(RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
+            foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
             {
                 List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
                 string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
@@ -218,7 +217,7 @@ public partial class AppVM : ObservableRecipient
 
     public void CurrentInstanceChanged()
     {
-        if(CurrentInstance == null)
+        if (CurrentInstance == null)
         {
             CurrentInstanceDCSData = null;
         }
@@ -345,7 +344,7 @@ public partial class AppVM : ObservableRecipient
             CurrentFile.Instances.Add(newInstance);
         }
     }
-     
+
     private void UpdateExistingInstances(List<InstanceData> instances)
     {
         var query = from gameInstance in CurrentFile.Instances
@@ -389,7 +388,7 @@ public partial class AppVM : ObservableRecipient
 
     private void LoadBindingDataForInstance(RinceDCSInstance instance)
     {
-        if(instance.ControlsData != null) { return; }
+        if (instance.ControlsData != null) { return; }
 
         DCSData data = DCSService.Default.GetControlsData(
             instance.Name,

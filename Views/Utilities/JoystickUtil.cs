@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using Microsoft.UI.Xaml.Media.Imaging;
 using RinceDCS.Models;
 using RinceDCS.Services;
@@ -87,7 +88,7 @@ public class JoystickUtil
             PrintDialog pp = new(printDoc);
             Microsoft.UI.Xaml.Controls.ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Print Assigned Buttons", pp, "Print", null, null, "Cancel");
 
-            if(result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
                 printDoc.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
@@ -173,15 +174,15 @@ public class JoystickUtil
                     {
                         format.Alignment = StringAlignment.Near;
                     }
-                    else if(button.JoystickButton.Alignment == "Center")
+                    else if (button.JoystickButton.Alignment == "Center")
                     {
                         format.Alignment = StringAlignment.Center;
                     }
-                    else if(button.JoystickButton.Alignment == "Right")
+                    else if (button.JoystickButton.Alignment == "Right")
                     {
                         format.Alignment = StringAlignment.Far;
                     }
-                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(button.JoystickButton.Width), (float)(fontSize+4));
+                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(button.JoystickButton.Width), (float)(fontSize + 4));
                     gfx.DrawString(button.Action, font, brush, rect, format);
                 }
             }

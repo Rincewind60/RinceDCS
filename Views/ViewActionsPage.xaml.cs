@@ -1,27 +1,15 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
-using RinceDCS.Models;
-using RinceDCS.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml.Markup;
-using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Navigation;
+using RinceDCS.Models;
+using RinceDCS.ViewModels;
 using RinceDCS.ViewModels.Messages;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -67,7 +55,7 @@ namespace RinceDCS.Views
         private void actionsDataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
         {
             string sortColumn = e.Column.Tag.ToString();
-            if(e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
             {
                 ViewModel.UpdateSortColumn(sortColumn, true);
                 e.Column.SortDirection = DataGridSortDirection.Ascending;
@@ -75,12 +63,12 @@ namespace RinceDCS.Views
             else
             {
                 ViewModel.UpdateSortColumn(sortColumn, false);
-                e.Column.SortDirection= DataGridSortDirection.Descending;
+                e.Column.SortDirection = DataGridSortDirection.Descending;
             }
 
-            foreach(var col in actionsDataGrid.Columns)
+            foreach (var col in actionsDataGrid.Columns)
             {
-                if(col.Tag.ToString() != sortColumn)
+                if (col.Tag.ToString() != sortColumn)
                 {
                     col.SortDirection = null;
                 }
@@ -105,7 +93,7 @@ namespace RinceDCS.Views
             {
                 string bindingName = "Joystick" + joystickIndex.ToString();
 
-                DataGridTemplateColumn column = new() { Header = joystickName, Tag = bindingName  + "Buttons" };
+                DataGridTemplateColumn column = new() { Header = joystickName, Tag = bindingName + "Buttons" };
 
                 string Xaml = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
                         "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +

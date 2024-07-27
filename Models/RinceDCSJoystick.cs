@@ -1,14 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using RinceDCS.ViewModels;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using Windows.Gaming.Input;
 
 namespace RinceDCS.Models;
 
@@ -40,7 +35,7 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
     [ObservableProperty]
     private int defaultLabelWidth;
 
-    public byte[] Image {  get; set; }
+    public byte[] Image { get; set; }
 
     public RinceDCSJoystick()
     {
@@ -86,7 +81,7 @@ public partial class RinceDCSJoystickButton : ObservableObject
     public bool IsKeyButton { get; set; }
 
     [property: JsonIgnore]
-    public string ButtonLabel {  get {  return IsModifier ? "MOD+" + ButtonName : ButtonName; } }
+    public string ButtonLabel { get { return IsModifier ? "MOD+" + ButtonName : ButtonName; } }
 
     [ObservableProperty]
     private int topX;

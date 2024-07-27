@@ -1,13 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Data;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Windows.Networking.Vpn;
 
 namespace RinceDCS.Models;
 
@@ -22,7 +18,7 @@ public class RinceDCSGroups
     [property: JsonIgnore]
     public Dictionary<string, RinceDCSGroup> AllGroups { get; set; } = new();
 
-    [property: JsonIgnore] 
+    [property: JsonIgnore]
     public HashSet<string> AllActions { get; set; } = new();
 
     [property: JsonIgnore]
@@ -32,7 +28,7 @@ public class RinceDCSGroups
 public class RinceDCSGroup
 {
     public string Name { get; set; }
-    public string Category {  get; set; }
+    public string Category { get; set; }
     public bool IsAxis { get; set; }
     public List<string> AircraftNames { get; set; } = new();
     public List<RinceDCSGroupAction> Actions { get; set; } = new();
@@ -58,15 +54,15 @@ public class RinceDCSGroupAction
 public class RinceDCSGroupJoystick
 {
     public AttachedJoystick Joystick { get; set; }
-    public List<RinceDCSGroupButton> Buttons { get; set; }= new();
+    public List<RinceDCSGroupButton> Buttons { get; set; } = new();
 
     public string GetButtonsLabel()
     {
         string label = "";
 
-        foreach(var button in Buttons)
+        foreach (var button in Buttons)
         {
-            label += button.Name + " "; 
+            label += button.Name + " ";
         }
 
         return label;

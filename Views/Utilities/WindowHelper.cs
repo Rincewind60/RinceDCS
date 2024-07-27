@@ -1,12 +1,4 @@
-﻿//*********************************************************
-//
-// Copyright (c) Microsoft. All rights reserved.
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
@@ -37,7 +29,8 @@ public class WindowHelper
 
     static public void TrackWindow(Window window)
     {
-        window.Closed += (sender, args) => {
+        window.Closed += (sender, args) =>
+        {
             _activeWindows.Remove(window);
         };
         _activeWindows.Add(window);

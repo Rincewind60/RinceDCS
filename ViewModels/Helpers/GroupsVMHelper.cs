@@ -1,6 +1,6 @@
-﻿using Csv;
-using Microsoft.UI.Xaml.Controls;
-using MoonSharp.Interpreter;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using Csv;
 using RinceDCS.Models;
 using RinceDCS.Properties;
 using RinceDCS.Services;
@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RinceDCS.ViewModels.Helpers;
 public class GroupsVMHelper
@@ -25,7 +24,7 @@ public class GroupsVMHelper
     {
         Joysticks = joysticks;
         Data = data;
-//        Groups = groups ?? new();
+        //        Groups = groups ?? new();
         Groups = new();
         SavedGamesPath = savedGamesPath;
 
@@ -112,9 +111,9 @@ public class GroupsVMHelper
     private void CreateNewModifiers()
     {
         var query = from modifier in Data.Modifiers.Values
-                    where !Groups.Modifiers.Any(row => row.Key == modifier.Key )
+                    where !Groups.Modifiers.Any(row => row.Key == modifier.Key)
                     select modifier;
-        foreach(DCSModifier modifier in query )
+        foreach (DCSModifier modifier in query)
         {
             RinceDCSGroupModifier newModifier = new()
             {
@@ -125,9 +124,9 @@ public class GroupsVMHelper
             };
             Groups.Modifiers.Add(newModifier);
         }
-        if(string.IsNullOrWhiteSpace(Groups.DefaultModifierName))
+        if (string.IsNullOrWhiteSpace(Groups.DefaultModifierName))
         {
-            Groups.DefaultModifierName = Groups.Modifiers[Groups.Modifiers.Count-1].Name;
+            Groups.DefaultModifierName = Groups.Modifiers[Groups.Modifiers.Count - 1].Name;
         }
     }
 
@@ -145,7 +144,7 @@ public class GroupsVMHelper
 
         foreach (DCSAircraft aircraft in Data.Aircraft.Values)
         {
-            foreach(DCSJoystick stick in Data.Joysticks.Values)
+            foreach (DCSJoystick stick in Data.Joysticks.Values)
             {
                 string aircraftStickHtmlPath = htmlFilesFolder + "\\" + aircraft.Key.Name + "\\" + stick.Joystick.DCSName + ".html";
                 if (File.Exists(aircraftStickHtmlPath))
@@ -157,7 +156,7 @@ public class GroupsVMHelper
                                 join htmlAction in htmlActions on grpAction.Id equals htmlAction.Id
                                 where !grp.Aircraft.Any(a => a.AircraftName == aircraft.Key.Name)
                                 select new { grp, grpAction, htmlAction };
-                    foreach(var newAircraft in query)
+                    foreach (var newAircraft in query)
                     {
                         RinceDCSGroupAircraft grpAircraft = new()
                         {
@@ -224,7 +223,7 @@ public class GroupsVMHelper
                     updated = true;
                 }
 
-                if(updated)
+                if (updated)
                 {
                     CsvDump.AddRow();
                     CsvDump["Group"] = a.Group;
@@ -287,14 +286,14 @@ public class GroupsVMHelper
     {
         //  Find all actions not part of a group and add to group 
         var actionsWithNoGroup = (from action in allActionsWithButtons
-                                   join grp in Groups.AllGroups.Values on action.Group equals grp.Name
-                                   where !Groups.AllActions.Contains(action.ActionId)
-                                   select new NewGroupAction
-                                   (
-                                       action.Group,
-                                       action.ActionId,
-                                       grp
-                                   )).Distinct();
+                                  join grp in Groups.AllGroups.Values on action.Group equals grp.Name
+                                  where !Groups.AllActions.Contains(action.ActionId)
+                                  select new NewGroupAction
+                                  (
+                                      action.Group,
+                                      action.ActionId,
+                                      grp
+                                  )).Distinct();
 
         CsvDump.AddRow();
         CsvDump["Group"] = "#### Actions to add to Groups ####";
@@ -350,8 +349,8 @@ public class GroupsVMHelper
                                     !Groups.AllActions.Contains(actionWithNoGroup.ActionId)
                               select new NewGroup
                               (
-                                  actionWithNoGroup.Group, 
-                                  actionWithNoGroup.AircraftCategory, 
+                                  actionWithNoGroup.Group,
+                                  actionWithNoGroup.AircraftCategory,
                                   actionWithNoGroup.IsAxis
                               )).Distinct()
                                 .OrderBy(row => row.Group)
@@ -362,7 +361,7 @@ public class GroupsVMHelper
         string prevGroup = "";
         foreach (var a in groupsToCreate)
         {
-            if(a.Group != prevGroup)
+            if (a.Group != prevGroup)
             {
                 CsvDump.AddRow();
                 CsvDump["Group"] = a.Group;
@@ -382,22 +381,22 @@ public class GroupsVMHelper
     {
         //  Find all actions in game that have a button assigned to them
         var allActionsWithButtons = (from action in Data.Actions.Values
-                                      from aircraftStickAction in action.AircraftJoysticks.Values
-                                      from button in aircraftStickAction.Buttons.Values
-                                      from aircraft in action.Aircraft.Values
-                                      where aircraftStickAction.AircraftKey == aircraft.Key
-                                      select new ActionWithButtons(
-                                        action.Key.Id,
-                                        action.Name,
-                                        action.IsAxis,
-                                        aircraftStickAction.JoystickKey.Id,
-                                        aircraftStickAction.AircraftKey.Name,
-                                        aircraft.Action,
-                                        aircraft.Category,
-                                        button.Name,
-                                        button.Modifiers,
-                                        button.AxisFilter
-                                      )).OrderBy(row => row.ActionId)
+                                     from aircraftStickAction in action.AircraftJoysticks.Values
+                                     from button in aircraftStickAction.Buttons.Values
+                                     from aircraft in action.Aircraft.Values
+                                     where aircraftStickAction.AircraftKey == aircraft.Key
+                                     select new ActionWithButtons(
+                                       action.Key.Id,
+                                       action.Name,
+                                       action.IsAxis,
+                                       aircraftStickAction.JoystickKey.Id,
+                                       aircraftStickAction.AircraftKey.Name,
+                                       aircraft.Action,
+                                       aircraft.Category,
+                                       button.Name,
+                                       button.Modifiers,
+                                       button.AxisFilter
+                                     )).OrderBy(row => row.ActionId)
                                         .ThenBy(row => row.Group)
                                         .ThenByDescending(row => row.AircraftCategory)
                                         .ThenBy(row => row.StickId)
@@ -436,7 +435,7 @@ public class GroupsVMHelper
             Groups.AllGroups[grp.Name] = grp;
         }
         var actions = (from grp in Groups.Groups
-                        from action in grp.Actions
+                       from action in grp.Actions
                        select action.Id).Distinct();
         foreach (string actiongId in actions)
         {

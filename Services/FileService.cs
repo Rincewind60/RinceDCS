@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using RinceDCS.Models;
 using RinceDCS.Properties;
 using System;
@@ -23,14 +24,14 @@ public class FileService
     {
         RinceDCSFile rinceDCSFile = null;
 
-        if(File.Exists(path))
+        if (File.Exists(path))
         {
             FileStream stream = File.OpenRead(path);
             rinceDCSFile = await JsonSerializer.DeserializeAsync<RinceDCSFile>(stream);
 
-            foreach(RinceDCSJoystick stick in rinceDCSFile.Joysticks)
+            foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
-                foreach(RinceDCSJoystickButton button in stick.Buttons)
+                foreach (RinceDCSJoystickButton button in stick.Buttons)
                 {
                     button.Font = stick.Font;
                     button.FontSize = stick.FontSize;
@@ -49,7 +50,7 @@ public class FileService
     public async Task SaveRinceDCSFile(RinceDCSFile rinceDCSFile)
     {
         string savePath = Settings.Default.LastSavePath;
-        if(savePath == null)
+        if (savePath == null)
         {
             await SaveAsRinceDCSFile(rinceDCSFile);
         }
@@ -61,7 +62,7 @@ public class FileService
 
     public async Task SaveAsRinceDCSFile(RinceDCSFile rinceDCSFile)
     {
-        string savePath = await DialogService.Default.OpenPickSaveFile("RinceDCS.json","DCS Tool",".json");
+        string savePath = await DialogService.Default.OpenPickSaveFile("RinceDCS.json", "DCS Tool", ".json");
         if (savePath == null)
         {
             await DialogService.Default.OpenInfoDialog("Save Error", "No save file selected.");

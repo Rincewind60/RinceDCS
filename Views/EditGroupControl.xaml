@@ -7,6 +7,7 @@
     xmlns:controlsprimitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
     xmlns:local="using:RinceDCS.Views"
     xmlns:utils="using:RinceDCS.Views.Utilities"
+    xmlns:models="using:RinceDCS.Models"
     xmlns:viewModels="using:RinceDCS.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,6 +24,13 @@
             </Setter>
 
         </Style>
+        <DataTemplate x:Key="StickTemplate" x:DataType="models:RinceDCSGroupJoystick">
+            <ItemContainer HorizontalAlignment="Left" Width="200" Height="140" AutomationProperties.Name="Stick Name">
+                <Grid>
+                    <TextBlock Text="Stick details go here..."/>
+                </Grid>
+            </ItemContainer>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid Margin="4" Padding="4">
@@ -110,7 +118,8 @@
                 </controls:DataGrid>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="12,0,0,0">
-                <TextBlock Text="Assigned Buttons:"/>
+                <TextBlock Text="Joysticks:"/>
+                <ItemsView Width="220" Height="400" ItemTemplate="{StaticResource StickTemplate}" ItemsSource="{x:Bind ViewModel.CurrentGroup.Joysticks}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

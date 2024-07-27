@@ -1,11 +1,10 @@
+// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
-using RinceDCS.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,7 +29,7 @@ public sealed partial class EditGroupsPage : Page
 
         Tuple<RinceDCSGroups, DCSData> data = e.Parameter as Tuple<RinceDCSGroups, DCSData>;
         List<AttachedJoystick> sticks = new();
-        foreach(var joystick in data.Item2.Joysticks.Values)
+        foreach (var joystick in data.Item2.Joysticks.Values)
         {
             sticks.Add(joystick.Joystick);
         }

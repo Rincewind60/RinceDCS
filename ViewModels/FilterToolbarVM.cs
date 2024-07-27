@@ -1,13 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using RinceDCS.Models;
 using RinceDCS.Properties;
-using RinceDCS.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 

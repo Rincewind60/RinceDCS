@@ -1,12 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RinceDCS.Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels;
 
@@ -42,9 +41,9 @@ public partial class ModifiersVM : ObservableObject
 {
     public ObservableCollection<ModifierData> Modifiers = new();
 
-    public ModifiersVM(List<RinceDCSGroupModifier> modifiers, string defaultModifierName) 
+    public ModifiersVM(List<RinceDCSGroupModifier> modifiers, string defaultModifierName)
     {
-        foreach(RinceDCSGroupModifier modifier in modifiers)
+        foreach (RinceDCSGroupModifier modifier in modifiers)
         {
             Modifiers.Add(new()
             {
@@ -66,7 +65,7 @@ public partial class ModifiersVM : ObservableObject
     public List<RinceDCSGroupModifier> GetUpdatedModifiers()
     {
         List<RinceDCSGroupModifier> newModifiers = new();
-        foreach(ModifierData modifier in Modifiers)
+        foreach (ModifierData modifier in Modifiers)
         {
             newModifiers.Add(new()
             {

@@ -1,9 +1,7 @@
-﻿using RinceDCS.Models;
-using System;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using RinceDCS.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinceDCS.ViewModels.Messages;
 

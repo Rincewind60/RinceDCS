@@ -1,33 +1,15 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
-using CommunityToolkit.Mvvm.DependencyInjection;
-using RinceDCS.Models;
-using RinceDCS.Services;
-using RinceDCS.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Security.EnterpriseData;
-using System.Threading.Tasks;
-using RinceDCS.Views.Utilities;
-using CommunityToolkit.Mvvm.Messaging.Messages;
-using CommunityToolkit.Mvvm.Messaging;
-using RinceDCS.ViewModels.Helpers;
+using RinceDCS.Services;
+using RinceDCS.ViewModels;
 using RinceDCS.ViewModels.Messages;
-using Windows.ApplicationModel;
+using RinceDCS.Views.Utilities;
+using System;
+using System.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -138,7 +120,7 @@ namespace RinceDCS.Views
         {
             ModifiersDialog page = new(ViewModel.CurrentInstanceGroups.Modifiers, ViewModel.CurrentInstanceGroups.DefaultModifierName);
             ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog("Edit Modifiers", page, "Save", null, null, null);
-            if(result == ContentDialogResult.Primary)
+            if (result == ContentDialogResult.Primary)
             {
                 ViewModel.CurrentInstanceGroups.Modifiers = page.ViewModel.GetUpdatedModifiers();
                 ViewModel.CurrentInstanceGroups.DefaultModifierName = page.ViewModel.GetUpdatedDefaultModifierName();

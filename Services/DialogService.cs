@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
+
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
@@ -24,7 +26,7 @@ public class DialogService
     public DialogService(Window appWindow)
     {
         AppWindow = appWindow;
-        Parent =appWindow.Content as FrameworkElement;
+        Parent = appWindow.Content as FrameworkElement;
         defaultInstance = this;
     }
 
