@@ -74,6 +74,7 @@
                 Name="EditModifiers"
                 Icon="Edit"
                 Label="Modifiers"
+                IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="EditModifiers_Click"
                 />
             <AppBarToggleButton
