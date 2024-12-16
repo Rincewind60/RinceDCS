@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="ComboBoxBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
+        <SolidColorBrush x:Key="ComboBoxBrush" Color="{x:Bind ViewModel.Stick.ButtonFontColor, Mode=OneWay}"/>
         <Style x:Key="ComboBoxFont" TargetType="ComboBox">
             <Setter Property="Foreground" Value="{StaticResource ComboBoxBrush}"/>
         </Style>
@@ -90,10 +90,10 @@
                                     SelectedItem="{x:Bind Group, Mode=TwoWay}"
                                     SelectionChanged="ComboBox_SelectionChanged"
                                     DisplayMemberPath="Name"
-                                    Width="{x:Bind JoystickButton.Width}"
-                                    Height="{x:Bind JoystickButton.Height}"
-                                    FontFamily="{x:Bind JoystickButton.Font}"
-                                    FontSize="{x:Bind JoystickButton.FontSize}"
+                                    Width="{x:Bind JoystickButton.Stick.ButtonWidth}"
+                                    Height="{x:Bind JoystickButton.Stick.ButtonHeight}"
+                                    FontFamily="{x:Bind JoystickButton.Stick.ButtonFont}"
+                                    FontSize="{x:Bind JoystickButton.Stick.ButtonFontSize}"
                                     Style="{StaticResource ComboBoxFont}">
                                 </ComboBox>
                                 <Border.RenderTransform>

@@ -34,16 +34,16 @@ public class JoystickUtil
         }
     }
 
-    public static async void ExportButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
+    public static async void ExportButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, int height, int width, string fontName, int fontSiZe)
     {
         string savePath = await DialogService.Default.OpenPickSaveFile("JoystickButtons.png", "PNG", ".png");
         if (string.IsNullOrWhiteSpace(savePath)) { return; }
 
-        Image image = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
+        Image image = CreateJoystickButtonsImage(imageBytes, buttons, height, width, fontName, fontSiZe);
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static async void PrintButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
+    public static async void PrintButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, int height, int width, string fontName, int fontSiZe)
     {
         using (PrintDocument printDoc = new())
         {
@@ -55,7 +55,7 @@ public class JoystickUtil
                 printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
                 printDoc.PrintPage += (sender, args) =>
                 {
-                    Image img = CreateJoystickButtonsImage(imageBytes, buttons, fontName, fontSiZe);
+                    Image img = CreateJoystickButtonsImage(imageBytes, buttons, height, width, fontName, fontSiZe);
                     Rectangle margins = CalculateImageRectangle(sender, args, printDoc, img);
                     args.Graphics.DrawImage(img, margins);
                 };
@@ -64,24 +64,24 @@ public class JoystickUtil
         }
     }
 
-    public static void ExportAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize, string saveFilePath)
+    public static void ExportAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, int height, int width, string fontName, int fontSize, string saveFilePath)
     {
         if (string.IsNullOrWhiteSpace(saveFilePath)) { return; }
 
-        Image image = CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
+        Image image = CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, height, width, fontName, fontSize);
         image.Save(saveFilePath, ImageFormat.Png);
     }
 
-    public static void ExportKneeboard(byte[] imageBytes, List<AssignedButton> assignedButtons, string aircraftName, string stickDCSName, string savedGamesFolder, string fontName, int fontSize)
+    public static void ExportKneeboard(byte[] imageBytes, List<AssignedButton> assignedButtons, string aircraftName, string stickDCSName, string savedGamesFolder, int height, int width, string fontName, int fontSize)
     {
         string savePath = savedGamesFolder + "\\Kneeboard\\" + aircraftName + "\\00_" + aircraftName + "__" + stickDCSName + ".png";
         if (string.IsNullOrWhiteSpace(savePath)) { return; }
 
-        Image image = CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
+        Image image = CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, height, width, fontName, fontSize);
         image.Save(savePath, ImageFormat.Png);
     }
 
-    public static async void PrintAssigedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize)
+    public static async void PrintAssigedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, int height, int width, string fontName, int fontSize)
     {
         using (PrintDocument printDoc = new())
         {
@@ -95,7 +95,7 @@ public class JoystickUtil
 
                 printDoc.PrintPage += (sender, args) =>
                 {
-                    Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, fontName, fontSize);
+                    Image img = JoystickUtil.CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, height, width,  fontName, fontSize);
                     Rectangle margins = CalculateImageRectangle(sender, args, printDoc, img);
 
                     args.Graphics.DrawImage(img, margins);
@@ -126,7 +126,7 @@ public class JoystickUtil
         return margins;
     }
 
-    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, string fontName, int fontSiZe)
+    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, int height, int width, string fontName, int fontSiZe)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
@@ -142,10 +142,10 @@ public class JoystickUtil
                 {
                     if (button.OnLayout)
                     {
-                        gfx.DrawRectangle(pen, (int)button.TopX, (int)button.TopY, (int)button.Width, (int)button.Height);
+                        gfx.DrawRectangle(pen, (int)button.TopX, (int)button.TopY, width, height);
                         StringFormat format = StringFormat.GenericDefault;
                         format.Trimming = StringTrimming.EllipsisCharacter;
-                        RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(button.Width - 2), (float)(button.Height - 2));
+                        RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(width - 2), (float)(height - 2));
                         gfx.DrawString(button.ButtonLabel, font, brush, rect, format);
                     }
                 }
@@ -155,7 +155,7 @@ public class JoystickUtil
         }
     }
 
-    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, string fontName, int fontSize)
+    private static Image CreateJoystickAssignedButtonsImage(byte[] imageBytes, List<AssignedButton> assignedButtons, int height, int width, string fontName, int fontSize)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
@@ -182,7 +182,7 @@ public class JoystickUtil
                     {
                         format.Alignment = StringAlignment.Far;
                     }
-                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(button.JoystickButton.Width), (float)(fontSize + 4));
+                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(width), (float)(fontSize + 4));
                     gfx.DrawString(button.Action, font, brush, rect, format);
                 }
             }

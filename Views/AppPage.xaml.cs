@@ -31,12 +31,12 @@ namespace RinceDCS.Views
 
             WeakReferenceMessenger.Default.Register<ExportAssignedButtonsImageMessage>(this, (r, m) =>
             {
-                JoystickUtil.ExportAssignedButtonsImage(m.Stick.Image, m.AssignedButtons, m.Stick.Font, m.Stick.FontSize, m.SaveFilePath);
+                JoystickUtil.ExportAssignedButtonsImage(m.Stick.Image, m.AssignedButtons, m.Stick.ButtonHeight, m.Stick.ButtonWidth, m.Stick.ButtonFont, m.Stick.ButtonFontSize, m.SaveFilePath);
             });
 
             WeakReferenceMessenger.Default.Register<ExportKneeboardMessage>(this, (r, m) =>
             {
-                JoystickUtil.ExportKneeboard(m.Stick.Image, m.AssignedButtons, m.AircraftName, m.Stick.AttachedJoystick.DCSName, ViewModel.CurrentInstance.SavedGamesPath, m.Stick.Font, m.Stick.FontSize);
+                JoystickUtil.ExportKneeboard(m.Stick.Image, m.AssignedButtons, m.AircraftName, m.Stick.AttachedJoystick.DCSName, ViewModel.CurrentInstance.SavedGamesPath, m.Stick.ButtonHeight, m.Stick.ButtonWidth, m.Stick.ButtonFont, m.Stick.ButtonFontSize);
             });
         }
 

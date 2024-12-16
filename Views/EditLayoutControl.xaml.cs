@@ -25,7 +25,10 @@ namespace RinceDCS.Views
 {
     public sealed partial class EditLayoutsControl : UserControl
     {
-        private bool isDrawing = false;
+        private bool isAddButtonMode = false;
+        private bool isMovingButtonMode = false;
+        private int movingYOffset = 0;
+        private int movingXOffset = 0;
 
         public EditLayoutsControl(RinceDCSJoystick joystick)
         {
@@ -40,7 +43,7 @@ namespace RinceDCS.Views
 
             this.DataContext = new EditJoystickVM(joystick, fontNames);
 
-            ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.FontColor));
+            ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.ButtonFontColor));
         }
 
         public EditJoystickVM ViewModel => (EditJoystickVM)DataContext;
@@ -81,7 +84,7 @@ namespace RinceDCS.Views
             ViewModel.ScaleHelper.CurrentScale = Math.Min(ViewModel.ScaleHelper.CurrentScale + 1, ViewModel.ScaleHelper.Scales.Count - 1);
         }
 
-        private PointerPoint GetImageMousePoint(object sender, PointerRoutedEventArgs e)
+        private PointerPoint GetMousePoint(object sender, PointerRoutedEventArgs e)
         {
             Pointer pointer = e.Pointer;
 
@@ -90,23 +93,23 @@ namespace RinceDCS.Views
                 return null;
             }
 
-            return e.GetCurrentPoint(JoystickImage);
+            return e.GetCurrentPoint(sender as UIElement);
         }
 
         private void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.Font, ViewModel.Stick.FontSize);
+            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
 
         private void ApplyColor_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.Stick.FontColor = ColorPicker.Color.ToHex();
+            ViewModel.Stick.ButtonFontColor = ColorPicker.Color.ToHex();
             ColorButton.Background = new SolidColorBrush(ColorPicker.Color);
             ColorPickerFlyout.Hide();
         }
@@ -118,52 +121,112 @@ namespace RinceDCS.Views
 
         private async void Settings_Click(object sender, RoutedEventArgs e)
         {
-            JoystickSettingsDialog page = new(ViewModel.Stick.DefaultLabelHeight, ViewModel.Stick.DefaultLabelWidth);
+            JoystickSettingsDialog page = new(ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth);
             string stickName = ViewModel.Stick.AttachedJoystick.Name;
             ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
             if (result == ContentDialogResult.Primary)
             {
-                ViewModel.UpdateSettings(page.ViewModel.DefaultHeight, page.ViewModel.DefaultWidth);
+                ViewModel.UpdateSettings(page.ViewModel.Height, page.ViewModel.Width);
             }
         }
 
         private void JoystickImage_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (ViewModel.CurrentButton == null) { isDrawing = false; return; }
-
-            PointerPoint point = GetImageMousePoint(sender, e);
-
-            ViewModel.PlaceButtonOnJoystick(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
-
-            isDrawing = true;
+            if (isAddButtonMode)
+            {
+                ViewModel.CurrentButton = JoystickButtons.SelectedItem as RinceDCSJoystickButton;
+                PointerPoint point = GetMousePoint(sender, e);
+                ViewModel.PlaceButtonOnJoystick(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
+                JoystickButtons.SelectedItem = null;
+            }
+            else
+            {
+                ViewModel.CurrentButton = null;
+                JoystickImage.Focus(FocusState.Pointer);
+            }
 
             e.Handled = true;
         }
 
         private void JoystickImage_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (ViewModel.CurrentButton == null || !isDrawing) { return; }
+            if (!isMovingButtonMode) { return; }
 
-            PointerPoint point = GetImageMousePoint(sender, e);
-
-            if (!point.IsInContact) { isDrawing = false; return; }
-
-            ViewModel.UpdateButtonDimensions(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
-
-            e.Handled = true;
+            PointerPoint point = GetMousePoint(sender, e);
+            ViewModel.CurrentButton.TopY = (int)point.Position.Y - movingYOffset;
+            ViewModel.CurrentButton.TopX = (int)point.Position.X - movingXOffset;
         }
 
         private void JoystickImage_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (ViewModel.CurrentButton == null || !isDrawing) { isDrawing = false; return; }
+            isMovingButtonMode = false;
+        }
 
-            PointerPoint point = GetImageMousePoint(sender, e);
+        private void JoystickImage_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            isMovingButtonMode = false;
+        }
 
-            ViewModel.UpdateButtonDimensions(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
+        private void JoystickButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(JoystickButtons.SelectedItem == null)
+            {
+                isAddButtonMode = false;
+            }
+            else
+            {
+                isAddButtonMode = true;
+            }
+        }
 
-            ViewModel.CurrentButton = null;
-            isDrawing = false;
-            e.Handled = true;
+        private void JoystickButtons_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            //if (ViewModel.CurrentButton == null) return;
+
+            //switch (e.Key)
+            //{
+            //    case Windows.System.VirtualKey.Delete:
+            //        ViewModel.CurrentButton.OnLayout = false;
+            //        e.Handled = true;
+            //        break;
+            //}
+        }
+
+        private void ButtonsItemsControl_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            //if (ViewModel.CurrentButton == null) return;
+
+            //switch (e.Key)
+            //{
+            //    case Windows.System.VirtualKey.Up:
+            //        ViewModel.CurrentButton.TopY = Math.Max(ViewModel.CurrentButton.TopY - 1, 0);
+            //        e.Handled = true;
+            //        break;
+            //    case Windows.System.VirtualKey.Right:
+            //        ViewModel.CurrentButton.TopX = ViewModel.CurrentButton.TopX + 1;
+            //        e.Handled = true;
+            //        break;
+            //    case Windows.System.VirtualKey.Down:
+            //        ViewModel.CurrentButton.TopY = ViewModel.CurrentButton.TopY + 1;
+            //        e.Handled = true;
+            //        break;
+            //    case Windows.System.VirtualKey.Left:
+            //        ViewModel.CurrentButton.TopX = Math.Max(ViewModel.CurrentButton.TopX - 1, 0);
+            //        e.Handled = true;
+            //        break;
+            //    case Windows.System.VirtualKey.Delete:
+            //        ViewModel.CurrentButton.OnLayout = false;
+            //        e.Handled = true;
+            //        break;
+            //}
+        }
+
+        private void ButtonsItemsControl_LayoutUpdated(object sender, object e)
+        {
+            if (JoystickScrollViewer.ZoomFactor != ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
+            {
+                JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
+            }
         }
 
         private void JoysticButton_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -174,10 +237,16 @@ namespace RinceDCS.Views
                 InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.LeftControl) == CoreVirtualKeyStates.Down)
             {
                 ViewModel.CurrentButton = null;
+                JoystickImage.Focus(FocusState.Pointer);
             }
             else
             {
+                isMovingButtonMode = true;
                 border.Focus(FocusState.Pointer);
+                PointerPoint point = GetMousePoint(sender, e);
+                movingXOffset = (int)point.Position.X;
+                movingYOffset = (int)point.Position.Y;
+                JoystickImage.CapturePointer(e.Pointer);                
             }
         }
 
@@ -187,23 +256,8 @@ namespace RinceDCS.Views
             ViewModel.CurrentButton = button;
         }
 
-        private void JoystickButtons_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        private void JoysticButton_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (ViewModel.CurrentButton == null) return;
-
-            switch (e.Key)
-            {
-                case Windows.System.VirtualKey.Delete:
-                    ViewModel.CurrentButton.OnLayout = false;
-                    e.Handled = true;
-                    break;
-            }
-        }
-
-        private void ButtonsItemsControl_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (ViewModel.CurrentButton == null) return;
-
             switch (e.Key)
             {
                 case Windows.System.VirtualKey.Up:
@@ -226,14 +280,6 @@ namespace RinceDCS.Views
                     ViewModel.CurrentButton.OnLayout = false;
                     e.Handled = true;
                     break;
-            }
-        }
-
-        private void ButtonsItemsControl_LayoutUpdated(object sender, object e)
-        {
-            if (JoystickScrollViewer.ZoomFactor != ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale])
-            {
-                JoystickScrollViewer.ChangeView(0, 0, ViewModel.ScaleHelper.ZoomFactors[ViewModel.ScaleHelper.CurrentScale]);
             }
         }
     }

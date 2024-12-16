@@ -59,10 +59,10 @@ public partial class EditJoystickVM : ObservableObject
         CurrentButton.Alignment = "Right";
     }
 
-    public void UpdateSettings(int defaultHeight, int defaultWidth)
+    public void UpdateSettings(int height, int width)
     {
-        Stick.DefaultLabelHeight = defaultHeight;
-        Stick.DefaultLabelWidth = defaultWidth;
+        Stick.ButtonHeight = height;
+        Stick.ButtonWidth = width;
     }
 
     public void UpdateImage(string path)
@@ -80,14 +80,6 @@ public partial class EditJoystickVM : ObservableObject
     {
         button.TopX = x;
         button.TopY = y;
-        button.Width = Stick.DefaultLabelWidth;
-        button.Height = Stick.DefaultLabelHeight;
         button.OnLayout = true;
-    }
-
-    public void UpdateButtonDimensions(RinceDCSJoystickButton button, int newRight, int newBottom)
-    {
-        button.Width = Math.Max(0, (int)(newRight - button.TopX));
-        button.Height = Math.Max(0, (int)(newBottom - button.TopY));
     }
 }

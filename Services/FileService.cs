@@ -28,16 +28,6 @@ public class FileService
         {
             FileStream stream = File.OpenRead(path);
             rinceDCSFile = await JsonSerializer.DeserializeAsync<RinceDCSFile>(stream);
-
-            foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
-            {
-                foreach (RinceDCSJoystickButton button in stick.Buttons)
-                {
-                    button.Font = stick.Font;
-                    button.FontSize = stick.FontSize;
-                }
-            }
-
             stream.Dispose();
 
             Settings.Default.LastSavePath = path;

@@ -26,7 +26,7 @@
             <Setter Property="Foreground" Value="Black"/>
         </Style>
 
-        <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
+        <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.ButtonFontColor, Mode=OneWay}"/>
 
         <Style x:Key="ButtonFont" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource ButtonTextBrush}"/>
@@ -48,7 +48,7 @@
             Grid.Row="1"
             Name="JoystickButtons"
             ItemsSource="{x:Bind ViewModel.Stick.Buttons}"
-            SelectedItem="{x:Bind ViewModel.CurrentButton, Mode=TwoWay}"
+            SelectionChanged="JoystickButtons_SelectionChanged"
             PreviewKeyDown="JoystickButtons_PreviewKeyDown">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:RinceDCSJoystickButton">
@@ -123,7 +123,7 @@
             <ComboBox
                 Name="FontCombo"
                 ItemsSource="{x:Bind ViewModel.FontNames}" 
-                SelectedItem="{x:Bind ViewModel.Stick.Font, Mode=TwoWay}" 
+                SelectedItem="{x:Bind ViewModel.Stick.ButtonFont, Mode=TwoWay}" 
                 VerticalAlignment="Center"
                 MinWidth="100"
                 Margin="2,0,2,0">
@@ -140,7 +140,7 @@
             <ComboBox
                 Name="FontSizeCombo"
                 ItemsSource="{x:Bind ViewModel.FontSizes}" 
-                SelectedItem="{x:Bind ViewModel.Stick.FontSize, Mode=TwoWay}" 
+                SelectedItem="{x:Bind ViewModel.Stick.ButtonFontSize, Mode=TwoWay}" 
                 VerticalAlignment="Center"
                 Margin="2,0,2,0">
             </ComboBox>
@@ -225,7 +225,7 @@
                 VerticalAlignment="Center"
                 Margin="12,0,2,0"/>
             <TextBlock
-                Text="{x:Bind ViewModel.CurrentButton.Width, Mode=OneWay}"
+                Text="{x:Bind ViewModel.Stick.ButtonWidth, Mode=OneWay}"
                 VerticalAlignment="Center"
                 Width="40"
                 Margin="2,0,2,0"/>
@@ -234,7 +234,7 @@
                 VerticalAlignment="Center"
                 Margin="2,0,2,0"/>
             <TextBlock
-                Text="{x:Bind ViewModel.CurrentButton.Height, Mode=OneWay}"
+                Text="{x:Bind ViewModel.Stick.ButtonHeight, Mode=OneWay}"
                 VerticalAlignment="Center"
                 Width="40"
                 Margin="2,0,2,0"/>
@@ -259,7 +259,8 @@
                     Loaded="JoystickImage_Loaded"
                     PointerPressed="JoystickImage_PointerPressed"
                     PointerMoved="JoystickImage_PointerMoved"
-                    PointerReleased="JoystickImage_PointerReleased"/>
+                    PointerReleased="JoystickImage_PointerReleased"
+                    PointerCaptureLost="JoystickImage_PointerCaptureLost"/>
                 <ItemsControl
                     Grid.Row="0"
                     Grid.Column="0"
@@ -277,16 +278,17 @@
                             <Border
                                 Name="JoysticButton"
                                 IsTabStop="True"
-                                GotFocus="JoysticButton_GotFocus"
-                                PointerPressed="JoysticButton_PointerPressed"
                                 BorderThickness="2"
                                 BorderBrush="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBorderConverter}}"
                                 MinWidth="60"
                                 MinHeight="24"
                                 Visibility="{x:Bind OnLayout, Mode=OneWay, Converter={StaticResource ButtonOnLayoutConverter}}"
-                                Width="{x:Bind Width, Mode=OneWay}"
-                                Height="{x:Bind Height, Mode=OneWay}"
-                                Background="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBackgroundConverter}}">
+                                Width="{x:Bind Stick.ButtonWidth, Mode=OneWay}"
+                                Height="{x:Bind Stick.ButtonHeight, Mode=OneWay}"
+                                Background="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource SelectedButtonBackgroundConverter}}"
+                                GotFocus="JoysticButton_GotFocus"
+                                PointerPressed="JoysticButton_PointerPressed"
+                                PreviewKeyDown="JoysticButton_PreviewKeyDown">
                                 <Border.RenderTransform>
                                     <TranslateTransform
                                         X="{x:Bind TopX, Mode=OneWay}" 
@@ -295,8 +297,8 @@
                                 <TextBlock
                                     Text="{x:Bind ButtonLabel, Mode=OneWay}" 
                                     Style="{StaticResource ButtonFont}" 
-                                    FontFamily="{x:Bind Font, Mode=OneWay}"
-                                    FontSize="{x:Bind FontSize, Mode=OneWay}"
+                                    FontFamily="{x:Bind Stick.ButtonFont, Mode=OneWay}"
+                                    FontSize="{x:Bind Stick.ButtonFontSize, Mode=OneWay}"
                                     TextAlignment="{x:Bind Alignment, Mode=OneWay}"/>
                             </Border>
                         </DataTemplate>

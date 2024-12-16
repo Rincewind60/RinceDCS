@@ -16,8 +16,8 @@ public class JoystickFontMessageHandler
         {
             if ((r is EditLayoutsPage) && stick != null)
             {
-                stick.Font = stick.Font == null ? FontFamily.XamlAutoFontFamily.Source : stick.Font;
-                stick.FontSize = stick.FontSize == 0 ? (int)page.FontSize : stick.FontSize;
+                stick.ButtonFont = stick.ButtonFont == null ? FontFamily.XamlAutoFontFamily.Source : stick.ButtonFont;
+                stick.ButtonFontSize = stick.ButtonFontSize == 0 ? (int)page.FontSize : stick.ButtonFontSize;
             }
         });
 

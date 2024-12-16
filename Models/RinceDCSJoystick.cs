@@ -21,49 +21,29 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
     private ObservableCollection<RinceDCSJoystickButton> buttons;
 
     [ObservableProperty]
-    private string font;
+    private string buttonFont;
 
     [ObservableProperty]
-    private int fontSize;
+    private int buttonFontSize;
 
     [ObservableProperty]
-    private string fontColor;
+    private string buttonFontColor;
 
     [ObservableProperty]
-    private int defaultLabelHeight;
+    private int buttonHeight;
 
     [ObservableProperty]
-    private int defaultLabelWidth;
+    private int buttonWidth;
 
     public byte[] Image { get; set; }
 
     public RinceDCSJoystick()
     {
-        Font = "Arial";
-        FontSize = 14;
-        FontColor = "#000000";
-        DefaultLabelHeight = 40;
-        DefaultLabelWidth = 120;
-    }
-
-    partial void OnFontChanged(string value)
-    {
-        if (Buttons == null) return;
-
-        foreach (RinceDCSJoystickButton button in Buttons)
-        {
-            button.Font = value;
-        }
-    }
-
-    partial void OnFontSizeChanged(int value)
-    {
-        if (Buttons == null) return;
-
-        foreach (RinceDCSJoystickButton button in Buttons)
-        {
-            button.FontSize = value;
-        }
+        ButtonFont = "Arial";
+        ButtonFontSize = 14;
+        ButtonFontColor = "#000000";
+        ButtonHeight = 40;
+        ButtonWidth = 120;
     }
 
     public int CompareTo(object obj)
@@ -90,12 +70,6 @@ public partial class RinceDCSJoystickButton : ObservableObject
     private int topY;
 
     [ObservableProperty]
-    private int width;
-
-    [ObservableProperty]
-    private int height;
-
-    [ObservableProperty]
     private bool onLayout;
 
     [ObservableProperty]
@@ -106,18 +80,15 @@ public partial class RinceDCSJoystickButton : ObservableObject
     /// </summary>
     [ObservableProperty]
     [property: JsonIgnore]
-    private string font;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private int fontSize;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
     private bool isSelected;
 
-    public RinceDCSJoystickButton()
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private RinceDCSJoystick stick;
+
+    public RinceDCSJoystickButton(RinceDCSJoystick stick)
     {
+        Stick = stick;
         Alignment = "Left";
     }
 

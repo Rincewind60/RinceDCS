@@ -13,11 +13,11 @@ namespace RinceDCS.Views
     /// </summary>
     public sealed partial class JoystickSettingsDialog : Page
     {
-        public JoystickSettingsDialog(int defaultHeight, int defaultWidth)
+        public JoystickSettingsDialog(int height, int width)
         {
             this.InitializeComponent();
 
-            this.DataContext = new JoystickSettingsVM(defaultHeight, defaultWidth);
+            this.DataContext = new JoystickSettingsVM(height, width);
         }
 
         public JoystickSettingsVM ViewModel => (JoystickSettingsVM)DataContext;

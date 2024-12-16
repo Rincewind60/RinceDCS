@@ -15,7 +15,7 @@
         <utils:TrueToVisibleConverter x:Key="TrueToVisibleConverter"/>
         <utils:FalseToVisibleConverter x:Key="FalseToVisibleConverter"/>
 
-        <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.FontColor, Mode=OneWay}"/>
+        <SolidColorBrush x:Key="ButtonTextBrush" Color="{x:Bind ViewModel.Stick.ButtonFontColor, Mode=OneWay}"/>
 
         <Style x:Key="ButtonFont" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource ButtonTextBrush}"/>
@@ -128,10 +128,10 @@
                                 Style="{StaticResource ButtonFont}"
                                 MinWidth="60"
                                 MinHeight="24"
-                                Width="{x:Bind JoystickButton.Width}"
-                                Height="{x:Bind JoystickButton.Height}"
-                                FontFamily="{x:Bind JoystickButton.Font}"
-                                FontSize="{x:Bind JoystickButton.FontSize}"
+                                Width="{x:Bind JoystickButton.Stick.ButtonWidth}"
+                                Height="{x:Bind JoystickButton.Stick.ButtonHeight}"
+                                FontFamily="{x:Bind JoystickButton.Stick.ButtonFont}"
+                                FontSize="{x:Bind JoystickButton.Stick.ButtonFontSize}"
                                 TextAlignment="{x:Bind JoystickButton.Alignment, Mode=OneWay}">
                                     <ToolTipService.ToolTip>
                                         <StackPanel Orientation="Vertical">

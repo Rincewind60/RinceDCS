@@ -278,11 +278,9 @@ public partial class AppVM : ObservableRecipient
 
     private RinceDCSJoystickButton NewJoystickButton(string name, RinceDCSJoystick stick, bool isKey = true, bool isModifier = false)
     {
-        return new RinceDCSJoystickButton()
+        return new RinceDCSJoystickButton(stick)
         {
             ButtonName = name,
-            Font = stick.Font,
-            FontSize = stick.FontSize,
             IsKeyButton = isKey,
             IsModifier = isModifier
         };

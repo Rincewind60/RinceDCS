@@ -7,13 +7,13 @@ namespace RinceDCS.ViewModels;
 public partial class JoystickSettingsVM : ObservableObject
 {
     [ObservableProperty]
-    private int defaultHeight;
+    private int height;
     [ObservableProperty]
-    private int defaultWidth;
+    private int width;
 
-    public JoystickSettingsVM(int defaultHeight, int defaultWidth)
+    public JoystickSettingsVM(int height, int width)
     {
-        DefaultHeight = defaultHeight;
-        DefaultWidth = defaultWidth;
+        Height = height;
+        Width = width;
     }
 }
