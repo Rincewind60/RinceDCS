@@ -53,6 +53,7 @@ public class JoystickUtil
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
+                printDoc.DefaultPageSettings.Margins = new Margins(25, 25, 25, 25);
                 printDoc.PrintPage += (sender, args) =>
                 {
                     Image img = CreateJoystickButtonsImage(imageBytes, buttons, height, width, fontName, fontSiZe);
@@ -91,7 +92,7 @@ public class JoystickUtil
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 printDoc.PrinterSettings.PrinterName = pp.ViewModel.Printer;
-                printDoc.DefaultPageSettings.Margins = new Margins(50, 50, 50, 50);
+                printDoc.DefaultPageSettings.Margins = new Margins(25, 25, 25, 25);
 
                 printDoc.PrintPage += (sender, args) =>
                 {
@@ -126,15 +127,17 @@ public class JoystickUtil
         return margins;
     }
 
-    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, int height, int width, string fontName, int fontSiZe)
+    private static Image CreateJoystickButtonsImage(byte[] imageBytes, List<RinceDCSJoystickButton> buttons, int height, int width, string fontName, int fontSize)
     {
         using (var stream = new MemoryStream(imageBytes))
         {
             Image image = Image.FromStream(stream, false, false);
 
-            Font font = new(fontName, fontSiZe, FontStyle.Regular, GraphicsUnit.Pixel);
-            SolidBrush brush = new(Color.Black);
-            Pen pen = new Pen(brush);
+            Font font = new(fontName, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
+            SolidBrush blackBrush = new(Color.Black);
+            SolidBrush whiteBrush = new(Color.White);
+            Pen linePen = new Pen(blackBrush, 4);
+            Pen rectPen = new Pen(blackBrush);
 
             using (Graphics gfx = Graphics.FromImage(image))
             {
@@ -142,11 +145,7 @@ public class JoystickUtil
                 {
                     if (button.OnLayout)
                     {
-                        gfx.DrawRectangle(pen, (int)button.TopX, (int)button.TopY, width, height);
-                        StringFormat format = StringFormat.GenericDefault;
-                        format.Trimming = StringTrimming.EllipsisCharacter;
-                        RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(width - 2), (float)(height - 2));
-                        gfx.DrawString(button.ButtonLabel, font, brush, rect, format);
+                        DrawJoystickButton(button, button.ButtonLabel, height, width, font, whiteBrush, blackBrush, linePen, rectPen, gfx);
                     }
                 }
             }
@@ -162,32 +161,56 @@ public class JoystickUtil
             Image image = Image.FromStream(stream, false, false);
 
             Font font = new(fontName, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            SolidBrush brush = new(Color.Black);
+            SolidBrush blackBrush = new(Color.Black);
+            SolidBrush whiteBrush = new(Color.White);
+            Pen linePen = new Pen(blackBrush, 4);
+            Pen rectPen = new Pen(blackBrush);
 
             using (Graphics gfx = Graphics.FromImage(image))
             {
                 foreach (AssignedButton button in assignedButtons)
                 {
-                    StringFormat format = StringFormat.GenericDefault;
-                    format.Trimming = StringTrimming.EllipsisCharacter;
-                    if (button.JoystickButton.Alignment == "Left")
-                    {
-                        format.Alignment = StringAlignment.Near;
-                    }
-                    else if (button.JoystickButton.Alignment == "Center")
-                    {
-                        format.Alignment = StringAlignment.Center;
-                    }
-                    else if (button.JoystickButton.Alignment == "Right")
-                    {
-                        format.Alignment = StringAlignment.Far;
-                    }
-                    RectangleF rect = new((float)(button.JoystickButton.TopX), (float)(button.JoystickButton.TopY), (float)(width), (float)(fontSize + 4));
-                    gfx.DrawString(button.Action, font, brush, rect, format);
+                    DrawJoystickButton(button.JoystickButton, button.Action, height, width, font, whiteBrush, blackBrush, linePen, rectPen, gfx);
                 }
             }
 
             return image;
         }
+    }
+
+    private static void DrawJoystickButton(
+        RinceDCSJoystickButton button, 
+        string label, 
+        int height, 
+        int width, 
+        Font font, 
+        SolidBrush whiteBrush, 
+        SolidBrush blackBrush, 
+        Pen linePen, 
+        Pen rectPen, 
+        Graphics gfx)
+    {
+        if (button.DrawLine)
+        {
+            gfx.DrawLine(linePen, button.LineStartX, button.LineStartY, button.LineEndX, button.LineEndY);
+        }
+
+        gfx.FillRectangle(whiteBrush, (int)button.TopX, (int)button.TopY, width, height);
+        gfx.DrawRectangle(rectPen, (int)button.TopX, (int)button.TopY, width, height);
+
+        StringFormat format = StringFormat.GenericDefault;
+        StringAlignment alignment;
+        if (Enum.TryParse(button.Alignment, out alignment))
+        {
+            format.Alignment = alignment;
+        }
+        else
+        {
+            format.Alignment = StringAlignment.Center;
+        }
+        format.LineAlignment = StringAlignment.Center;
+        format.Trimming = StringTrimming.Character;
+        RectangleF rect = new((float)(button.TopX + 1), (float)(button.TopY + 1), (float)(width - 2), (float)(height - 2));
+        gfx.DrawString(label, font, blackBrush, rect, format);
     }
 }
