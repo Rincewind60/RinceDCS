@@ -1,6 +1,7 @@
 ﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using RinceDCS.Properties;
 using System;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
@@ -64,10 +65,37 @@ public partial class RinceDCSJoystickButton : ObservableObject
     public string ButtonLabel { get { return IsModifier ? "MOD+" + ButtonName : ButtonName; } }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LineStartX))]
     private int topX;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LineStartY))] 
     private int topY;
+
+    [ObservableProperty]
+    private bool drawLine;
+
+    [ObservableProperty] 
+    private int lineEndX;
+
+    [ObservableProperty]
+    private int lineEndY;
+
+    public int LineStartX 
+    { 
+        get
+        {
+            return TopX + (Stick.ButtonWidth / 2);
+        }
+    }
+
+    public int LineStartY
+    {
+        get
+        {
+            return TopY + (Stick.ButtonHeight / 2);
+        }
+    }
 
     [ObservableProperty]
     private bool onLayout;

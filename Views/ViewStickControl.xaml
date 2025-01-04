@@ -112,6 +112,30 @@
                 <ItemsControl
                     Grid.Row="0"
                     Grid.Column="0"
+                    Name="ButtonLinesItemsControl"
+                    ItemsSource="{x:Bind ViewModel.AssignedButtons}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:AssignedButton">
+                            <Line
+                                Stroke="Black"
+                                X1="{x:Bind JoystickButton.LineStartX, Mode=OneWay}" 
+                                Y1="{x:Bind JoystickButton.LineStartY, Mode=OneWay}"
+                                X2="{x:Bind JoystickButton.LineEndX, Mode=OneWay}"
+                                Y2="{x:Bind JoystickButton.LineEndY, Mode=OneWay}"
+                                StrokeThickness="4"
+                                Visibility="{x:Bind JoystickButton.DrawLine, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
+                            </Line>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl
+                    Grid.Row="0"
+                    Grid.Column="0"
                     Name="ButtonsItemsControl"
                     ItemsSource="{x:Bind ViewModel.AssignedButtons}"
                     LayoutUpdated="ButtonsItemsControl_LayoutUpdated">
@@ -122,17 +146,27 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:AssignedButton">
-                            <Border Background="{x:Bind IsValid, Converter={StaticResource IsValidBackgroundConverter}}">
-                                <TextBlock
-                                Text="{x:Bind Action}"
-                                Style="{StaticResource ButtonFont}"
+                            <Border
+                                BorderThickness="2"
+                                BorderBrush="Black"
+                                Background="{x:Bind IsValid, Converter={StaticResource IsValidBackgroundConverter}}"
                                 MinWidth="60"
                                 MinHeight="24"
                                 Width="{x:Bind JoystickButton.Stick.ButtonWidth}"
-                                Height="{x:Bind JoystickButton.Stick.ButtonHeight}"
-                                FontFamily="{x:Bind JoystickButton.Stick.ButtonFont}"
-                                FontSize="{x:Bind JoystickButton.Stick.ButtonFontSize}"
-                                TextAlignment="{x:Bind JoystickButton.Alignment, Mode=OneWay}">
+                                Height="{x:Bind JoystickButton.Stick.ButtonHeight}">
+                                <Border.RenderTransform>
+                                    <TranslateTransform
+                                        X="{x:Bind JoystickButton.TopX, Mode=OneWay}" 
+                                        Y="{x:Bind JoystickButton.TopY, Mode=OneWay}"/>
+                                </Border.RenderTransform>
+                                <TextBlock
+                                    Text="{x:Bind Action}"
+                                    Style="{StaticResource ButtonFont}"
+                                    FontFamily="{x:Bind JoystickButton.Stick.ButtonFont}"
+                                    FontSize="{x:Bind JoystickButton.Stick.ButtonFontSize}"
+                                    TextAlignment="{x:Bind JoystickButton.Alignment, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords"
+                                    VerticalAlignment="Center">
                                     <ToolTipService.ToolTip>
                                         <StackPanel Orientation="Vertical">
                                             <Grid Visibility="{x:Bind IsAxisButton, Converter={StaticResource TrueToVisibleConverter}}">
@@ -231,9 +265,6 @@
                                         </StackPanel>
                                     </ToolTipService.ToolTip>
                                 </TextBlock>
-                                <Border.RenderTransform>
-                                    <TranslateTransform X="{x:Bind JoystickButton.TopX}" Y="{x:Bind JoystickButton.TopY}"/>
-                                </Border.RenderTransform>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

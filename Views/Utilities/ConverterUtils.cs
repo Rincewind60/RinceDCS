@@ -164,7 +164,7 @@ public class IsValidBackgroundConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return (bool)value == true ? null : new SolidColorBrush(Colors.LightPink);
+        return (bool)value == true ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.LightPink);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -205,7 +205,7 @@ public class SelectedButtonBackgroundConverter : IValueConverter
     {
         if (value == null || (bool)value == false)
         {
-            return null;
+            return new SolidColorBrush(Colors.White);
         }
         else
         {

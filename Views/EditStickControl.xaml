@@ -11,6 +11,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <utils:TrueToVisibleConverter x:Key="TrueToVisibleConverter"/>
         <SolidColorBrush x:Key="ComboBoxBrush" Color="{x:Bind ViewModel.Stick.ButtonFontColor, Mode=OneWay}"/>
         <Style x:Key="ComboBoxFont" TargetType="ComboBox">
             <Setter Property="Foreground" Value="{StaticResource ComboBoxBrush}"/>
@@ -72,6 +73,30 @@
                 <ItemsControl
                     Grid.Row="0"
                     Grid.Column="0"
+                    Name="ButtonLinesItemsControl"
+                    ItemsSource="{x:Bind ViewModel.Buttons}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:ManagedButton">
+                            <Line
+                                Stroke="Black"
+                                X1="{x:Bind JoystickButton.LineStartX, Mode=OneWay}" 
+                                Y1="{x:Bind JoystickButton.LineStartY, Mode=OneWay}"
+                                X2="{x:Bind JoystickButton.LineEndX, Mode=OneWay}"
+                                Y2="{x:Bind JoystickButton.LineEndY, Mode=OneWay}"
+                                StrokeThickness="4"
+                                Visibility="{x:Bind JoystickButton.DrawLine, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
+                            </Line>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl
+                    Grid.Row="0"
+                    Grid.Column="0"
                     Name="ButtonsItemsControl"
                     ItemsSource="{x:Bind ViewModel.Buttons}"
                     LayoutUpdated="ButtonsItemsControl_LayoutUpdated">
@@ -84,9 +109,14 @@
                         <DataTemplate x:DataType="models:ManagedButton">
                             <Border
                                 BorderBrush="{StaticResource ComboBoxBrush}"
+                                Background="White"
+                                MinWidth="60"
+                                MinHeight="24"
+                                Width="{x:Bind JoystickButton.Stick.ButtonWidth, Mode=OneWay}"
+                                Height="{x:Bind JoystickButton.Stick.ButtonHeight, Mode=OneWay}"
                                 BorderThickness="2">
                                 <ComboBox
-                                    ItemsSource="{x:Bind Groups, Mode=OneTime}"
+                                    ItemsSource="{x:Bind Groups, Mode=OneWay}"
                                     SelectedItem="{x:Bind Group, Mode=TwoWay}"
                                     SelectionChanged="ComboBox_SelectionChanged"
                                     DisplayMemberPath="Name"
@@ -94,7 +124,8 @@
                                     Height="{x:Bind JoystickButton.Stick.ButtonHeight}"
                                     FontFamily="{x:Bind JoystickButton.Stick.ButtonFont}"
                                     FontSize="{x:Bind JoystickButton.Stick.ButtonFontSize}"
-                                    Style="{StaticResource ComboBoxFont}">
+                                    Style="{StaticResource ComboBoxFont}"
+                                    VerticalAlignment="Center">
                                 </ComboBox>
                                 <Border.RenderTransform>
                                     <TranslateTransform X="{x:Bind JoystickButton.TopX}" Y="{x:Bind JoystickButton.TopY}"/>

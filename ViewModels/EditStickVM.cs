@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public partial class ManageJoystickVM : ObservableRecipient,
+public partial class EditStickVM : ObservableRecipient,
                                                IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
@@ -26,7 +26,7 @@ public partial class ManageJoystickVM : ObservableRecipient,
 
     public ScaleVMHelper ScaleHelper { get { return ScaleVMHelper.Default; } }
 
-    public ManageJoystickVM(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData data)
+    public EditStickVM(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData data)
     {
         Stick = stick;
         Groups = groups;

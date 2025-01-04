@@ -3,6 +3,7 @@
 using RinceDCS.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
 using System.Linq;
 
 namespace RinceDCS.ViewModels.Helpers;
@@ -36,12 +37,18 @@ public class JoystickVMHelper
 
         List<AssignedButton> assignedButtons = new();
 
+        //  First Create an assigned button for each button on layout, this way all button labels will appear, even if no action assigned to them
+        foreach (RinceDCSJoystickButton layoutButton in buttonsOnLayout.Values)
+        {
+            assignedButtons.Add(new AssignedButton(layoutButton));
+        }
+
         DCSAircraftKey aircraftKey = new(aircraftName);
         DCSAircraft dcsAircraft = Data.Aircraft[aircraftKey];
 
-        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Game", instanceName);
-        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Plane", aircraftName);
-        BuildAppButtons(stick, assignedButtons, buttonsOnLayout, "Joystick", stick.AttachedJoystick.Name);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Game", instanceName);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Plane", aircraftName);
+        BuildAppButtons(assignedButtons, buttonsOnLayout, "Joystick", stick.AttachedJoystick.Name);
 
         foreach (DCSAction action in dcsAircraft.Actions.Values)
         {
@@ -110,7 +117,6 @@ public class JoystickVMHelper
     }
 
     private void BuildAppButtons(
-        RinceDCSJoystick stick,
         List<AssignedButton> assignedButtons,
         Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout,
         string buttonName,
@@ -120,9 +126,8 @@ public class JoystickVMHelper
         AssignedButtonKey key = new(buttonName, false);
         if (buttonsOnLayout.ContainsKey(key))
         {
-            AssignedButton vwButton = new(buttonsOnLayout[key]);
+            AssignedButton vwButton = GetAssignedButton(assignedButtons, buttonsOnLayout[key]);
             vwButton.Actions.Add(new("", commandName, ""));
-            assignedButtons.Add(vwButton);
         }
     }
 
@@ -138,11 +143,10 @@ public class JoystickVMHelper
     {
         foreach (DCSButton button in bindingButtons.Buttons.Values)
         {
-            AssignedButtonKey key;
-            key = new(button.Name, button.IsModifier);
+            AssignedButtonKey key = new(button.Name, button.IsModifier);
             if (buttonsOnLayout.ContainsKey(key))
             {
-                AssignedButton vwButton = GetAssignedButtons(assignedButtons, buttonsOnLayout[key]);
+                AssignedButton vwButton = GetAssignedButton(assignedButtons, buttonsOnLayout[key]);
                 vwButton.Actions.Add(new(bindingId, commandName, categoryName));
                 AddButtonConfiguration(IsAxis, button, vwButton);
             }
@@ -159,7 +163,7 @@ public class JoystickVMHelper
         }
     }
 
-    private AssignedButton GetAssignedButtons(List<AssignedButton> assignedButtons, RinceDCSJoystickButton gameJoystickButton)
+    private AssignedButton GetAssignedButton(List<AssignedButton> assignedButtons, RinceDCSJoystickButton gameJoystickButton)
     {
         foreach (AssignedButton button in assignedButtons)
         {
@@ -170,8 +174,6 @@ public class JoystickVMHelper
             }
         }
 
-        AssignedButton assigned = new(gameJoystickButton);
-        assignedButtons.Add(assigned);
-        return assigned;
+        throw new Exception("Joystick button not in assignedButtons");
     }
 }

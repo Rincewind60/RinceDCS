@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using RinceDCS.Models;
 using RinceDCS.Services;
 using RinceDCS.ViewModels.Helpers;
@@ -11,7 +12,7 @@ using System.Collections.ObjectModel;
 
 namespace RinceDCS.ViewModels;
 
-public partial class EditJoystickVM : ObservableObject
+public partial class EditLayoutVM : ObservableObject
 {
     [ObservableProperty]
     private RinceDCSJoystick stick;
@@ -24,7 +25,7 @@ public partial class EditJoystickVM : ObservableObject
 
     public ScaleVMHelper ScaleHelper { get; }
 
-    public EditJoystickVM(RinceDCSJoystick joystick, List<string> fonts)
+    public EditLayoutVM(RinceDCSJoystick joystick, List<string> fonts)
     {
         Stick = joystick;
         CurrentButton = null;
@@ -81,5 +82,17 @@ public partial class EditJoystickVM : ObservableObject
         button.TopX = x;
         button.TopY = y;
         button.OnLayout = true;
+    }
+
+    public void DrawLineFromButtonToLocation(RinceDCSJoystickButton button, int x, int y)
+    {
+        button.LineEndX = x;
+        button.LineEndY = y;
+        button.DrawLine = true;
+    }
+
+    internal void HideButtonLine(RinceDCSJoystickButton button)
+    {
+        button.DrawLine = false;
     }
 }

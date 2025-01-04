@@ -20,10 +20,10 @@ namespace RinceDCS.Views
         {
             this.InitializeComponent();
 
-            this.DataContext = new ManageJoystickVM(stick, groups, dcsData);
+            this.DataContext = new EditStickVM(stick, groups, dcsData);
         }
 
-        public ManageJoystickVM ViewModel => (ManageJoystickVM)DataContext;
+        public EditStickVM ViewModel => (EditStickVM)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {

@@ -20,6 +20,8 @@ public class AssignedButton
     {
         get
         {
+            if (Actions.Count == 0) { return ""; }
+
             string action = Actions[0].ActionName;
             for (int i = 1; i < Actions.Count; i++)
             {
@@ -33,6 +35,8 @@ public class AssignedButton
     {
         get
         {
+            if (Actions.Count == 0) { return ""; }
+
             string category = Actions[0].CategoryName;
             for (int i = 1; i < Actions.Count; i++)
             {
@@ -46,6 +50,8 @@ public class AssignedButton
     {
         get
         {
+            if (Actions.Count == 0) { return ""; }
+
             string id = Actions[0].ActionId;
             for (int i = 1; i < Actions.Count; i++)
             {
@@ -68,7 +74,7 @@ public class AssignedButton
         }
     }
 
-    public bool IsValid { get { return Actions.Count == 1; } }
+    public bool IsValid { get { return Actions.Count < 2; } }
 
     public AssignedButton(RinceDCSJoystickButton joyButton)
     {

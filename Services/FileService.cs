@@ -30,6 +30,15 @@ public class FileService
             rinceDCSFile = await JsonSerializer.DeserializeAsync<RinceDCSFile>(stream);
             stream.Dispose();
 
+            //  We dont save parent stick in JSON file, so have to set on file open manually
+            foreach(RinceDCSJoystick stick in rinceDCSFile.Joysticks)
+            {
+                foreach(RinceDCSJoystickButton button in stick.Buttons)
+                {
+                    button.Stick = stick;
+                }
+            }
+
             Settings.Default.LastSavePath = path;
             Settings.Default.Save();
         }

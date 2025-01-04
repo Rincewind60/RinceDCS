@@ -41,12 +41,12 @@ namespace RinceDCS.Views
                 fontNames.Add(font.Name);
             }
 
-            this.DataContext = new EditJoystickVM(joystick, fontNames);
+            this.DataContext = new EditLayoutVM(joystick, fontNames);
 
             ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.ButtonFontColor));
         }
 
-        public EditJoystickVM ViewModel => (EditJoystickVM)DataContext;
+        public EditLayoutVM ViewModel => (EditLayoutVM)DataContext;
 
         private void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -132,12 +132,19 @@ namespace RinceDCS.Views
 
         private void JoystickImage_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (isAddButtonMode)
+            PointerPoint point = GetMousePoint(sender, e);
+
+            if (isAddButtonMode && point.Properties.IsLeftButtonPressed)
             {
+                //  Add button to layout and make current
                 ViewModel.CurrentButton = JoystickButtons.SelectedItem as RinceDCSJoystickButton;
-                PointerPoint point = GetMousePoint(sender, e);
                 ViewModel.PlaceButtonOnJoystick(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
                 JoystickButtons.SelectedItem = null;
+            }
+            else if(ViewModel.CurrentButton != null && point.Properties.IsRightButtonPressed)
+            {
+                //  Add a line from current cutton to click location
+                ViewModel.DrawLineFromButtonToLocation(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
             }
             else
             {
@@ -231,22 +238,29 @@ namespace RinceDCS.Views
 
         private void JoysticButton_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            PointerPoint point = GetMousePoint(sender, e);
             Border border = (Border)sender;
 
-            if (ViewModel.CurrentButton == (RinceDCSJoystickButton)border.DataContext &&
-                InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.LeftControl) == CoreVirtualKeyStates.Down)
+            if (ViewModel.CurrentButton == (RinceDCSJoystickButton)border.DataContext)
             {
-                ViewModel.CurrentButton = null;
-                JoystickImage.Focus(FocusState.Pointer);
+                if (point.Properties.IsLeftButtonPressed &&
+                   InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.LeftControl) == CoreVirtualKeyStates.Down)
+                {
+                    ViewModel.CurrentButton = null;
+                    JoystickImage.Focus(FocusState.Pointer);
+                }
+                else if (point.Properties.IsRightButtonPressed)
+                {
+                    ViewModel.HideButtonLine(ViewModel.CurrentButton);
+                }
             }
             else
             {
                 isMovingButtonMode = true;
                 border.Focus(FocusState.Pointer);
-                PointerPoint point = GetMousePoint(sender, e);
                 movingXOffset = (int)point.Position.X;
                 movingYOffset = (int)point.Position.Y;
-                JoystickImage.CapturePointer(e.Pointer);                
+                JoystickImage.CapturePointer(e.Pointer);
             }
         }
 
