@@ -16,18 +16,18 @@ namespace RinceDCS.Views
 {
     public sealed partial class EditStickControl : UserControl
     {
-        public EditStickControl(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData dcsData)
+        public EditStickControl(RinceDCSJoystick stick, RinceDCSJoystickImage stickImage, RinceDCSGroups groups, DCSData dcsData)
         {
             this.InitializeComponent();
 
-            this.DataContext = new EditStickVM(stick, groups, dcsData);
+            this.DataContext = new EditStickVM(stick, stickImage, groups, dcsData);
         }
 
         public EditStickVM ViewModel => (EditStickVM)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
-            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
+            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick, ViewModel.StickImage);
             ButtonsItemsControl.Width = (JoystickImage.Source as BitmapSource).PixelWidth;
         }
 

@@ -20,6 +20,9 @@ public partial class ViewStickVM : ObservableRecipient,
     private RinceDCSJoystick stick;
 
     [ObservableProperty]
+    private RinceDCSJoystickImage stickImage;
+
+    [ObservableProperty]
     private AttachedJoystick attachedStick;
     public DCSData BindingsData { get; set; }
 
@@ -29,9 +32,10 @@ public partial class ViewStickVM : ObservableRecipient,
 
     public ScaleVMHelper ScaleHelper { get { return ScaleVMHelper.Default; } }
 
-    public ViewStickVM(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData data)
+    public ViewStickVM(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, RinceDCSJoystickImage stickImage, DCSData data)
     {
         Stick = stick;
+        StickImage = stickImage;
         AttachedStick = Stick.AttachedJoystick;
         BindingsData = data;
         InstanceName = instanceName;
@@ -55,7 +59,7 @@ public partial class ViewStickVM : ObservableRecipient,
         if (FilterToolbarVM.Default.SelectedAircraft != "All")
         {
             JoystickVMHelper helper = new(BindingsData);
-            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
+            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(StickImage);
             List<AssignedButton> buttons = helper.GetAssignedButtons(Stick, buttonsOnLayout, InstanceName, FilterToolbarVM.Default.SelectedAircraft);
             foreach (AssignedButton button in buttons)
             {

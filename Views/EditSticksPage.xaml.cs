@@ -1,8 +1,11 @@
 // Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 
@@ -33,15 +36,24 @@ namespace RinceDCS.Views
 
             foreach (RinceDCSJoystick stick in joysticks)
             {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = stick.AttachedJoystick.Name;
-                newItem.IsClosable = false;
+                foreach (RinceDCSJoystickImage stickImage in stick.Images)
+                {
+                    TabViewItem newItem = new TabViewItem();
+                    Binding titleBinding = new Binding
+                    {
+                        Source = stickImage,
+                        Path = new PropertyPath("Title"),
+                        Mode = BindingMode.OneWay
+                    };
+                    newItem.SetBinding(TabViewItem.HeaderProperty, titleBinding);
+                    newItem.IsClosable = false;
 
-                EditStickControl ctrl = new(stick, rinceDCSInstance.Groups, dcsData);
-                ctrl.ViewModel.IsActive = true;
+                    EditStickControl ctrl = new(stick, stickImage, rinceDCSInstance.Groups, dcsData);
+                    ctrl.ViewModel.IsActive = true;
 
-                newItem.Content = ctrl;
-                ManageJoysticks.TabItems.Add(newItem);
+                    newItem.Content = ctrl;
+                    ManageJoysticks.TabItems.Add(newItem);
+                }
             }
         }
 

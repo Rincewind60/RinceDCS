@@ -33,9 +33,22 @@ public class FileService
             //  We dont save parent stick in JSON file, so have to set on file open manually
             foreach(RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
-                foreach(RinceDCSJoystickButton button in stick.Buttons)
+                ///TODO: remove after save
+                //RinceDCSJoystickImage newImage = new RinceDCSJoystickImage() { Title = stick.AttachedJoystick.Name, Image = stick.Image, Buttons = [] };
+                //stick.Images.Add(newImage);
+
+                //foreach (RinceDCSJoystickButton button in stick.Buttons)
+                //{
+                //    newImage.Buttons.Add(button);
+                //}
+
+
+                foreach (RinceDCSJoystickImage image in stick.Images)
                 {
-                    button.Stick = stick;
+                    foreach (RinceDCSJoystickButton button in image.Buttons)
+                    {
+                        button.Stick = stick;
+                    }
                 }
             }
 

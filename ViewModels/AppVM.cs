@@ -125,6 +125,8 @@ public partial class AppVM : ObservableRecipient
 
     private void CheckForNewJoysticks(RinceDCSFile openedRinceDCSFile)
     {
+        JoystickVMHelper stickHelper = new JoystickVMHelper(CurrentInstanceDCSData);
+
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
             bool existingStick = false;
@@ -138,9 +140,11 @@ public partial class AppVM : ObservableRecipient
             }
             if (existingStick == false)
             {
-                RinceDCSJoystick newJoystick = new() { AttachedJoystick = stick };
+                RinceDCSJoystick newJoystick = new();
+                newJoystick.AttachedJoystick = stick;
+                newJoystick.Images.Add(new RinceDCSJoystickImage() {  Title = stick.Name });
 
-                AddJoystickButtons(newJoystick);
+                stickHelper.AddJoystickButtons(newJoystick, newJoystick.Images[0]);
 
                 openedRinceDCSFile.Joysticks.Add(newJoystick);
 
@@ -177,12 +181,16 @@ public partial class AppVM : ObservableRecipient
         JoystickVMHelper helper = new(CurrentInstanceDCSData);
         foreach (RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
-            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
-            foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
+            foreach(RinceDCSJoystickImage stickImage in stick.Images)
             {
-                List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
-                string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
-                WeakReferenceMessenger.Default.Send(new ExportAssignedButtonsImageMessage(stick, assignedButtons, saveFilePath));
+                Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stickImage);
+                foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
+                {
+                    List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
+                    string saveFilePath = exportFolder + "\\" + aircraft.Name + "_" + stick.AttachedJoystick.Name + ".png";
+                    WeakReferenceMessenger.Default.Send(new ExportAssignedButtonsImageMessage(stick, stickImage, assignedButtons, saveFilePath));
+                }
+
             }
         }
     }
@@ -193,11 +201,14 @@ public partial class AppVM : ObservableRecipient
         JoystickVMHelper helper = new(CurrentInstanceDCSData);
         foreach (RinceDCSJoystick stick in CurrentFile.Joysticks)
         {
-            Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stick);
-            foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
+            foreach (RinceDCSJoystickImage stickImage in stick.Images)
             {
-                List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
-                WeakReferenceMessenger.Default.Send(new ExportKneeboardMessage(stick, assignedButtons, aircraft.Name));
+                Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(stickImage);
+                foreach (RinceDCSAircraft aircraft in CurrentInstance.Aircraft)
+                {
+                    List<AssignedButton> assignedButtons = helper.GetAssignedButtons(stick, buttonsOnLayout, CurrentInstance.Name, aircraft.Name);
+                    WeakReferenceMessenger.Default.Send(new ExportKneeboardMessage(stick, stickImage, assignedButtons, aircraft.Name));
+                }
             }
         }
     }
@@ -244,51 +255,18 @@ public partial class AppVM : ObservableRecipient
 
     private void LoadJoysticks(RinceDCSFile rinceDCSFile)
     {
+        JoystickVMHelper stickHelper = new JoystickVMHelper(CurrentInstanceDCSData);
+
         foreach (AttachedJoystick stick in AttachedJoysticks)
         {
-            RinceDCSJoystick newJoystick = new() { AttachedJoystick = stick };
+            RinceDCSJoystick newJoystick = new();
+            newJoystick.AttachedJoystick = stick;
+            newJoystick.Images.Add(new RinceDCSJoystickImage() { Title = stick.Name });
 
-            AddJoystickButtons(newJoystick);
+            stickHelper.AddJoystickButtons(newJoystick, newJoystick.Images[0]);
 
             rinceDCSFile.Joysticks.Add(newJoystick);
         }
-    }
-
-    /// <summary>
-    /// Remove any existing Joystick info and update with latest
-    /// </summary>
-    /// <param name="joystick"></param>
-    private void AddJoystickButtons(RinceDCSJoystick joystick)
-    {
-        JoystickInfo info = JoystickService.Default.GetJoystickInfo(joystick.AttachedJoystick);
-
-        joystick.Buttons = new ObservableCollection<RinceDCSJoystickButton>();
-
-        joystick.Buttons.Add(NewJoystickButton("Game", joystick));
-        joystick.Buttons.Add(NewJoystickButton("Plane", joystick));
-        joystick.Buttons.Add(NewJoystickButton("Joystick", joystick));
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
-        foreach (string item in info.POVs) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
-        foreach (string item in info.Buttons) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
-        //  Now add copies of Buttons for when using Modifier
-        foreach (string item in info.SupportedAxes) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
-        foreach (string item in info.POVs) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
-        foreach (string item in info.Buttons) joystick.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
-    }
-
-    private RinceDCSJoystickButton NewJoystickButton(string name, RinceDCSJoystick stick, bool isKey = true, bool isModifier = false)
-    {
-        return new RinceDCSJoystickButton(stick)
-        {
-            ButtonName = name,
-            IsKeyButton = isKey,
-            IsModifier = isModifier
-        };
-    }
-
-    private bool IsKeyButton(string item)
-    {
-        return item.Contains("BTN");
     }
 
     private void ApplyChangesToModels()

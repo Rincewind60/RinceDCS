@@ -48,7 +48,7 @@
             Grid.Column="0"
             Grid.Row="1"
             Name="JoystickButtons"
-            ItemsSource="{x:Bind ViewModel.Stick.Buttons}"
+            ItemsSource="{x:Bind ViewModel.StickImage.Buttons, Mode=OneWay}"
             SelectionChanged="JoystickButtons_SelectionChanged"
             PreviewKeyDown="JoystickButtons_PreviewKeyDown">
             <ListView.ItemTemplate>
@@ -72,9 +72,20 @@
                 Click="Settings_Click"
                 Margin="2,0,2,0"/>
             <Button
-                Name="EditImage" 
+                Name="AddImage" 
+                Content="Add Image"
+                Command="{x:Bind ViewModel.AddStickImageCommand}"
+                Margin="2,0,2,0"/>
+            <Button
+                Name="DeleteImage" 
+                Content="Del Image"
+                Command="{x:Bind ViewModel.DeleteStickImageCommand}"
+                IsEnabled="{x:Bind ViewModel.IsNotLastImage, Mode=OneWay}"
+                Margin="2,0,2,0"/>
+            <Button
+                Name="SelectImage" 
                 Content="Select Image"
-                Click="EditImage_Click"
+                Click="SelectImage_Click"
                 Margin="2,0,2,0"/>
             <Button
                 Name="ExportImage"
@@ -266,7 +277,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Name="ButtonLinesItemsControl"
-                    ItemsSource="{x:Bind ViewModel.Stick.Buttons}">
+                    ItemsSource="{x:Bind ViewModel.StickImage.Buttons}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas/>
@@ -291,7 +302,7 @@
                     Grid.Column="0"
                     Name="ButtonsItemsControl"
                     PreviewKeyDown="ButtonsItemsControl_PreviewKeyDown"
-                    ItemsSource="{x:Bind ViewModel.Stick.Buttons}"
+                    ItemsSource="{x:Bind ViewModel.StickImage.Buttons}"
                     LayoutUpdated="ButtonsItemsControl_LayoutUpdated">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

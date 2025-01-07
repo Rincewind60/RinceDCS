@@ -11,8 +11,7 @@ using System.Linq;
 
 namespace RinceDCS.ViewModels;
 
-public partial class EditStickVM : ObservableRecipient,
-                                               IRecipient<PropertyChangedMessage<string>>
+public partial class EditStickVM : ObservableRecipient, IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
     public ObservableCollection<ManagedButton> buttons;
@@ -20,15 +19,19 @@ public partial class EditStickVM : ObservableRecipient,
     [ObservableProperty]
     private RinceDCSJoystick stick;
 
+    [ObservableProperty]
+    private RinceDCSJoystickImage stickImage;
+
     public DCSData BindingsData { get; set; }
 
     private RinceDCSGroups Groups { get; set; }
 
     public ScaleVMHelper ScaleHelper { get { return ScaleVMHelper.Default; } }
 
-    public EditStickVM(RinceDCSJoystick stick, RinceDCSGroups groups, DCSData data)
+    public EditStickVM(RinceDCSJoystick stick, RinceDCSJoystickImage stickImage, RinceDCSGroups groups, DCSData data)
     {
         Stick = stick;
+        StickImage = stickImage;
         Groups = groups;
         BindingsData = data;
 
@@ -70,7 +73,7 @@ public partial class EditStickVM : ObservableRecipient,
     private void ReBuildViewButtons()
     {
         JoystickVMHelper helper = new(BindingsData);
-        Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(Stick);
+        Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttonsOnLayout = helper.GetJoystickButtonsOnLayout(StickImage);
         List<ManagedButton> buttons = helper.GetManagedButtons(Stick, Groups, buttonsOnLayout, FilterToolbarVM.Default.SelectedAircraft);
         Buttons = buttons == null ? new() : new(buttons);
     }

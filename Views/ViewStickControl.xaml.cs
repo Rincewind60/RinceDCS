@@ -20,18 +20,18 @@ namespace RinceDCS.Views
 {
     public sealed partial class ViewStickControl : UserControl
     {
-        public ViewStickControl(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, DCSData dcsData)
+        public ViewStickControl(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, RinceDCSJoystickImage stickImage, DCSData dcsData)
         {
             this.InitializeComponent();
 
-            this.DataContext = new ViewStickVM(instanceName, savedGamesFolder, stick, dcsData);
+            this.DataContext = new ViewStickVM(instanceName, savedGamesFolder, stick, stickImage, dcsData);
         }
 
         public ViewStickVM ViewModel => (ViewStickVM)DataContext;
 
         private async void JoystickImage_Loaded(object sender, RoutedEventArgs e)
         {
-            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
+            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick, ViewModel.StickImage);
             ButtonsItemsControl.Width = (JoystickImage.Source as BitmapSource).PixelWidth;
         }
 
@@ -52,19 +52,19 @@ namespace RinceDCS.Views
 
         private void ExportKneeboard_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.ExportKneeboard(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), FilterToolbarVM.Default.SelectedAircraft, ViewModel.AttachedStick.DCSName, ViewModel.SavedGamesFolder, ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
+            JoystickUtil.ExportKneeboard(ViewModel.StickImage.Image, ViewModel.AssignedButtons.ToList(), FilterToolbarVM.Default.SelectedAircraft, ViewModel.AttachedStick.DCSName, ViewModel.SavedGamesFolder, ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
         private async void ExportImage_Click(object sender, RoutedEventArgs e)
         {
             string savePath = await DialogService.Default.OpenPickSaveFile("JoystickLabels.png", "PNG", ".png");
 
-            JoystickUtil.ExportAssignedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize, savePath);
+            JoystickUtil.ExportAssignedButtonsImage(ViewModel.StickImage.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize, savePath);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.PrintAssigedButtonsImage(ViewModel.Stick.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
+            JoystickUtil.PrintAssigedButtonsImage(ViewModel.StickImage.Image, ViewModel.AssignedButtons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
         private void ButtonsItemsControl_LayoutUpdated(object sender, object e)

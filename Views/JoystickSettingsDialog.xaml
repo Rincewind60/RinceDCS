@@ -19,29 +19,49 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock
             Grid.Column="0"
             Grid.Row="0"
+            Text="Title:"
+            VerticalAlignment="Center"
+            Margin="2"/>
+        <TextBox
+            Grid.Column="1"
+            Grid.Row="0"
+            Name="Title"
+            Text="{x:Bind ViewModel.Title, Mode=TwoWay}"
+            TextChanging="Title_TextChanging"
+            Margin="2"/>
+        <TextBlock
+            Grid.Column="0"
+            Grid.Row="1"
             Text="Label Height:"
             VerticalAlignment="Center"
             Margin="2"/>
         <NumberBox
             Grid.Column="1"
-            Grid.Row="0"
+            Grid.Row="1"
+            Name="Height"
             Value="{x:Bind ViewModel.Height, Mode=TwoWay}"
+            Minimum="8"
+            Maximum="120"
             Margin="2"/>
         <TextBlock
             Grid.Column="0"
-            Grid.Row="1"
+            Grid.Row="2"
             Text="Label Width:"
             VerticalAlignment="Center"
             Margin="2"/>
         <NumberBox
             Grid.Column="1"
-            Grid.Row="1"
+            Grid.Row="2"
+            Name="Width"
             Value="{x:Bind ViewModel.Width, Mode=TwoWay}"
+            Minimum="8"
+            Maximum="1000"
             Margin="2"/>
     </Grid>
 </Page>

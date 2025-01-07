@@ -1,6 +1,7 @@
 ﻿// Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
 using RinceDCS.Models;
+using RinceDCS.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Design;
@@ -17,10 +18,48 @@ public class JoystickVMHelper
         Data = data;
     }
 
-    public Dictionary<AssignedButtonKey, RinceDCSJoystickButton> GetJoystickButtonsOnLayout(RinceDCSJoystick stick)
+    /// <summary>
+    /// Remove any existing Joystick info and update with latest
+    /// </summary>
+    /// <param name="joystick"></param>
+    public void AddJoystickButtons(RinceDCSJoystick joystick, RinceDCSJoystickImage stickImage)
+    {
+        JoystickInfo info = JoystickService.Default.GetJoystickInfo(joystick.AttachedJoystick);
+
+        stickImage.Buttons =
+            [
+            NewJoystickButton("Game", joystick),
+            NewJoystickButton("Plane", joystick),
+            NewJoystickButton("Joystick", joystick),
+            ];
+        foreach (string item in info.SupportedAxes) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
+        foreach (string item in info.POVs) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
+        foreach (string item in info.Buttons) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item)));
+        //  Now add copies of Buttons for when using Modifier
+        foreach (string item in info.SupportedAxes) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+        foreach (string item in info.POVs) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+        foreach (string item in info.Buttons) stickImage.Buttons.Add(NewJoystickButton(item, joystick, IsKeyButton(item), true));
+    }
+
+    private RinceDCSJoystickButton NewJoystickButton(string name, RinceDCSJoystick stick, bool isKey = true, bool isModifier = false)
+    {
+        return new RinceDCSJoystickButton(stick)
+        {
+            ButtonName = name,
+            IsKeyButton = isKey,
+            IsModifier = isModifier
+        };
+    }
+
+    private bool IsKeyButton(string item)
+    {
+        return item.Contains("BTN");
+    }
+
+    public Dictionary<AssignedButtonKey, RinceDCSJoystickButton> GetJoystickButtonsOnLayout(RinceDCSJoystickImage stickImage)
     {
         Dictionary<AssignedButtonKey, RinceDCSJoystickButton> buttons = new();
-        foreach (RinceDCSJoystickButton button in stick.Buttons)
+        foreach (RinceDCSJoystickButton button in stickImage.Buttons)
         {
             if (button.OnLayout)
             {

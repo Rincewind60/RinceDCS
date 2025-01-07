@@ -1,8 +1,15 @@
 // Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Navigation;
 using RinceDCS.Models;
+using RinceDCS.ViewModels.Messages;
+using RinceDCS.Views.Utilities;
+using SharpDX.DirectInput;
+using System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -17,6 +24,15 @@ namespace RinceDCS.Views
         public EditLayoutsPage()
         {
             this.InitializeComponent();
+
+            WeakReferenceMessenger.Default.Register<AddNewJoystickImageMessage>(this, (r, m) =>
+            {
+                AddNewStickImageTab(m.Stick, m.StickImage);
+            });
+            WeakReferenceMessenger.Default.Register<DeleteJoystickImageMessage>(this, (r, m) =>
+            {
+                DeleteStickImageTab(m.Stick, m.StickImage);
+            });
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -25,16 +41,41 @@ namespace RinceDCS.Views
 
             RinceDCSFile rinceDCSFile = (RinceDCSFile)e.Parameter;
 
-            foreach (RinceDCSJoystick joystick in rinceDCSFile.Joysticks)
+            foreach (RinceDCSJoystick stick in rinceDCSFile.Joysticks)
             {
-                TabViewItem newItem = new TabViewItem();
-                newItem.Header = joystick.AttachedJoystick.Name;
-                newItem.IsClosable = false;
+                foreach (RinceDCSJoystickImage stickImage in stick.Images)
+                {
+                    AddNewStickImageTab(stick, stickImage);
+                }
+            }
+        }
 
-                EditLayoutsControl ctrl = new(joystick);
+        private void AddNewStickImageTab(RinceDCSJoystick stick, RinceDCSJoystickImage stickImage)
+        {
+            TabViewItem newItem = new TabViewItem();
+            Binding titleBinding = new Binding
+            {
+                Source = stickImage,
+                Path = new PropertyPath("Title"),
+                Mode = BindingMode.OneWay
+            };
+            newItem.SetBinding(TabViewItem.HeaderProperty, titleBinding);
+            newItem.IsClosable = false;
+            EditLayoutsControl ctrl = new(stick, stickImage);
+            newItem.Content = ctrl;
+            EditJoystickLayouts.TabItems.Add(newItem);
+        }
 
-                newItem.Content = ctrl;
-                EditJoystickLayouts.TabItems.Add(newItem);
+        private void DeleteStickImageTab(RinceDCSJoystick stick, RinceDCSJoystickImage stickImage)
+        {
+            foreach (TabViewItem tab in EditJoystickLayouts.TabItems)
+            {
+                EditLayoutsControl ctrl = tab.Content as EditLayoutsControl;
+                if (ctrl.ViewModel.StickImage == stickImage)
+                {
+                    EditJoystickLayouts.TabItems.Remove(tab);
+                    return;
+                }
             }
         }
     }

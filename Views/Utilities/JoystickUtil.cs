@@ -16,14 +16,14 @@ namespace RinceDCS.Views.Utilities;
 
 public class JoystickUtil
 {
-    public static async Task<BitmapImage> GetImageSource(RinceDCSJoystick joystick)
+    public static async Task<BitmapImage> GetImageSource(RinceDCSJoystick joystick, RinceDCSJoystickImage stickImage)
     {
-        if (joystick == null || joystick.Image == null)
+        if (joystick == null || stickImage.Image == null)
         {
             return new BitmapImage(new Uri("ms-appx:///Assets/DefaultJoystickImage.png"));
         }
 
-        using (MemoryStream stream = new(joystick.Image))
+        using (MemoryStream stream = new(stickImage.Image))
         {
             using (IRandomAccessStream random = stream.AsRandomAccessStream())
             {

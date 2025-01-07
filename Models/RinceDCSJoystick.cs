@@ -19,7 +19,7 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
     private AttachedJoystick attachedJoystick;
 
     [ObservableProperty]
-    private ObservableCollection<RinceDCSJoystickButton> buttons;
+    private ObservableCollection<RinceDCSJoystickImage> images;
 
     [ObservableProperty]
     private string buttonFont;
@@ -36,10 +36,9 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
     [ObservableProperty]
     private int buttonWidth;
 
-    public byte[] Image { get; set; }
-
     public RinceDCSJoystick()
     {
+        Images = [];
         ButtonFont = "Arial";
         ButtonFontSize = 14;
         ButtonFontColor = "#000000";
@@ -51,6 +50,17 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
     {
         return AttachedJoystick.Name.CompareTo(((RinceDCSJoystick)obj).AttachedJoystick.Name);
     }
+}
+
+public partial class RinceDCSJoystickImage : ObservableObject
+{
+    [ObservableProperty]
+    private string title;
+
+    [ObservableProperty]
+    private ObservableCollection<RinceDCSJoystickButton> buttons;
+
+    public byte[] Image { get; set; }
 }
 
 public partial class RinceDCSJoystickButton : ObservableObject

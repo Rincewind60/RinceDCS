@@ -1,15 +1,18 @@
 // Copyright 2023-2024 Paul Scobell. Subject to the GPL-3.0 license.
 
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Helpers;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using RinceDCS.Models;
 using RinceDCS.Services;
 using RinceDCS.ViewModels;
+using RinceDCS.ViewModels.Messages;
 using RinceDCS.Views.Utilities;
 using System;
 using System.Collections.Generic;
@@ -30,7 +33,7 @@ namespace RinceDCS.Views
         private int movingYOffset = 0;
         private int movingXOffset = 0;
 
-        public EditLayoutsControl(RinceDCSJoystick joystick)
+        public EditLayoutsControl(RinceDCSJoystick joystick, RinceDCSJoystickImage stickImage)
         {
             this.InitializeComponent();
 
@@ -41,7 +44,7 @@ namespace RinceDCS.Views
                 fontNames.Add(font.Name);
             }
 
-            this.DataContext = new EditLayoutVM(joystick, fontNames);
+            this.DataContext = new EditLayoutVM(joystick, stickImage, fontNames);
 
             ColorButton.Background = new SolidColorBrush(CommunityToolkit.WinUI.Helpers.ColorHelper.ToColor(joystick.ButtonFontColor));
         }
@@ -53,7 +56,7 @@ namespace RinceDCS.Views
             SetJoystickImageSource();
         }
 
-        private async void EditImage_Click(object sender, RoutedEventArgs e)
+        private async void SelectImage_Click(object sender, RoutedEventArgs e)
         {
             string newImageFile = await DialogService.Default.OpenPickFile(".png");
             if (!string.IsNullOrEmpty(newImageFile))
@@ -65,7 +68,7 @@ namespace RinceDCS.Views
 
         private async void SetJoystickImageSource()
         {
-            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick);
+            JoystickImage.Source = await JoystickUtil.GetImageSource(ViewModel.Stick, ViewModel.StickImage);
             ButtonsItemsControl.Width = (JoystickImage.Source as BitmapSource).PixelWidth;
         }
 
@@ -98,12 +101,12 @@ namespace RinceDCS.Views
 
         private void ExportImage_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.ExportButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
+            JoystickUtil.ExportButtonsImage(ViewModel.StickImage.Image, ViewModel.StickImage.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
         private void PrintImage_Click(object sender, RoutedEventArgs e)
         {
-            JoystickUtil.PrintButtonsImage(ViewModel.Stick.Image, ViewModel.Stick.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
+            JoystickUtil.PrintButtonsImage(ViewModel.StickImage.Image, ViewModel.StickImage.Buttons.ToList(), ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth, ViewModel.Stick.ButtonFont, ViewModel.Stick.ButtonFontSize);
         }
 
 
@@ -121,12 +124,19 @@ namespace RinceDCS.Views
 
         private async void Settings_Click(object sender, RoutedEventArgs e)
         {
-            JoystickSettingsDialog page = new(ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth);
+            JoystickSettingsDialog page = new(ViewModel.StickImage.Title, ViewModel.Stick.ButtonHeight, ViewModel.Stick.ButtonWidth);
             string stickName = ViewModel.Stick.AttachedJoystick.Name;
-            ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog(stickName + " edit Settings", page, "Save", null, null, "Cancel");
+            Binding settingsBinding = new Binding
+            {
+                Source = page.ViewModel,
+                Path = new PropertyPath("IsValid"),
+                Mode = BindingMode.OneWay
+            };
+            ContentDialogResult result = await DialogService.Default.OpenResponsePageDialog(stickName + " edit Settings", page, "Save", settingsBinding, null, "Cancel");
             if (result == ContentDialogResult.Primary)
             {
-                ViewModel.UpdateSettings(page.ViewModel.Height, page.ViewModel.Width);
+                ViewModel.UpdateSettings(page.ViewModel.Title, page.ViewModel.Height, page.ViewModel.Width);
+                ///TODO: Update tab title now image title has changed
             }
         }
 

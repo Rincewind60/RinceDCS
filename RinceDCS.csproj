@@ -45,6 +45,7 @@
     <None Remove="Help\ViewJoysticksMenu.png" />
     <None Remove="NLog.config" />
     <None Remove="Views\AboutDialog.xaml" />
+    <None Remove="Views\AddStickImageDialog.xaml" />
     <None Remove="Views\AppPage.xaml" />
     <None Remove="Views\EditGroupAircraftControl.xaml" />
     <None Remove="Views\EditGroupControl.xaml" />
@@ -187,6 +188,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Page Update="Views\AddStickImageDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\GroupsToolbar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
