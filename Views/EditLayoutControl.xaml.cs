@@ -150,6 +150,11 @@ namespace RinceDCS.Views
                 ViewModel.CurrentButton = JoystickButtons.SelectedItem as RinceDCSJoystickButton;
                 ViewModel.PlaceButtonOnJoystick(ViewModel.CurrentButton, (int)point.Position.X, (int)point.Position.Y);
                 JoystickButtons.SelectedItem = null;
+
+                isMovingButtonMode = true;
+                movingXOffset = 0;
+                movingYOffset = 0;
+                JoystickImage.CapturePointer(e.Pointer);
             }
             else if(ViewModel.CurrentButton != null && point.Properties.IsRightButtonPressed)
             {
@@ -258,20 +263,20 @@ namespace RinceDCS.Views
                 {
                     ViewModel.CurrentButton = null;
                     JoystickImage.Focus(FocusState.Pointer);
+                    return;
                 }
                 else if (point.Properties.IsRightButtonPressed)
                 {
                     ViewModel.HideButtonLine(ViewModel.CurrentButton);
+                    return;
                 }
             }
-            else
-            {
-                isMovingButtonMode = true;
-                border.Focus(FocusState.Pointer);
-                movingXOffset = (int)point.Position.X;
-                movingYOffset = (int)point.Position.Y;
-                JoystickImage.CapturePointer(e.Pointer);
-            }
+
+            isMovingButtonMode = true;
+            border.Focus(FocusState.Pointer);
+            movingXOffset = (int)point.Position.X;
+            movingYOffset = (int)point.Position.Y;
+            JoystickImage.CapturePointer(e.Pointer);
         }
 
         private void JoysticButton_GotFocus(object sender, RoutedEventArgs e)
