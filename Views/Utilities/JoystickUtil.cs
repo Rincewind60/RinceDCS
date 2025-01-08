@@ -75,8 +75,9 @@ public class JoystickUtil
 
     public static void ExportKneeboard(byte[] imageBytes, List<AssignedButton> assignedButtons, string aircraftName, string stickDCSName, string savedGamesFolder, int height, int width, string fontName, int fontSize)
     {
-        string savePath = savedGamesFolder + "\\Kneeboard\\" + aircraftName + "\\00_" + aircraftName + "__" + stickDCSName + ".png";
-        if (string.IsNullOrWhiteSpace(savePath)) { return; }
+        string savePath = savedGamesFolder + "\\Kneeboard\\" + aircraftName;
+        Directory.CreateDirectory(savePath);
+        savePath += "\\00_" + aircraftName + "__" + stickDCSName + ".png";
 
         Image image = CreateJoystickAssignedButtonsImage(imageBytes, assignedButtons, height, width, fontName, fontSize);
         image.Save(savePath, ImageFormat.Png);

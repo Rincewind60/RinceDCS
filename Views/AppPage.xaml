@@ -70,6 +70,13 @@
                 IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditGroups}"
                 IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="EditGroups_Click"/>
+            <AppBarToggleButton
+                Name="EditLayouts"
+                Icon="Edit" 
+                Label="Layouts" 
+                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditSticks}"
+                Click="EditLayouts_Click"/>
+            <AppBarSeparator/>
             <AppBarButton
                 Name="EditModifiers"
                 Icon="Edit"
@@ -77,12 +84,6 @@
                 IsEnabled="{x:Bind ViewModel.CurrentInstance, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
                 Click="EditModifiers_Click"
                 />
-            <AppBarToggleButton
-                Name="EditLayouts"
-                Icon="Edit" 
-                Label="Layouts" 
-                IsChecked="{x:Bind ViewModel.JoystickMode, Mode=TwoWay, Converter={StaticResource ModeConverter}, ConverterParameter=EditSticks}"
-                Click="EditLayouts_Click"/>
             <AppBarSeparator/>
             <AppBarButton Label="Help" Click="Help_Click"/>
             <AppBarButton Label="About" Click="About_Click"/>
