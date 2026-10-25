@@ -101,9 +101,9 @@ public partial class EditLayoutVM : ObservableObject
         if (result == ContentDialogResult.Primary)
         {
             RinceDCSJoystickImage newImage = new RinceDCSJoystickImage() { Image = null, Title = page.ViewModel.NewImageTabTitle, Buttons = [] };
-            foreach(RinceDCSJoystickButton button in stickImage.Buttons)
+            foreach(RinceDCSJoystickButton button in StickImage.Buttons)
             {
-                RinceDCSJoystickButton newButton = new RinceDCSJoystickButton(stick)
+                RinceDCSJoystickButton newButton = new RinceDCSJoystickButton(Stick)
                 {
                     ButtonName = button.ButtonName,
                     IsKeyButton = button.IsKeyButton,

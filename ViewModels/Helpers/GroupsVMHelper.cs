@@ -18,7 +18,7 @@ public class GroupsVMHelper
     private RinceDCSGroups Groups { get; }
     private string SavedGamesPath;
 
-    CsvExport CsvDump = new CsvExport(",", true, true);
+    CsvExport CsvDump = new CsvExport(',', true, true);
 
     public GroupsVMHelper(List<RinceDCSJoystick> joysticks, DCSData data, RinceDCSGroups groups, string savedGamesPath)
     {
