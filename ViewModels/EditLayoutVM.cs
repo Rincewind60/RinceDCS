@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace RinceDCS.ViewModels;
@@ -25,13 +26,13 @@ namespace RinceDCS.ViewModels;
 public partial class EditLayoutVM : ObservableObject
 {
     [ObservableProperty]
-    private RinceDCSJoystick stick;
+    public partial RinceDCSJoystick Stick { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystickImage stickImage;
+    public partial RinceDCSJoystickImage StickImage { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystickButton currentButton;
+    public partial RinceDCSJoystickButton CurrentButton { get; set; }
      
     public bool IsNotLastImage {  get {  return Stick.Images.Count > 1; } }
 
@@ -87,7 +88,7 @@ public partial class EditLayoutVM : ObservableObject
     }
 
     [RelayCommand]
-    private async void AddStickImage()
+    private async Task AddStickImage()
     {
         AddStickImageDialog page = new AddStickImageDialog(Stick);
         Binding addBinding = new Binding
@@ -119,7 +120,7 @@ public partial class EditLayoutVM : ObservableObject
     }
 
     [RelayCommand]
-    private async void DeleteStickImage()
+    private async Task DeleteStickImage()
     {
         bool? result = await DialogService.Default.OpenConfirmationDialog("Delete Joystick Image Tab", "Do you want to delete this image from the " + Stick.AttachedJoystick.Name + " Joystick");
         if(result.HasValue && result.Value)

@@ -17,18 +17,18 @@ public partial class InstanceData : ObservableObject
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNameEditable))]
-    private string name;
+    public partial string Name { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNameEditable))]
-    private string gameExePath;
+    public partial string GameExePath { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNameEditable))]
-    private string savedGamesPath;
+    public partial string SavedGamesPath { get; set; }
 
     [ObservableProperty]
-    private bool isHeading;
+    public partial bool IsHeading { get; set; }
 
     public bool IsNameEditable
     {
@@ -46,7 +46,7 @@ public partial class GameInstancesVM : ObservableObject
     public ObservableCollection<InstanceData> Instances;
 
     [ObservableProperty]
-    public bool isValid;
+    public partial bool IsValid { get; set; }
 
     private readonly int NumberOfHeadingInstances = 1;
 

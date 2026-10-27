@@ -12,17 +12,17 @@ namespace RinceDCS.ViewModels;
 public partial class ModifierData : ObservableObject
 {
     [ObservableProperty]
-    private string name;
+    public partial string Name { get; set; }
     [ObservableProperty]
-    private string device;
+    public partial string Device { get; set; }
     [ObservableProperty]
-    private string key;
+    public partial string Key { get; set; } 
     [ObservableProperty]
-    private bool isSwitch;
+    public partial bool IsSwitch { get; set; }
     [ObservableProperty]
-    private bool isCoreGame;
+    public partial bool IsCoreGame { get; set; }
     [ObservableProperty]
-    private bool isDefault;
+    public partial bool IsDefault { get; set; }
 
     [RelayCommand]
     public void BindToButton()

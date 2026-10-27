@@ -8,16 +8,16 @@ namespace RinceDCS.ViewModels;
 public partial class JoystickSettingsVM : ObservableObject
 {
     [ObservableProperty]
-    private string title;
+    public partial string Title { get; set; }
 
     [ObservableProperty]
-    private int height;
+    public partial int Height { get; set; }
 
     [ObservableProperty]
-    private int width;
+    public partial int Width { get; set; }
 
     [ObservableProperty]
-    public bool isValid;
+    public partial bool IsValid { get; set; }
 
     public JoystickSettingsVM(string title, int height, int width)
     {

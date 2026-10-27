@@ -8,7 +8,7 @@ namespace RinceDCS.Models;
 public partial class RinceDCSAircraft : ObservableObject, IComparable<RinceDCSAircraft>, IEquatable<RinceDCSAircraft>
 {
     [ObservableProperty]
-    private string name;
+    public partial string Name { get; set; }
 
     public RinceDCSAircraft(string name)
     {

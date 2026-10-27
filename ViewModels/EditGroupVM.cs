@@ -14,7 +14,7 @@ public partial class EditGroupVM : ObservableRecipient,
                                    IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    private RinceDCSGroup currentGroup;
+    public partial RinceDCSGroup CurrentGroup { get; set; }
     public ObservableCollection<RinceDCSGroupAircraft> Aircraft = [];
 
     private RinceDCSGroups Groups;

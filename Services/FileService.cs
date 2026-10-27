@@ -106,7 +106,7 @@ public class FileService
         // Load a filestream and put its content into the byte[]
         using (FileStream fs = fileInfo.OpenRead())
         {
-            fs.Read(data, 0, data.Length);
+            fs.ReadExactly(data, 0, data.Length);
         }
 
         return data;

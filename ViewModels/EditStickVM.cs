@@ -14,13 +14,13 @@ namespace RinceDCS.ViewModels;
 public partial class EditStickVM : ObservableRecipient, IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    public ObservableCollection<ManagedButton> buttons;
+    public partial ObservableCollection<ManagedButton> Buttons { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystick stick;
+    public partial RinceDCSJoystick Stick { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystickImage stickImage;
+    public partial RinceDCSJoystickImage StickImage { get; set; }
 
     public DCSData BindingsData { get; set; }
 

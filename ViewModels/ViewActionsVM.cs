@@ -21,7 +21,7 @@ public class ActionTableData
 public partial class ActionCategory : ObservableObject, IComparable<ActionCategory>
 {
     [ObservableProperty]
-    private string categoryName;
+    public partial string CategoryName { get; set; }
 
     public int CompareTo(ActionCategory other)
     {
@@ -34,9 +34,10 @@ public partial class ViewActionsVM : ObservableRecipient,
                                      IRecipient<PropertyChangedMessage<bool>>
 {
     [ObservableProperty]
-    private ActionTableData filteredActionTableData;
+    public partial ActionTableData FilteredActionTableData { get; set; }
     [ObservableProperty]
-    private ActionTableData actionTableData;
+    public partial ActionTableData ActionTableData { get; set; }
+
     private DCSData DCSData { get; set; }
     string SortColumn { get; set; }
     bool IsSortedAscending { get; set; }

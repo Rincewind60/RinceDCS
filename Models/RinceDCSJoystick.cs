@@ -16,25 +16,25 @@ public record AttachedJoystick(Guid JoystickGuid, string Name)
 public partial class RinceDCSJoystick : ObservableObject, IComparable
 {
     [ObservableProperty]
-    private AttachedJoystick attachedJoystick;
+    public partial AttachedJoystick AttachedJoystick { get; set; }
 
     [ObservableProperty]
-    private ObservableCollection<RinceDCSJoystickImage> images;
+    public partial ObservableCollection<RinceDCSJoystickImage> Images { get; set; }
 
     [ObservableProperty]
-    private string buttonFont;
+    public partial string ButtonFont {  get; set; }
 
     [ObservableProperty]
-    private int buttonFontSize;
+    public partial int ButtonFontSize { get; set; }
 
     [ObservableProperty]
-    private string buttonFontColor;
+    public partial string ButtonFontColor { get; set; }
 
     [ObservableProperty]
-    private int buttonHeight;
+    public partial int ButtonHeight { get; set; }
 
     [ObservableProperty]
-    private int buttonWidth;
+    public partial int ButtonWidth { get; set; }
 
     public RinceDCSJoystick()
     {
@@ -55,10 +55,10 @@ public partial class RinceDCSJoystick : ObservableObject, IComparable
 public partial class RinceDCSJoystickImage : ObservableObject
 {
     [ObservableProperty]
-    private string title;
+    public partial string Title { get; set; }
 
     [ObservableProperty]
-    private ObservableCollection<RinceDCSJoystickButton> buttons;
+    public partial ObservableCollection<RinceDCSJoystickButton> Buttons { get; set; }
 
     public byte[] Image { get; set; }
 }
@@ -76,20 +76,20 @@ public partial class RinceDCSJoystickButton : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LineStartX))]
-    private int topX;
+    public partial int TopX { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LineStartY))] 
-    private int topY;
+    public partial int TopY { get; set; }
 
     [ObservableProperty]
-    private bool drawLine;
-
-    [ObservableProperty] 
-    private int lineEndX;
+    public partial bool DrawLine { get; set; }
 
     [ObservableProperty]
-    private int lineEndY;
+    public partial int LineEndX { get; set; }
+
+    [ObservableProperty]
+    public partial int LineEndY { get; set; }
 
     public int LineStartX 
     { 
@@ -108,21 +108,21 @@ public partial class RinceDCSJoystickButton : ObservableObject
     }
 
     [ObservableProperty]
-    private bool onLayout;
+    public partial bool OnLayout { get; set; }
 
     [ObservableProperty]
-    private string alignment;
+    public partial string Alignment { get; set; }
 
     /// <summary>
     /// TODO: These proeprties should be removed, need to create a ViewModel version of GameJoystickButton and put them there.
     /// </summary>
     [ObservableProperty]
     [property: JsonIgnore]
-    private bool isSelected;
+    public partial bool IsSelected { get; set; }
 
     [ObservableProperty]
     [property: JsonIgnore]
-    private RinceDCSJoystick stick;
+    public partial RinceDCSJoystick Stick { get; set; }
 
     public RinceDCSJoystickButton(RinceDCSJoystick stick)
     {
@@ -135,7 +135,7 @@ public partial class RinceDCSJoystickButton : ObservableObject
         if (newValue == null)
         {
 #pragma warning disable MVVMTK0034
-            alignment = oldValue;
+            Alignment = oldValue;
 #pragma warning restore MVVMTK0034
         }
     }

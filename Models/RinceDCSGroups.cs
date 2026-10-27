@@ -83,7 +83,7 @@ public partial class RinceDCSGroupAircraft : ObservableObject, IEquatable<RinceD
     public string AircraftName { get; set; }
 
     [ObservableProperty]
-    private bool isActive;
+    public partial bool? IsActive { get; set; }
     public string Action { get; set; }
     public string Category { get; set; }
 

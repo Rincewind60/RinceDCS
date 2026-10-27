@@ -21,21 +21,21 @@ public partial class FilterToolbarVM : ObservableRecipient
     public ObservableCollection<string> Aircraft = [];
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private string selectedAircraft;
+    public partial string SelectedAircraft { get; set; }
 
     public ObservableCollection<string> Categories = [];
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private string selectedCategory;
+    public partial string SelectedCategory { get; set; }
 
     public ObservableCollection<string> Groups = [];
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private string selectedGroup;
+    public partial string SelectedGroup { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private bool withButtons;
+    public partial bool WithButtons { get; set; }
 
     public FilterToolbarVM()
     {

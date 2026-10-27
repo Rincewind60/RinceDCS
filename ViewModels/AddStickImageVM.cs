@@ -14,13 +14,13 @@ namespace RinceDCS.ViewModels;
 public partial class AddStickImageVM : ObservableObject
 {
     [ObservableProperty]
-    private RinceDCSJoystick stick;
+    public partial RinceDCSJoystick Stick { get; set; }
 
     [ObservableProperty]
-    private string newImageTabTitle;
+    public partial string NewImageTabTitle { get; set; }
 
     [ObservableProperty]
-    public bool isValid;
+    public partial bool IsValid { get; set; }
 
     public AddStickImageVM(RinceDCSJoystick stick)
     {

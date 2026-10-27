@@ -9,7 +9,7 @@ namespace RinceDCS.ViewModels;
 public partial class HelpVM : ObservableRecipient
 {
     [ObservableProperty]
-    private string markDownText;
+    public partial string MarkDownText { get; set; }
 
     public HelpVM()
     {

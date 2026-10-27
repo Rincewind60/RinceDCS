@@ -33,32 +33,33 @@ public partial class AppVM : ObservableRecipient
 {
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private RinceDCSFile currentFile;
+    public partial RinceDCSFile CurrentFile { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private RinceDCSInstance currentInstance;
+    public partial RinceDCSInstance CurrentInstance { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private DCSData currentInstanceDCSData;
+    public partial DCSData CurrentInstanceDCSData { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    private RinceDCSGroups currentInstanceGroups;
+    public partial RinceDCSGroups CurrentInstanceGroups { get; set; }
 
     [ObservableProperty]
-    private List<AttachedJoystick> attachedJoysticks;
+    public partial List<AttachedJoystick> AttachedJoysticks { get; set; }
 
     [ObservableProperty]
-    private bool isRinceDCSFileLoaded = false;
+    public partial bool IsRinceDCSFileLoaded { get; set; }
 
     [ObservableProperty]
-    private DetailsDisplayMode? joystickMode;
+    public partial DetailsDisplayMode? JoystickMode { get; set; }
 
     public AppVM()
     {
         IsActive = true;
+        IsRinceDCSFileLoaded = false;
 
         JoystickMode = DetailsDisplayMode.None;
 
@@ -248,7 +249,7 @@ public partial class AppVM : ObservableRecipient
         if (newValue == null)
         {
 #pragma warning disable MVVMTK0034
-            joystickMode = oldValue;
+            JoystickMode = oldValue;
 #pragma warning restore MVVMTK0034
         }
     }

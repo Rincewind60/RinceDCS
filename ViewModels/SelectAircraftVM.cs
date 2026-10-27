@@ -11,9 +11,9 @@ namespace RinceDCS.ViewModels;
 public partial class SelectAircraft : ObservableObject
 {
     [ObservableProperty]
-    private string name;
+    public partial string Name { get; set; }
     [ObservableProperty]
-    private bool selected;
+    public partial bool Selected { get; set; }
 }
 
 public partial class SelectAircraftVM : ObservableObject
@@ -21,7 +21,7 @@ public partial class SelectAircraftVM : ObservableObject
     public ObservableCollection<SelectAircraft> Aircraft = new();
 
     [ObservableProperty]
-    private bool selectAll;
+    public partial bool SelectAll { get; set; }
 
     public SelectAircraftVM(List<string> aircraftNames)
     {

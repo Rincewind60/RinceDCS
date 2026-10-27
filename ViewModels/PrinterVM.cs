@@ -10,10 +10,10 @@ namespace RinceDCS.ViewModels;
 public partial class PrinterVM : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<string> printers;
+    public partial ObservableCollection<string> Printers { get; set; }
 
     [ObservableProperty]
-    private string printer;
+    public partial string Printer { get; set; }
 
     public PrinterVM(List<string> printers, string printer)
     {

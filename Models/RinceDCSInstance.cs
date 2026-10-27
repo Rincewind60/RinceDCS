@@ -9,16 +9,16 @@ namespace RinceDCS.Models;
 public partial class RinceDCSInstance : ObservableObject
 {
     [ObservableProperty]
-    private string name;
+    public partial string Name { get; set; }
 
     [ObservableProperty]
-    private string gameExePath;
+    public partial string GameExePath { get; set; }
 
     [ObservableProperty]
-    private string savedGamesPath;
+    public partial string SavedGamesPath { get; set; }
 
     [ObservableProperty]
-    private RinceDCSGroups groups;
+    public partial RinceDCSGroups Groups { get; set; }
 
     public ObservableCollection<RinceDCSAircraft> Aircraft { get; set; } = [];
 

@@ -29,7 +29,7 @@ public partial class ScaleVMHelper : ObservableObject
     public float[] ZoomFactors = { 4F, 2F, 1.5F, 1F, 0.8F, 0.6F, 0.5F, 0.4F, 0.30F };
 
     [ObservableProperty]
-    private int currentScale;
+    public partial int CurrentScale { get; set; }
 
     public ScaleVMHelper()
     {

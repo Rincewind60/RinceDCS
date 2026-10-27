@@ -44,7 +44,7 @@
         <NumberBox
             Grid.Column="1"
             Grid.Row="1"
-            Name="Height"
+            Name="Height1"
             Value="{x:Bind ViewModel.Height, Mode=TwoWay}"
             Minimum="8"
             Maximum="120"
@@ -58,7 +58,7 @@
         <NumberBox
             Grid.Column="1"
             Grid.Row="2"
-            Name="Width"
+            Name="Width1"
             Value="{x:Bind ViewModel.Width, Mode=TwoWay}"
             Minimum="8"
             Maximum="1000"

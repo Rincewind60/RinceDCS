@@ -21,13 +21,13 @@ public partial class EditGroupAircraftVM : ObservableRecipient,
                                            IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    public List<string> aircraftNames;
+    public partial List<string> AircraftNames { get; set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAircraftSelected))]
-    private string currentAircraft;
+    public partial string CurrentAircraft { get; set; }
     public bool IsAircraftSelected { get { return CurrentAircraft != null; } }
     [ObservableProperty]
-    private ObservableCollection<EditGroupAircraftData> aircraftData;
+    public partial ObservableCollection<EditGroupAircraftData> AircraftData { get; set; } = new();
 
     private Dictionary<string, RinceDCSGroup> Groups;
 

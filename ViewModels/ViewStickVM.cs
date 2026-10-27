@@ -14,16 +14,17 @@ public partial class ViewStickVM : ObservableRecipient,
                                    IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    public ObservableCollection<AssignedButton> assignedButtons = new();
+    public partial ObservableCollection<AssignedButton> AssignedButtons { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystick stick;
+    public partial RinceDCSJoystick Stick { get; set; }
 
     [ObservableProperty]
-    private RinceDCSJoystickImage stickImage;
+    public partial RinceDCSJoystickImage StickImage { get; set; }
 
     [ObservableProperty]
-    private AttachedJoystick attachedStick;
+    public partial AttachedJoystick AttachedStick { get; set; }
+
     public DCSData BindingsData { get; set; }
 
     public string SavedGamesFolder { get; set; }
@@ -34,6 +35,7 @@ public partial class ViewStickVM : ObservableRecipient,
 
     public ViewStickVM(string instanceName, string savedGamesFolder, RinceDCSJoystick stick, RinceDCSJoystickImage stickImage, DCSData data)
     {
+        AssignedButtons = new();
         Stick = stick;
         StickImage = stickImage;
         AttachedStick = Stick.AttachedJoystick;

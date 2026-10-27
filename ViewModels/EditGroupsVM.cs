@@ -23,7 +23,7 @@ public partial class EditGroupsVM : ObservableRecipient,
                                     IRecipient<PropertyChangedMessage<string>>
 {
     [ObservableProperty]
-    private EditGroupsTableData groupsData;
+    public partial EditGroupsTableData GroupsData { get; set; }
 
     private RinceDCSGroups Groups;
     private List<AttachedJoystick> Sticks;
